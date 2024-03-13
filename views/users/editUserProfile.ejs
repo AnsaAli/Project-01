@@ -1,0 +1,81 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Shipping Address</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/editUser">
+                <input type="hidden" name="id" value="<%= userData._id %>">
+                <div class="form-group">
+                    <input type="file" name="user_image" value="<%= userData.user_image %>">
+                </div>                        
+                
+                <h3>Address</h3>
+                <% userData.address.forEach(address => { %>
+                    <div class="form-group">
+                        <input type="text" required name="mobilenumber" placeholder="Contact number" value="<%= address.mobilenumber %>" oninput="validateNumber(this)">
+                    </div>
+                    <div class="form-group">
+                        <input required="" value="<%= address.house_num %>" type="text" name="house_num" placeholder="House number">
+                    </div>
+                    <div class="form-group">
+                        <input required="" value="<%= address.apartment_name %>" type="text" name="apartment_name" placeholder="Apartment name">
+                    </div>
+                    <div class="form-group">
+                        <input required="" value="<%= address.city %>" type="text" name="city" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                        <input required="" value="<%= address.district %>" type="text" name="district" placeholder="District">
+                    </div>
+                    <div class="form-group">
+                        <input required="" value="<%= address.pinCode %>" type="text" name="pinCode" placeholder="Pincode">
+                    </div>
+                <% }); %>
+               
+                    <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Update</button>
+                
+            </form>
+            
+            
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<p>Please Edit</p>
+
+
+
+
+<script>
+    function validateNumber(input) {
+    const mobileNumber = input.value;
+    const isValid = validateMobileNumber(mobileNumber);
+
+
+if (isValid) {
+    input.setCustomValidity(''); // Clear any previous validation error message
+} else {
+    input.setCustomValidity('Please enter a valid 10-digit mobile number.'); // Set custom validation error message
+}
+}
+</script>

@@ -1,0 +1,55 @@
+
+<!-- <h1>Verify OTP</h1>
+<% if (userData) { %>
+    <p>Welcome <%= userData.username %>!</p>
+    <p>Please enter the OTP sent to your email <%= userData.email %>.</p>
+    <form action="/existingEmailVerifyOTP" method="POST">
+        <input type="hidden" name="email" value="<%= userData.email %>">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <button type="submit">Verify OTP</button>
+    </form>
+<% } else { %>
+    <p>User not found.</p>
+<% } %> -->
+
+<%- include('../layout/header.ejs') %>
+<div class="container col-lg-6">
+    <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+       <div class="padding_eight_all bg-white">
+            <div class="heading_s1">
+               <h3 class="mb-30">Verify OTP</h3>
+            </div>
+            <% if (userData) { %>
+                <p>Welcome <%= userData.username %>!</p>
+                 <p>Please enter the OTP sent to your Email: <%= userData.email %>.</p>
+                <form action="/existingEmailVerifyOTP" method="POST">
+                    <%
+                      if(typeof successMessage !='undefined'){
+                %>
+                        <p style="color: green;"><%= successMessage %></p>
+                <%
+                          } 
+                %>
+                <%
+                         if(typeof errorMessage !='undefined'){
+                %>
+                         <p style="color: red;"><%= errorMessage %></p>
+                <%
+                           } 
+                %>
+                    <!-- <input type="hidden" id="email" name="email" value="<%= userData.email %>" required> -->
+                    <input type="hidden" name="email" value="<%= userData.email %>" required>
+                    <label for="otp">Enter OTP:</label>
+                    <input type="text" id="otp" name="otp" required>
+                    <button type="submit">Verify OTP</button>
+                </form>
+                <% } else { %>
+                    <p>User not found.</p>
+             <% } %>
+             
+        </div>
+    </div>
+</div>       
+
+<%- include('../layout/footer.ejs') %>

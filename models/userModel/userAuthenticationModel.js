@@ -1,48 +1,57 @@
-const mongoose=require('mongoose')
+    const mongoose=require('mongoose')
 
-// Declare the Schema of the Mongo model
-const userAuthenticationSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-        //index:true,
-    },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
-        index:true,
-    },
-    password:{
-        type:String,
-        required:true,
-    },
-    is_admin:{
-        type:Number,
-        require:true,
-    },
-    is_blocked:{
-        type:Number,
-        default:0
-    },
-    is_verified:{
-        type:Boolean,
-        default:false
-    },
-    otp:{
-        type:String,
-    },
-    otp_expiry:{
-        type: Date
-    },
-    accept_terms: {
-        type: Boolean,
-        required: true,
-        default: false,
-    }
-},{timestamps: true});
+    // Declare the Schema of the Mongo model
+    const userAuthenticationSchema = new mongoose.Schema({
+        name:{
+            type:String,
+            required:true,
+            //index:true,
+        },
+        email:{
+            type:String,
+            required:true,
+            unique:true,
+            index:true,
+        },
+        password:{
+            type:String,
+            required:true,
+        },
+        is_admin:{
+            type:Number,
+            require:true,
+        },
+        is_blocked:{
+            type:Number,
+            default:false
+        },
+        is_verified:{
+            type:Boolean,
+            default:false
+        },
+        is_deleted:{
+            type: Boolean,
+            default: false
+        },
+        otp:{
+            type:String,
+        },
+        otp_expiry:{
+            type: Date
+        }, 
+        user_image: {
+            type: String 
+        },
+         user_mobile:{
+            type: String,
+           
+        },
+        is_blocked:{
+            type:Boolean,
+            default:false
 
-//Export the model
-module.exports = mongoose.model('UserAuth',userAuthenticationSchema)
+        }
+    },{timestamps: true});
 
-//UserAuth is name of the collection in db
+   
+    module.exports = mongoose.model('UserAuth',userAuthenticationSchema)

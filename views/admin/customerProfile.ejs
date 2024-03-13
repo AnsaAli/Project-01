@@ -206,11 +206,11 @@
                           <td></td>
                           <td> <%= user.createdAt %></td>
                           <td>
-                            <form id="blockForm_<%= user._id %>" method="POST" action="/admin/customerProfile/<%= user._id %>/status/<%= user.is_blocked ? 'unblock' : 'block' %>">
+                            <form id="blockForm_<%= user._id %>" class="block-form" data-user-id="<%= user._id %>" action="/admin/customerProfile/<%= user._id %>/status/<%= user.is_blocked ? 'unblock' : 'block' %>" method="POST">
                               <% if (user.is_blocked) { %>
-                                <button class="btn btn-danger" type="submit">Unblock</button>
+                                <button class="btn btn-danger" type="button" onclick="confirmAction('<%= user._id %>', 'unblock')">Unblock</button>
                               <% } else { %>
-                                <button type="submit" class="btn btn-success">Block</button>
+                                <button class="btn btn-success" type="button" onclick="confirmAction('<%= user._id %>', 'block')">Block</button>
                               <% } %>
                             </form>
                           </td>
@@ -270,8 +270,14 @@
 
 <!-- block/unblock -->
 <script>
+  function confirmAction(userId, action) {
+    if (confirm(`Are you sure you want to ${action} this user?`)) {
+      submitBlockUnblockForm(userId, action);
+    }
+  }
+
   function submitBlockUnblockForm(userId, action) {
-    const form = document.getElementById('blockForm');
+    const form = document.getElementById(`blockForm_${userId}`);
     form.action = `/admin/customerProfile/${userId}/status/${action}`;
     form.submit();
   }

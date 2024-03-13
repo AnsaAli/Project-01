@@ -1,4 +1,4 @@
-<h1>Verify OTP</h1>
+<!-- <h1>Verify OTP</h1>
     <form action="/veryfyOtp" method="POST">
         <label for="email">Email</label>
         <input type="text" id="email" name="email" required>
@@ -8,4 +8,45 @@
     </form>
     <form action="/resendOtp">
         <input type="submit" value="Resend OTP">
-    </form>
+    </form> -->
+    <%- include('../layout/header.ejs') %>
+
+
+<div class="container col-lg-6">
+    <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+       <div class="padding_eight_all bg-white">
+            <div class="heading_s1">
+               <h3 class="mb-30">Verify OTP</h3>
+            </div>
+           
+                
+                <form action="/veryfyOtp" method="POST">
+                    <%
+                      if(typeof successMessage !='undefined'){
+                %>
+                        <p style="color: green;"><%= successMessage %></p>
+                <%
+                          } 
+                %>
+                <%
+                         if(typeof errorMessage !='undefined'){
+                %>
+                         <p style="color: red;"><%= errorMessage %></p>
+                <%
+                           } 
+                %>
+                    <input type="hidden" id="email" name="email" value="<%= userData.email %>" required>
+                    <label for="otp">Enter OTP:</label>
+                    <input type="text" id="otp" name="otp" required>
+                    <button type="submit">Verify OTP</button>
+                </form>
+            
+        </div>
+    </div>
+</div>       
+  
+
+
+
+
+<%- include('../layout/footer.ejs') %>

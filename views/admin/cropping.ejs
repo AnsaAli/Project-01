@@ -1,0 +1,134 @@
+<div>
+    <div class="row mb-3">
+      <div class="col-md-6 pr-1">
+          <label for="image">Image:</label>
+          <input type="file" id="image" name="image" multiple  onchange="previewAndCropImages(event)">
+       </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 pr-1">
+         <div id="imagePreview" class="preview-container"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="cropWidth">Width:</label>
+      <input type="number" id="cropWidth" value="200">
+      <label for="cropHeight">Height:</label>
+      <input type="number" id="cropHeight" value="200">
+  </div>
+  <div class="row">
+    <div class="col-md-5 pr-1 form-group">
+            <button class="btn btn-fill-out btn-block hover-up" onclick="cropAndSaveImages()">Crop & Save Images</button>
+    </div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+  const containers = [];
+
+  async function previewAndCropImages(event) {
+      const preview = document.getElementById('imagePreview');
+      preview.innerHTML = ''; // Clear previous previews
+
+      const files = event.target.files; // Get selected files
+
+    //   for (let i = 0; i < files.length; i++) {
+    //     console.log('Uploaded images:', files[i].name);
+    // }
+
+      for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const reader = new FileReader();
+
+          reader.onload = function(e) {
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.classList.add('preview-image');
+              preview.appendChild(img);
+
+              // Initialize Cropper
+              const cropper = new Cropper(img, {
+                  aspectRatio: NaN, // Allow free aspect ratio
+                  viewMode: 1, // Set view mode
+                  crop(event) {
+                      const cropperData = cropper.getData();
+                      document.getElementById('cropWidth').value = Math.round(cropperData.width);
+                      document.getElementById('cropHeight').value = Math.round(cropperData.height);
+                  }
+                  // Add more options as needed
+              });
+
+              // Store Cropper instance with the image element
+              img.cropper = cropper;
+          };
+
+          reader.readAsDataURL(file);
+      }
+  }
+
+  function cropAndSaveImages() {
+      const previewImages = document.querySelectorAll('.preview-image');
+
+      previewImages.forEach(img => {
+          // Get cropped data
+          const cropper = img.cropper;
+          if (cropper) {
+              const cropWidth = document.getElementById('cropWidth').value;
+              const cropHeight = document.getElementById('cropHeight').value;
+              const croppedDataUrl = cropper.getCroppedCanvas({
+                  width: parseInt(cropWidth),
+                  height: parseInt(cropHeight)
+              }).toDataURL();
+
+              // Create a new container for the cropped image
+              const container = document.createElement('div');
+              container.classList.add('preview-container');
+
+              // Display the cropped image
+              const croppedImg = document.createElement('img');
+              croppedImg.src = croppedDataUrl;
+              croppedImg.classList.add('cropped-image');
+              container.appendChild(croppedImg);
+
+              // Display the width and height
+              const widthLabel = document.createElement('span');
+              widthLabel.textContent = 'Width: ' + cropWidth;
+              container.appendChild(widthLabel);
+
+              const heightLabel = document.createElement('span');
+              heightLabel.textContent = 'Height: ' + cropHeight;
+              container.appendChild(heightLabel);
+
+              // Append the container to the list
+              containers.push(container);
+              // console.log('Checking cropped image:', croppedDataUrl);
+          }
+      });
+
+      // Display the cropped images in separate containers
+      const imagesContainer = document.getElementById('imagePreview');
+      imagesContainer.innerHTML = ''; // Clear previous previews
+      containers.forEach(container => {
+          imagesContainer.appendChild(container);
+      });
+
+      // Save the cropped images
+      containers.forEach(container => {
+          const croppedImg = container.querySelector('.cropped-image');
+          const dataUrl = croppedImg.src;
+          console.log('Saved image:', dataUrl);
+         
+      });
+  }
+
+  
+</script>

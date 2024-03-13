@@ -1,9 +1,8 @@
-const { redirect } = require('express');
-const adminModel = require('../../models/userModel/userAuthenticationModel')
-const categoryModel = require('../../models/adminModel/categoryModel')
-const bcrypt = require("bcrypt")
 
-const { createCanvas, loadImage } = require('canvas');
+const adminModel = require('../../models/userModel/userAuthenticationModel')
+const{ Category,Product} = require('../../models/adminModel/categoryModel')
+const bcrypt = require("bcrypt")
+const sharp= require('sharp')
 
 const loadAdminLogin= async (req,res)=>{
     try {
@@ -81,7 +80,7 @@ const loadUserProfile= async(req,res)=>{
     }
 }
 
-// Toggle block status
+
 userBlockUnblock = async (req, res) => {
     try {
       const user_id = req.params.id;
@@ -90,10 +89,12 @@ userBlockUnblock = async (req, res) => {
         return res.status(404).send('User not found');
       }
       
-      user.is_blocked = user.is_blocked === 1 ? 0 : 1; 
-      console.log('blocked or unblocked?',user.is_blocked  )
+    //   user.is_blocked = user.is_blocked === 1 ? 0 : 1; 
+      //console.log('blocked or unblocked?',user.is_blocked  )
+      user.is_blocked = !user.is_blocked;
       await user.save();
-      res.redirect('/admin/customerProfile');
+    //   res.redirect('/admin/customerProfile');
+      res.json({ logout: true });
     } catch (err) {
       console.error('Error toggling block status:', err);
       res.status(500).send('Internal Server Error');
@@ -102,7 +103,7 @@ userBlockUnblock = async (req, res) => {
   
 const loadCategory= async(req,res)=>{
     try {
-        const categories= await categoryModel.find({ is_deleted: false })
+        const categories= await Category.find({ is_deleted: false })
         
         res.render('category', { categories });
     } catch (error) {
@@ -121,7 +122,7 @@ const loadAddCategory= async(req,res)=>{
 const addCategory= async (req,res)=>{
     try {
         const { name, image, description } = req.body;
-        const newCategory= new categoryModel({name, image, description,is_deleted:false})
+        const newCategory= new Category({name, image, description,is_deleted:false})
         await newCategory.save()
         //console.log(newCategory, 'Is the new category')
         res.redirect('/admin/category')
@@ -133,7 +134,7 @@ const addCategory= async (req,res)=>{
 const loadEditCategory= async (req,res)=>{
     try {
         const id= req.query._id;
-        const categoryData= await categoryModel.findById({_id:id});
+        const categoryData= await Category.findById({_id:id});
         //console.log(categoryData.description)
         if(categoryData){
             res.render('editCategory',{category:categoryData})
@@ -149,7 +150,7 @@ const loadEditCategory= async (req,res)=>{
 
 const updateCategory =async(req,res)=>{
     try {
-       await categoryModel.findByIdAndUpdate({_id:req.body.id},{$set:{name:req.body.name,image:req.body.image,description:req.body.description}})
+       await Category.findByIdAndUpdate({_id:req.body.id},{$set:{name:req.body.name,image:req.body.image,description:req.body.description}})
        res.redirect('/admin/category')
     } catch (error) {
         console.log('Error while editing category')
@@ -159,7 +160,7 @@ const updateCategory =async(req,res)=>{
 const softDeleteCategory= async(req,res)=>{
     try {
         const category_id= req.params.id
-        const category= await categoryModel.findById( category_id);
+        const category= await Category.findById( category_id);
         if(!category){
             return res.status(404).send ('Category not found');
         }
@@ -172,47 +173,83 @@ const softDeleteCategory= async(req,res)=>{
         console.log('Error while deleting the category',error.message)
     }
 }
+const cropImage= async(imagePath,width,height)=>{
+    try {
+        // Construct the output path for the cropped image
+        const outputPath = `${imagePath}-cropped`;
+
+         // Crop the image using Sharp
+         await sharp(imagePath)
+         .resize(width, height, { fit: 'cover' })
+         .toFile(outputPath);
+
+         console.log('Image cropped successfully:', outputPath);
+         return outputPath; 
+    } catch (error) {
+        console.log('Error while cropping the images',error.message)
+    }
+}
 
 const loadAddProducts=async(req,res)=>{
     try {
-        const categories= await categoryModel.find({})
-        res.render('addProducts',{ categories: categories })
+        const products= await Product.find({})
+        const categories= await Category.find({})
+        res.render('addProducts',{ products: products,categories:categories })
     } catch (error) {
-        console.log('Error while loading add product page')
+        console.log('Error while loading add product page',error.message)
     }
 }
 
 
-const addProducts =async (req, res) => {
+// 
+const addProducts = async (req, res) => {
     try {
-        const { name, category, description, price } = req.body;
-        const images = req.files.map(file => file.filename);
-        //console.log('images',images)
-        // const imageString = images.join(', ');
-        // Save the product to the database
-        const newProduct = new categoryModel({ 
-            name: name,
-            category: category,
-            image:images, 
-            description: description,
-            price: price,
-            is_product: true
-        });
-        //console.log('added product image:', newProduct.image)
-        await newProduct.save();
-        res.redirect('/admin/viewProducts');
+        console.log('Form can submit')
+      const { name, category, description, quantity, total_price, offer_price } = req.body;
+      console.log('details:', name, category, description, quantity);
+    
+      // Check if any images were uploaded
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No images uploaded');
+      }
+  
+      const images = req.files.images.map(file => file.filename);
+      console.log('uploaded images:', images);
+  
+      const croppedImages = await Promise.all(
+        images.map(async imagePath => {
+          // Perform image cropping
+          const croppedImagePath = await cropImage(imagePath, 200, 200);
+          return croppedImagePath;
+        })
+      );
+  
+      // Save the product to the database
+      const newProduct = new Product({
+        name,
+        category,
+        quantity,
+        images: croppedImages,
+        description,
+        total_price,
+        offer_price,
+      });
+  
+      await newProduct.save();
+      res.redirect('/admin/viewProducts');
     } catch (error) {
-        console.log('Error adding product:', error);
-        res.status(500).send('Error adding product');
+      console.log('Error adding product:', error);
+      res.status(500).send('Error adding product');
     }
-};
+  };
+
 const loadViewProducts = async (req, res) => {
     try {
-        const products = await categoryModel.find({is_deleted: false});
-        //console.log(products, 'is the product')
+        const products = await Product.find({ is_deleted: false });
+        //console.log('Products:', products); 
         res.render('viewProduct', { products: products });
     } catch (error) {
-        console.log('Error while loading view product page', error.message);
+        console.log('Error while loading view product page:', error.message);
         res.status(500).send('Error while loading view product page');
     }
 };
@@ -220,41 +257,34 @@ const loadViewProducts = async (req, res) => {
 const loadEditProduct= async(req,res)=>{
     try {
         const id= req.query._id;
-        const productData= await categoryModel.findById({_id:id})
-        if(!productData){
+        const products= await Product.findById({_id:id}).populate('category');
+        const categories = await Category.find({})
+        if(!products){
             console.log('Error while loading edit-category page with data')
             redirect('/admin/viewProducts')
         }else{
-            res.render('editProduct',{product:productData})
+            res.render('editProduct',{products:products,categories:categories})
         }
        
     } catch (error) {
         console.log('Error while loading the edit product page', error.message)
     }
 }
-// const updateProduct= async(req,res)=>{
-//     try {
-//       console.log()
-//        const product=await categoryModel.findByIdAndUpdate({_id:req.body.id},{$set:{name:req.body.name,image:req.body.additionalImages,price:req.body.price}})
-//        res.redirect('/admin/viewProducts')
-//     } catch (error) {
-//         console.log('Error while updating the product',error.message)
-//     }
-// }
+
 
 const updateProduct= async(req,res)=>{
     try {
-        const { id, name, price, description } = req.body;
+        const { id,name, category, description,quantity, price } = req.body;
         let additionalImages = [];
 
         if (req.files && req.files.length>0){
             additionalImages = req.files.additionalImages.map(file => file.path);
         }
 
-        const product = await categoryModel.findByIdAndUpdate(
+        const product = await Product.findByIdAndUpdate(
             {_id:id},
-           { $set: { name, price, description },
-           $addToSet: { image: { $each: additionalImages } }},
+            { $set: { name, price, description,category,quantity },
+              $addToSet: { image: { $each: additionalImages } }},
            {new:true}
         )
 
@@ -266,7 +296,7 @@ const updateProduct= async(req,res)=>{
 const deleteProduct= async(req,res)=>{
     try {
         const product_id = req.params.id;
-        const product= await categoryModel.findById(product_id)
+        const product= await Product.findById(product_id)
         if(!product){
             return res.status(404).send('Product not found')
         }
@@ -296,5 +326,6 @@ module.exports={
     loadViewProducts,
     loadEditProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    cropImage
 }

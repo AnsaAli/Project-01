@@ -33,82 +33,86 @@
   <!-- CSS Files -->
   <link href="../adinAssets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../adinAssets/css/now-ui-dashboard.css?v=1.5.0" rel="stylesheet" />
- 
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+  <link href="../adinAssets/demo/demo.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 </head>
-
+   
+   
+</head>
 <body class="">
-  <div class="wrapper ">
-    <div class="sidebar" data-color="orange">
-      <!--
-        Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
-    -->
-      <div class="logo">
-        <h2 class="simple-text logo-mini">Welcome Admin </h2>
-      </div>
-      <div class="sidebar-wrapper" id="sidebar-wrapper">
-        <ul class="nav">
-          <li class="active ">
-            <a  href="/admin/dashboard">
-              <i class="now-ui-icons design_app fi-rs-angle-down"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li>
-            <a >
-              <!-- <i class="now-ui-icons education_atom"></i> -->
-              <p>Categories</p>
-              <li><a href="/admin/category">View </a></li>
-              <li><a href="/admin/addCategory">Add</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/viewProducts" >
-              <i class="now-ui-icons location_map-big"></i>
-              <p>Products</p>
-              <li><a href="/admin/addProducts">Add Products</a></li>
-              <li><a href="/admin/viewProducts" >View Products</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="">
-              <i class="now-ui-icons ui-1_bell-53"></i>
-              <p>Orders</p>
-              <li><a href="index.html">View</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/customerProfile">
-              <i class="now-ui-icons users_single-02"></i>
-              <p>User Profile</p>
-              <li><a href="/admin/customerProfile">View</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="">
-              <i class="now-ui-icons design_bullet-list-67"></i>
-              <p>Coupons</p>
-              <li><a href="index.html">View</a></li>
-              <li><a href="index-2.html">Add</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="">
-              <i class="now-ui-icons text_caps-small"></i>
-              <p>Wallet</p>
-              <li><a href="index-2.html">View</a></li>
-            </a>
-          </li>
-          <!-- <li class="active-pro">
-            <a href="./upgrade.html">
-              <i class="now-ui-icons arrows-1_cloud-download-93"></i>
-              <p>Upgrade to PRO</p>
-            </a>
-          </li> -->
-        </ul>
-      </div>
-    </div>
-    <div class="main-panel" id="main-panel">
-      <!-- Navbar -->
+    <div class="wrapper ">
+        <div class="sidebar" data-color="orange">
+            <!--
+              Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
+          -->
+            <div class="logo">
+              <h2 class="simple-text logo-mini">Welcome Admin </h2>
+            </div>
+            <div class="sidebar-wrapper" id="sidebar-wrapper">
+              <ul class="nav">
+                <li class="active ">
+                  <a  href="/admin/dashboard">
+                    <i class="now-ui-icons design_app fi-rs-angle-down"></i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                <li>
+                  <a >
+                    <!-- <i class="now-ui-icons education_atom"></i> -->
+                    <p>Categories</p>
+                    <li><a href="/admin/category">View </a></li>
+                    <li><a href="/admin/addCategory">Add</a></li>
+                  </a>
+                </li>
+                <li>
+                  <a href="/admin/viewProducts" >
+                    <i class="now-ui-icons location_map-big"></i>
+                    <p>Products</p>
+                    <li><a href="/admin/addProducts">Add Products</a></li>
+                    <li><a href="/admin/viewProducts" >View Products</a></li>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <i class="now-ui-icons ui-1_bell-53"></i>
+                    <p>Orders</p>
+                    <li><a href="index.html">View</a></li>
+                  </a>
+                </li>
+                <li>
+                  <a href="/admin/customerProfile">
+                    <i class="now-ui-icons users_single-02"></i>
+                    <p>User Profile</p>
+                    <li><a href="/admin/customerProfile">View</a></li>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <i class="now-ui-icons design_bullet-list-67"></i>
+                    <p>Coupons</p>
+                    <li><a href="index.html">View</a></li>
+                    <li><a href="index-2.html">Add</a></li>
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    <i class="now-ui-icons text_caps-small"></i>
+                    <p>Wallet</p>
+                    <li><a href="index-2.html">View</a></li>
+                  </a>
+                </li>
+                <!-- <li class="active-pro">
+                  <a href="./upgrade.html">
+                    <i class="now-ui-icons arrows-1_cloud-download-93"></i>
+                    <p>Upgrade to PRO</p>
+                  </a>
+                </li> -->
+              </ul>
+            </div>
+          </div>
+          <div class="main-panel" id="main-panel">
+             <!-- Navbar -->
       <nav class="navbar navbar-expand-lg navbar-transparent  bg-primary  navbar-absolute">
         <div class="container-fluid">
           <div class="navbar-wrapper">
@@ -119,7 +123,7 @@
                 <span class="navbar-toggler-bar bar3"></span>
               </button>
             </div>
-           
+            <a class="navbar-brand" href="">Dashboard</a>
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -174,120 +178,184 @@
       </nav>
       <!-- End Navbar -->
 
-<body>
-    
-    <div class="panel-header panel-header-sm">
-    </div>
-    <div class="content">
-      <div class="row">
+      <div class="panel-header panel-header-sm">
+      </div>
+      <div class="content">
         <div class="col-md-8">
           <div class="card">
             <div class="card-header">
               <h5 class="title">Add Product</h5>
             </div>
             <div class="card-body">
-              <form action="/admin/addProducts" method="POST" enctype="multipart/form-data">
+        <form action="/admin/addProducts" method="POST" enctype='multipart/form-data'>
+          <!-- images -->
+          <div class="row">
+            <div class="col-md-6 pr-1">
+                <div >
+                    <label for="image">Product Images</label>
+                    <input type="file" id="image" name="images" accept="image/*" required onchange="previewImages(event)">                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 pr-1">
+                <div id="imagePreview" class="preview-container"></div>
+            </div>
+        </div>
+         
+                <!-- Product name and Category -->
                 <div class="row">
                   <div class="col-md-5 pr-1">
-                    <div class="mb-3">
-                        <label for="image">Image:</label>
-                        <input type="file" id="image" name="image" multiple onchange="previewAndCropImages(event)">
-                    </div>
-                    <div id="imagePreview"></div>
-                  </div>
-                </div>
-                <div class="row mb-2">
-                  <div class="col-md-6 pr-1">
-                    <div>
-                        <label for="category">Category:</label>
-                         <select id="category" name="category">
-                                <% categories.forEach(category => { %>
-                                <option value="<%= category._id %>"><%= category.name %></option>
-                                <% }); %>
-                          </select><br>
+                    <div class="form-group">
+                        <label for="name">Product Name</label>
+                        <input type="text"  class="form-control" id="name" name="name" required>
                     </div>
                   </div>
+                  <div class="col-md-5 pr-1">
+                    <div class="form-group">
+                        <label for="category">Choose Category </label>
+                        <!-- <input type="text"  class="form-control" id="name" name="name" required> -->
+                        <select class="form-control" name="category" id="category">
+                          <% categories.forEach(category=>{%>
+                            <option value="<%= category._id %>"> <%= category.name%></option>
+                           
+                            <%} )%>
+                        </select>
+                        
+                    </div>
+                  </div>
+
                 </div>
+                 <!-- Product description -->
                 <div class="row">
                   <div class="col-md-6 pr-1">
                     <div class="form-group">
-                      <label for="name">Product Name:</label>
-                      <input type="text" class="form-control" id="name" name="name" required>
+                      <label for="description">Description</label>
+                        <textarea name="description" rows="4" cols="80" class="form-control" id="description" required></textarea>
                     </div>
                   </div>
                 </div>
+                 <!-- Product Quantity  -->
                 <div class="row">
                   <div class="col-md-6 pr-1">
                     <div class="form-group">
-                      <label for="price">Price:</label>
-                      <input type="number" id="price" name="price"  class="form-control" required><br>
+                        <label for="quantity">Stock/Quantity</label>
+                        <input type="number"  class="form-control" placeholder="in gram" id="quantity" name="quantity" required>
                     </div>
                   </div>
                 </div>
-                <div class="row">
+                 <!-- Product Price -->
+                 <div class="row">
                   <div class="col-md-6 pr-1">
                     <div class="form-group">
-                    <label for="description">Description:</label><br>
-                     <textarea id="description" name="description"  rows="4" cols="80" class="form-control" required></textarea><br>
+                        <label for="price">Price (₹)</label>
+                        <input type="number"  class="form-control" id="price" placeholder="per 100g"  name="price" required>
+                        <!-- <select name="price" id="price"  required>
+                          <option type="number" value="g"></option>
+                          <option type="number" value="Kg"></option>
+                        </select> -->
                     </div>
                   </div>
                 </div>
-               
+
+                <!-- Total Price -->
+                <div class="row">
+                  <div class="col-md-6 pr-1">
+                      <div class="form-group">
+                          <label for="total">Total Price (₹)</label>
+                          <input type="text" class="form-control" id="total" name="total_price" readonly>
+                          
+                      </div>
+                  </div>
+                 </div>
+                    <!-- Offer Percentage -->
+                   <div class="row">
+                  <div class="col-md-6 pr-1">
+                     <div class="form-group">
+                        <label for="offerPercentage">Offer Percentage (%)</label>
+                        <input type="number" class="form-control" id="offerPercentage" value="0" min="0" max="100">
+                      </div>
+                  </div>
+                      </div>
+             <!-- Offer Price -->
+                <div class="row">
+                <div class="col-md-6 pr-1">
+                  <div class="form-group">
+                     <label for="offerPrice">Offer Price (₹)</label>
+                     <input type="text" class="form-control" id="offerPrice" name="offer_price" readonly>
+                     <button type="button" class="btn btn-fill-out btn-block hover-up" onclick="calculateTotal()">Calculate Total</button>
+                  </div>
+                </div>
+
+                </div>
+              
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
-                      
-                      <button type="submit"  class="btn btn-success btn-fill-out btn-block hover-up" style="color: rgb(255, 255, 255); font-weight: bold;">Add Product</button>
-                      <button type="submit" class="btn btn-primary btn-fill-out btn-block hover-up"><a href="/admin/viewProducts" style="color: rgb(255, 255, 255); font-weight: bold;">Cancel</a></button>
-
+                        <button type="submit" class="btn btn-fill-out btn-block hover-up btn-success">Add Product</button>
+                      <a href="/admin/viewProducts">Cancel</a>
                     </div>
                   </div>
                 </div>
-              </form>
+         </form>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+   
+  <style>
+    .preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 
+.preview-image {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid #ccc;
+}
 
-    <script>
-         async function previewAndCropImages(event) {
-        const preview = document.getElementById('imagePreview');
-        preview.innerHTML = ''; //else the new images would be appended to the existing ones. 
+</style>
+<script>
+  function previewImages(event) {
+    var previewContainer = document.getElementById('imagePreview');
 
-        const files = event.target.files; // Get selected files
+    var files = event.target.files;
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var reader = new FileReader();
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const reader = new FileReader();
-
-            reader.onload = async function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.classList.add('preview-image');
-                img.setAttribute('name', 'image'); // Set name attribute
-                preview.appendChild(img);
-
-                // Crop the image
-                const croppedImageDataUrl = await cropImage(e.target.result, 50, 50); 
-                console.log('Cropped image:', croppedImageDataUrl);
-            };
-
-            reader.readAsDataURL(file);
+        reader.onload = function(e) {
+            var image = document.createElement('img');
+            image.src = e.target.result;
+            image.classList.add('preview-image');
+            previewContainer.appendChild(image);
         }
+
+        reader.readAsDataURL(file);
     }
-    </script>
-    
-    <style>
-       .preview-image {
-        width: 100px; 
-        height: auto; 
-        margin-right: 10px; 
+}
+  function calculateTotal() {
+        const quantity = document.getElementById('quantity').value;
+        const pricePer100g = document.getElementById('price').value;
+        const total = quantity * pricePer100g;
+        document.getElementById('total').value = total.toFixed(2);
+
+        const offerPercentage = document.getElementById('offerPercentage').value;
+        const offerAmount = (total * offerPercentage) / 100;
+        const offerPrice = total - offerAmount;
+        document.getElementById('offerPrice').value = offerPrice.toFixed(2);
     }
-    </style>
-    
-    
-    
+</script>
+
+      
+
+</div>
+  
+</div>
+
 </body>
+
 </html>
+
+  
+ 

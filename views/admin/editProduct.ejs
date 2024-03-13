@@ -38,144 +38,6 @@
   <link href="../adinAssets/demo/demo.css" rel="stylesheet" />
 </head>
 
-<body class="">
-  <div class="wrapper ">
-    <div class="sidebar" data-color="orange">
-      <!--
-        Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
-    -->
-      <div class="logo">
-        <h2 class="simple-text logo-mini">Welcome Admin </h2>
-      </div>
-      <div class="sidebar-wrapper" id="sidebar-wrapper">
-        <ul class="nav">
-          <li class="active ">
-            <a  href="/admin/dashboard">
-              <i class="now-ui-icons design_app fi-rs-angle-down"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li>
-            <a >
-              <!-- <i class="now-ui-icons education_atom"></i> -->
-              <p>Categories</p>
-              <li><a href="/admin/category">View </a></li>
-              <li><a href="/admin/addCategory">Add</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/viewProducts" >
-              <i class="now-ui-icons location_map-big"></i>
-              <p>Products</p>
-              <li><a href="/admin/addProducts">Add Products</a></li>
-              <li><a href="/admin/viewProducts" >View Products</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="">
-              <i class="now-ui-icons ui-1_bell-53"></i>
-              <p>Orders</p>
-              <li><a href="index.html">View</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/customerProfile">
-              <i class="now-ui-icons users_single-02"></i>
-              <p>User Profile</p>
-              <li><a href="/admin/customerProfile">View</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="">
-              <i class="now-ui-icons design_bullet-list-67"></i>
-              <p>Coupons</p>
-              <li><a href="index.html">View</a></li>
-              <li><a href="index-2.html">Add</a></li>
-            </a>
-          </li>
-          <li>
-            <a href="">
-              <i class="now-ui-icons text_caps-small"></i>
-              <p>Wallet</p>
-              <li><a href="index-2.html">View</a></li>
-            </a>
-          </li>
-          <!-- <li class="active-pro">
-            <a href="./upgrade.html">
-              <i class="now-ui-icons arrows-1_cloud-download-93"></i>
-              <p>Upgrade to PRO</p>
-            </a>
-          </li> -->
-        </ul>
-      </div>
-    </div>
-    <div class="main-panel" id="main-panel">
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-transparent  bg-primary  navbar-absolute">
-        <div class="container-fluid">
-          <div class="navbar-wrapper">
-            <div class="navbar-toggle">
-              <button type="button" class="navbar-toggler">
-                <span class="navbar-toggler-bar bar1"></span>
-                <span class="navbar-toggler-bar bar2"></span>
-                <span class="navbar-toggler-bar bar3"></span>
-              </button>
-            </div>
-           
-          </div>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-bar navbar-kebab"></span>
-            <span class="navbar-toggler-bar navbar-kebab"></span>
-            <span class="navbar-toggler-bar navbar-kebab"></span>
-          </button>
-          <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <form>
-              <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Search...">
-                <div class="input-group-append">
-                  <div class="input-group-text">
-                    <i class="now-ui-icons ui-1_zoom-bold"></i>
-                  </div>
-                </div>
-              </div>
-            </form>
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="">
-                  <i class="now-ui-icons media-2_sound-wave"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Stats</span>
-                  </p>
-                </a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="now-ui-icons location_world"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Some Actions</span>
-                  </p>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="">
-                  <i class="now-ui-icons users_single-02"></i>
-                  <a href="/admin/logout">logout</a>
-                  <p>
-                    <span class="d-lg-none d-md-block">Account</span>
-                  </p>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <!-- End Navbar -->
-
 <body class="user-profile  ">
   <div class="wrapper ">
     <div class="sidebar" data-color="orange">
@@ -312,38 +174,7 @@
           </div>
         </nav>
         <!-- End Navbar -->
-    <!-- 
-    <form action="/admin/editProduct" method="POST" enctype="multipart/form-data" class="edit">
-      
-        <% product.image.forEach(image => { %>
-            <img src="/images/<%= image %>" alt="Product Image" class="pdtImg">
-        <% }); %>
-         <br>
-         <br>
-
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" value="<%= product.name %>" required><br>
-        <br>
-
-        
-        <label for="additionalImages">Additional Images:</label><br>
-        <input type="file" id="additionalImages" name="additionalImages" multiple><br>
-        <br>
-        <br>
-        <label for="price">Price:</label><br>
-        <input type="number" id="price" name="price" value="<%= product.price %>" required><br>
-        <br>
-        <br>
-       
-        <label for="description">Description:</label><br>
-        <textarea id="description" name="description" required><%= product.description %></textarea><br>
-        <br>
-        <br>
-        <input type="hidden" name="id" value="<%= product._id %>">
-
-        <button type="submit">Update Product</button>
-        <a href="/admin/viewProducts">Cancel</a>
-    </form> -->
+    
     
     <div class="panel-header panel-header-sm">
     </div>
@@ -359,34 +190,73 @@
                 <div class="row">
                   <div class="col-md-5 pr-1">
                     <div class="form-group">
-                      <% product.image.forEach(image => { %>
+                      <% products.images.forEach(image => { %>
                         <img src="/images/<%= image %>" alt="Product Image" class="pdtImg">
                     <% }); %>
                     </div>
                   </div>
                 </div>
-                <div class="row mb-2">
+                <!-- <div class="row mb-2"> -->
                   <div class="col-md-6 pr-1">
                     <div>
                       <label for="additionalImages">Additional Images:</label><br>
-                      <input type="file" id="additionalImages" name="additionalImages" multiple>
-                      
+                      <input type="file" id="additionalImages" name="additionalImages" multiple onchange="previewAndCropImages(event)">
                     </div>
                   </div>
+
+                  <div class="row">
+                    <div class="col-md-6 pr-1">
+                       <div id="imagePreview" class="preview-container"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="cropWidth">Width:</label>
+                    <input type="number" id="cropWidth" value="200">
+                    <label for="cropHeight">Height:</label>
+                    <input type="number" id="cropHeight" value="200">
                 </div>
+            </div>
+            <!-- <div class="row">
+              <div class="col-md-5 pr-1 form-group">
+                      <button class="btn btn-fill-out btn-block hover-up" onclick="cropAndSaveImages()">Crop & Save Images</button>
+              </div>
+          </div> -->
+
                 <div class="row">
                   <div class="col-md-6 pr-1">
                     <div class="form-group">
                       <label for="name">Name:</label>
-                      <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+                      <input type="text" class="form-control" id="name" name="name" value="<%= products.name %>" required>
                     </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-6 pr-1">
                     <div class="form-group">
-                      <label for="price">Price:</label>
-                      <input type="number" id="price" class="form-control" name="price" value="<%= product.price %>" required>
+                      <label for="category">Category:</label>
+                      <!-- <input type="text"  class="form-control" id="category" name="category" value="<%= products.category.name %>"> -->
+                      <select class="form-control" name="category" id="category">
+                        <% categories.forEach(category=>{%>
+                          <option value="<%= category._id %>"> <%= category.name%></option>
+                         
+                          <%} )%>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 pr-1">
+                    <div class="form-group">
+                      <label for="price">Price(₹)/g</label>
+                      <input type="number" id="price" class="form-control" name="price" value="<%= products.price %>" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 pr-1">
+                    <div class="form-group">
+                      <label for="quantity">Stock/Quantity in g</label>
+                      <input type="number" id="quantity" class="form-control" name="quantity" value="<%= products.price %>" required>
                     </div>
                   </div>
                 </div>
@@ -394,20 +264,18 @@
                   <div class="col-md-6 pr-1">
                     <div class="form-group">
                       <label for="description">Description:</label>
-                        <textarea name="description" rows="4" cols="80" class="form-control" id="description" required><%= product.description %></textarea>
+                        <textarea name="description" rows="4" cols="80" class="form-control" id="description" required><%= products.description %></textarea>
                     </div>
                   </div>
                 </div>
-                <input type="hidden" name="id" value="<%= product._id %>">
+                <input type="hidden" name="id" value="<%= products._id %>">
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-group">
-                      <!-- <input type="hidden" name="id" value="<%= product._id %>"> -->
+                     
                       <button type="submit"  class="btn btn-fill-out btn-block hover-up">Update Product</button>
                       <button type="submit" class="btn btn-fill-out btn-block hover-up"><a href="/admin/viewProducts">Cancel</a></button>
-<!-- 
-                        <button type="submit" class="btn btn-fill-out btn-block hover-up">Add Category</button>
-                        <button type="submit" class="btn btn-fill-out btn-block hover-up"><a href="/admin/category" class="viewCate">View Categories</a></button> -->
+
                     </div>
                   </div>
                 </div>
@@ -434,7 +302,7 @@
                 </a>
               </li>
               <li>
-                <a href="http://blog.creative-tim.com">
+                <a href="">
                   Blog
                 </a>
               </li>
@@ -450,17 +318,128 @@
     </div>
   </div>
     
-
-
-
-<style>
-    .pdtImg{
-        width: 250px;
-        height:250px
+  <style>
+    .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
-  
-</style>
 
-    
+    .preview-image {
+        max-width: 200px;
+        height: auto;
+        border: 1px solid #ccc;
+    }
+
+    .cropped-image {
+        max-width: 200px;
+        height: auto;
+        border: 1px solid #ccc;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+  const containers = [];
+
+  async function previewAndCropImages(event) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = ''; // Clear previous previews
+
+    const files = event.target.files; // Get selected files
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.classList.add('preview-image');
+            
+            // Create a container for each image
+            const container = document.createElement('div');
+            container.classList.add('preview-container');
+            
+            // Append the image to the container
+            container.appendChild(img);
+            preview.appendChild(container);
+
+            // Initialize Cropper
+            const cropper = new Cropper(img, {
+                aspectRatio: NaN, // Allow free aspect ratio
+                viewMode: 1, // Set view mode
+                crop(event) {
+                    const cropperData = cropper.getData();
+                    document.getElementById('cropWidth').value = Math.round(cropperData.width);
+                    document.getElementById('cropHeight').value = Math.round(cropperData.height);
+                }
+                // Add more options as needed
+            });
+
+            // Store Cropper instance with the image element
+            img.cropper = cropper;
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+
+
+  function cropAndSaveImages() {
+      const previewImages = document.querySelectorAll('.preview-image');
+
+      previewImages.forEach(img => {
+          // Get cropped data
+          const cropper = img.cropper;
+          if (cropper) {
+              const cropWidth = document.getElementById('cropWidth').value;
+              const cropHeight = document.getElementById('cropHeight').value;
+              const croppedDataUrl = cropper.getCroppedCanvas({
+                  width: parseInt(cropWidth),
+                  height: parseInt(cropHeight)
+              }).toDataURL();
+
+              // Create a new container for the cropped image
+              const container = document.createElement('div');
+              container.classList.add('preview-container');
+
+              // Display the cropped image
+              const croppedImg = document.createElement('img');
+              croppedImg.src = croppedDataUrl;
+              croppedImg.classList.add('cropped-image');
+              container.appendChild(croppedImg);
+
+              // Display the width and height
+              const widthLabel = document.createElement('span');
+              widthLabel.textContent = 'Width: ' + cropWidth;
+              container.appendChild(widthLabel);
+
+              const heightLabel = document.createElement('span');
+              heightLabel.textContent = 'Height: ' + cropHeight;
+              container.appendChild(heightLabel);
+
+              // Append the container to the list
+              containers.push(container);
+              // console.log('Checking cropped image:', croppedDataUrl);
+          }
+      });
+
+      // Display the cropped images in separate containers
+      const imagesContainer = document.getElementById('imagePreview');
+      imagesContainer.innerHTML = ''; // Clear previous previews
+      containers.forEach(container => {
+          imagesContainer.appendChild(container);
+      });
+
+      // Save the cropped images
+      containers.forEach(container => {
+          const croppedImg = container.querySelector('.cropped-image');
+          const dataUrl = croppedImg.src;
+          console.log('Saved image:', dataUrl);
+         
+      });
+  }
+</script>
+
 </body>
 </html>

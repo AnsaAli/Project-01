@@ -1,39 +1,72 @@
-const mongoose= require('mongoose')
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const categorySchema= new mongoose.Schema({
+const categorySchema= new Schema({
     name:{
         type: String,
         require:true,
     },
-    image: [{
-        type: String
-    }],
+    image: {
+        type: String,
+        require: true
+    },
     
     description:{ 
        type: String
     },
-
-   price:{
-        type: Number,
-        require: true
-    },
-    quantity:{
-        type: Number,
-        default: 0,
-    },
-    category:{
-        type: String
-    },
-    is_product:{
-        type: Boolean,
-        default:false
-    }
-    ,
     is_deleted:{
         type: Boolean,
         default: false
     },
-    ratings: [{ type: Number }]
+    is_featured:{
+        type:Boolean,
+        default:false
+    }
 },{timestamps: true});
 
-module.exports= mongoose.model('Category',categorySchema)
+const Category= mongoose.model('Category',categorySchema)
+
+const productSchema= new Schema({
+    name:{
+        type: String,
+        require:true
+    },
+    description:{
+        type:String
+    },
+    total_price:{
+        type:Number,
+        required:true
+    },
+    onOffer: {
+        type: Boolean,
+        default: false
+    },
+    offer_price:{
+        type:Number,
+        required:true
+    },
+    category:{
+        type: Schema.Types.ObjectId,
+        ref:'Category'
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    images: {
+        type: Object,
+        default: {} 
+    },
+    is_deleted:{
+        type: Boolean,
+        default: false
+    }
+})
+
+const Product= mongoose.model('Product',productSchema)
+
+module.exports={
+    Category,
+    Product}

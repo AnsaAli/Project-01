@@ -1,3 +1,7 @@
+<!-- <h1>View Product</h1>
+<% products.forEach(pdt => { %>
+  <p>Product Name: <%= pdt.name %></p>
+<% }) %> -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,8 +20,7 @@
   <!-- CSS Files -->
   <link href="../adinAssets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../adinAssets/css/now-ui-dashboard.css?v=1.5.0" rel="stylesheet" />
-  <!-- CSS Just for demo purpose, don't include it in your project -->
-  <link href="../adinAssets/demo/demo.css" rel="stylesheet" />
+ 
 </head>
 
 <body class="user-profile ">
@@ -158,42 +161,26 @@
         </nav>
         <!-- End Navbar -->
 
+        
 
-    <!-- <h1>View Products</h1>
-    <div>
-       
-
-        <% products.forEach(product => { %>
-            <div class="product-card">
-                <% if (product.is_product) { %>
-                    
-                    <p><%= product.category %></p>
-                <% } %>
-                <img src="<%= product.image %>" alt="<%= product.name %>">
-                <p>Price: <%= product.price %></p>
-                
-            </div>
-        <% }); %>
-         
-    </div> -->
-
-    <div class="row pdt-view-card">
+ 
+    <div class="panel-header panel-header-sm">
+    </div>
+    <div class="row pdt-view-card  mt-5 mb-5">
       <% products.forEach(product => { %>
           <div class="col-md-3 col-sm-4 mb-3 ml-5"> 
               <div class="card">
-                  <% if (product.image.length > 0) { %>
-                     
                       <div class="card-img-top" style="height: 200px; overflow: hidden;">
-                         
-                          <img src="/images/<%= product.image[0] %>" class="img-fluid mx-auto d-block" alt="Product Image" style="height: 100%; width: auto;">
+                        <img src="/images/<%= product.images[0] %>" class="img-fluid mx-auto d-block" alt="Product Image" style="width:100%">
                       </div>
-                  <% } %>
                   <div class="card-body" style="height: 150px;">
                       <h5 class="card-title"><%= product.name %></h5>
-                      <p class="card-text">Price: <%= product.price %></p>
+                      <p class="card-text">Price per 250g(₹): <%= product.price %></p>
+                      <p class="card-text">Quantity(in 250g): <%= product.quantity %></p>
+                      <p class="card-text">Total(₹)</p>
                   </div>
                   <div class="card-footer">
-                      <form action="/admin/editProduct" method="GET">
+                      <form action="/admin/editProduct" method="GET" class="mb-3">
                           <input type="hidden" name="_id" value="<%= product._id %>">
                           <button type="submit" class="btn btn-primary">View/Edit</button>
                       </form>
@@ -205,144 +192,36 @@
               </div>
           </div>
       <% }); %>
-  </div>
-  
-    <!-- <div class="content">
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="card card-chart">
-              <div class="card-header">
-                <h5 class="card-category">Global Sales</h5>
-                <h4 class="card-title">Shipped Products</h4>
-                
-                <div class="dropdown">
-                  <button type="button" class="btn btn-round btn-outline-default dropdown-toggle btn-simple btn-icon no-caret" data-toggle="dropdown">
-                    <i class="now-ui-icons loader_gear"></i>
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                    <a class="dropdown-item text-danger" href="#">Remove Data</a>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart-area">
-                  <canvas id="lineChartExample"></canvas>
-                </div>
-              </div>
-              <div class="card-footer">
-                <div class="stats">
-                  <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6">
-            <div class="card card-chart">
-              <div class="card-header">
-                <h5 class="card-category">2018 Sales</h5>
-                <h4 class="card-title">All products</h4>
-                <div class="dropdown">
-                  <button type="button" class="btn btn-round btn-outline-default dropdown-toggle btn-simple btn-icon no-caret" data-toggle="dropdown">
-                    <i class="now-ui-icons loader_gear"></i>
-                  </button>
-                  <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                    <a class="dropdown-item text-danger" href="#">Remove Data</a>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart-area">
-                  <canvas id="lineChartExampleWithNumbersAndGrid"></canvas>
-                </div>
-              </div>
-              <div class="card-footer">
-                <div class="stats">
-                  <i class="now-ui-icons arrows-1_refresh-69"></i> Just Updated
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-6">
-            <div class="card card-chart">
-              <div class="card-header">
-                <h5 class="card-category">Email Statistics</h5>
-                <h4 class="card-title">24 Hours Performance</h4>
-              </div>
-              <div class="card-body">
-                <div class="chart-area">
-                  <canvas id="barChartSimpleGradientsNumbers"></canvas>
-                </div>
-              </div>
-              <div class="card-footer">
-                <div class="stats">
-                  <i class="now-ui-icons ui-2_time-alarm"></i> Last 7 days
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
-    
-    
-  <footer class="footer">
-    <div class=" container-fluid ">
-      <nav>
-        <ul>
-          <li>
-            <a href="https://www.creative-tim.com">
-              GoEasy-Admin
-            </a>
-          </li>
-          <li>
-            <a href="http://presentation.creative-tim.com">
-              About Us
-            </a>
-          </li>
-          <li>
-            <a href="http://blog.creative-tim.com">
-              Blog
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="copyright" id="copyright">
-        &copy; <script>
-          document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
-        </script>, Designed by <a href="https://www.invisionapp.com" target="_blank">Invision</a>. Coded by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
-      </div>
-    </div>
-  </footer>
-</div>
-</div>
+  </div> 
 
-<style>
-    .pdt-view-card{
-        margin-top: 100px;
-    }
-    .productShow{
-        background-color: rgba(0, 0, 0, 0.661);
-    }
-</style>
+  <style>
+    .card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  font-family: arial;
+}
 
-<!--   Core JS Files   -->
-<script src="../adinAssets/js/core/jquery.min.js"></script>
-<script src="../adinAssets/js/core/popper.min.js"></script>
-<script src="../adinAssets/js/core/bootstrap.min.js"></script>
-<script src="../adinAssets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
-<!--  Google Maps Plugin    -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
-<!-- Chart JS -->
-<script src="../adinAssets/js/plugins/chartjs.min.js"></script>
-<!--  Notifications Plugin    -->
-<script src="../adinAssets/js/plugins/bootstrap-notify.js"></script>
-<!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
-<script src="../adinAssets/js/now-ui-dashboard.min.js?v=1.5.0" type="text/javascript"></script><!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
-<script src="../adinAssets/demo/demo.js"></script>
-</body>
+.price {
+  color: grey;
+  font-size: 22px;
+}
 
-</html>
+.card button {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+
+.card button:hover {
+  opacity: 0.7;
+}
+
+  </style>

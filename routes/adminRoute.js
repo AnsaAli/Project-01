@@ -2,32 +2,33 @@ const express= require('express')
 const admin_route= express()
 const multer= require('multer')
 const path = require('path')
-
-
-
-const storage =multer.diskStorage({
-    destination: function(req,file,cb){
-      cb(null,path.join(__dirname,'../views/public/adinAssets/img'))
-    },
-    filename:function(req,file,cb){
-      const name= Date.now()+ '-'+file.originalname;
-      cb(null,name)
-    }
-})
-const upload = multer({storage:storage})
-
+const imageStore= require('../middleware/imageStorage')
 const adminController= require('../controller/adminControllerPage/adminController')
+const bodyParser= require('body-parser')
+const { sessionSecret, passport } = require('../secret/secret')
+const authMiddleware= require('../middleware/adminAuthMiddlware')
+
 admin_route.set('view engine','ejs')
 admin_route.set('views','./views/admin')
 
-const bodyParser= require('body-parser')
 admin_route.use(bodyParser.json())
 admin_route.use(bodyParser.urlencoded({extended:true}))
 
-const secret= require('../secret/secret')
-admin_route.use(secret())
+admin_route.use(sessionSecret())
 
-const authMiddleware= require('../middleware/adminAuthMiddlware')
+const storage=imageStore
+const upload = multer({storage:storage})
+// const storage =multer.diskStorage({
+//     destination: function(req,file,cb){
+//       cb(null,path.join(__dirname,'../views/public/adinAssets/img'))
+//     },
+//     filename:function(req,file,cb){
+//       const name= Date.now()+ '-'+file.originalname;
+//       cb(null,name)
+//     }
+// })
+// const upload = multer({storage:storage})
+
 
 //loginpage\\
 admin_route.get('/',authMiddleware.is_logout, adminController.loadAdminLogin)
@@ -52,7 +53,7 @@ admin_route.post('/editCategory',adminController.updateCategory)
 admin_route.post('/category/:id/delete',adminController.softDeleteCategory)
 
 admin_route.get('/addProducts',authMiddleware.is_login,adminController.loadAddProducts)
-admin_route.post('/addProducts',upload.array('image', 5),adminController.addProducts)
+admin_route.post('/addProducts',upload.array('images', 5),adminController.addProducts)
 
 admin_route.get('/viewProducts',authMiddleware.is_login,adminController.loadViewProducts)
 

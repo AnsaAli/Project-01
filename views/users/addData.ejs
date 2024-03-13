@@ -1,0 +1,46 @@
+
+<form method="post" action="/addData">
+    <div class="form-group ">
+        <input type="file"  name="user_image" >
+    </div>                        
+    <div class="form-group">
+        <input type="string" required name="mobilenumber" placeholder="Contact number" oninput="validateNumber(this)">
+    </div>
+    <h3>Address</h3>
+    <div class="form-group">
+        <input required="" type="string" name="house_num" placeholder="House number">
+    </div>
+    <div class="form-group ">
+        <input required="" type="text" name="apartment_name" placeholder="Apartment name">
+    </div>
+    <div class="form-group ">
+        <input required="" type="text" name="city" placeholder="city">
+    </div>
+    <div class="form-group ">
+        <input required="" type="text" name="district" placeholder="District">
+    </div>
+    <div class="form-group ">
+        <input required="" type="string" name="pinCode" placeholder="Pincode">
+    </div>
+    
+    <div class="form-group">
+         <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Add</button>
+    </div>
+</form>
+
+
+
+
+<script>
+    function validateNumber(input) {
+    const mobileNumber = input.value;
+    const isValid = validateMobileNumber(mobileNumber);
+
+
+if (isValid) {
+    input.setCustomValidity(''); // Clear any previous validation error message
+} else {
+    input.setCustomValidity('Please enter a valid 10-digit mobile number.'); // Set custom validation error message
+}
+}
+</script>

@@ -1,0 +1,28 @@
+<%- include('../layout/header.ejs') %>
+
+<!--<h2>Verify with registerd email</h2>
+
+ <form action='/existingEmailVerification' method="post">
+    <input type="email" id="email" name="email"> 
+    <label for="email">Enter registered email</label>
+
+    <input type="submit" value="Send OTP">
+</form> -->
+
+<div class="container col-lg-6">
+    <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+       <div class="padding_eight_all bg-white">
+            <div class="heading_s1">
+               <h3 class="mb-30">Verify with registerd email</h3>
+            </div>
+            <form action='/existingEmailVerification' method="post">
+                    <div class="form-group login_page"> 
+                        <label for="email">Enter registered email</label>
+                        <input type="email" id="email" name="email" required> 
+                    </div>
+                        <input type="submit" class="btn btn-fill-out btn-block hover-up" value="Send OTP">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>   
