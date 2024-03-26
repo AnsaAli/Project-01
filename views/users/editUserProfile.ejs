@@ -1,81 +1,129 @@
+<%- include('../layout/header.ejs') %>
+
+    <main class="main">
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="col-lg-6">
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">Shipping Address</h5>
-        </div>
-        <div class="card-body">
-            <form method="post" action="/editUser">
-                <input type="hidden" name="id" value="<%= userData._id %>">
-                <div class="form-group">
-                    <input type="file" name="user_image" value="<%= userData.user_image %>">
-                </div>                        
-                
-                <h3>Address</h3>
-                <% userData.address.forEach(address => { %>
-                    <div class="form-group">
-                        <input type="text" required name="mobilenumber" placeholder="Contact number" value="<%= address.mobilenumber %>" oninput="validateNumber(this)">
+        <div class="container col-lg-6">
+            <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                <div class="padding_eight_all bg-white">
+                    <div class="heading_s1">
+                        <h3 class="mb-30">Edit Address</h3>
                     </div>
-                    <div class="form-group">
-                        <input required="" value="<%= address.house_num %>" type="text" name="house_num" placeholder="House number">
+                    <!-- <p class="mb-50 font-sm">
+                       Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our privacy policy
+                   </p>
+                  -->
+                    <div id="form">
+
+
+                        <form id="updateForm" action="/editAddress/<%= index %>" method="POST">
+                            <!-- <input type="hidden" name="_method" value="PUT"> -->
+                            <input type="hidden" name="id" value="<%= userData._id %>">
+                            <div class="form-group">
+                                <input type="file" name="user_image" value="<%= addressData.user_image %>">
+                            </div>
+
+                            <h3>Address</h3>
+                            <div class="form-group">
+                                <input type="string" required name="address_customer_name" placeholder="Enter name"
+                                    value="<%= addressData.address_customer_name %>" >
+                            </div>
+                            <div class="form-group">
+                                <input type="string" required name="address_type" placeholder="Home,Office,etc"
+                                    value="<%= addressData.address_type %>" >
+                            </div>
+                            <div class="form-group">
+                                <input type="string" required name="mobile_num" placeholder="Contact number"
+                                    value="<%= addressData.mobile_num %>" oninput="validateNumber(this)">
+                            </div>
+                            <div class="form-group">
+                                <input required="" value="<%= addressData.house_num %>" type="string" name="house_num"
+                                    placeholder="House number">
+                            </div>
+                            <div class="form-group">
+                                <input required="" value="<%= addressData.apartment_name %>" type="string"
+                                    name="apartment_name" placeholder="Apartment name">
+                            </div>
+                            <div class="form-group">
+                                <input required="" value="<%= addressData.city %>" type="string" name="city"
+                                    placeholder="City">
+                            </div>
+                            <div class="form-group">
+                                <input required="" value="<%= addressData.landmark %>" type="string" name="landmark"
+                                    placeholder="Landmark">
+                            </div>
+                            <div class="form-group">
+                                <input required="" value="<%= addressData.district %>" type="string" name="district"
+                                    placeholder="District">
+                            </div>
+                            <div class="form-group">
+                                <input required="" value="<%= addressData.pincode %>" type="string" name="pincode"
+                                    placeholder="Pincode">
+                            </div>
+
+                            <button type="submit" class="btn btn-fill-out btn-block hover-up">Update</button>
+                        </form>
+
                     </div>
-                    <div class="form-group">
-                        <input required="" value="<%= address.apartment_name %>" type="text" name="apartment_name" placeholder="Apartment name">
-                    </div>
-                    <div class="form-group">
-                        <input required="" value="<%= address.city %>" type="text" name="city" placeholder="City">
-                    </div>
-                    <div class="form-group">
-                        <input required="" value="<%= address.district %>" type="text" name="district" placeholder="District">
-                    </div>
-                    <div class="form-group">
-                        <input required="" value="<%= address.pinCode %>" type="text" name="pinCode" placeholder="Pincode">
-                    </div>
-                <% }); %>
-               
-                    <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Update</button>
-                
-            </form>
-            
-            
-        </div>
-    </div>
-</div>
+
+                </div>
+
+
+
+    </main>
 
 
 
 
 
 
-<p>Please Edit</p>
 
 
 
+    <script>
+        function validateNumber(input) {
+            const mobileNumber = input.value;
+            const isValid = validateMobileNumber(mobileNumber);
 
-<script>
-    function validateNumber(input) {
-    const mobileNumber = input.value;
-    const isValid = validateMobileNumber(mobileNumber);
+
+            if (isValid) {
+                input.setCustomValidity(''); // Clear any previous validation error message
+            } else {
+                input.setCustomValidity('Please enter a valid 10-digit mobile number.'); // Set custom validation error message
+            }
+        }
+
+        // document.getElementById('updateForm').addEventListener('submit', function (event) {
+        //     console.log('inside the front end code')
+        //     event.preventDefault(); // Prevent the default form submission
+
+        //     const form = event.target;
+        //     console.log(form, 'is the form')
+        //     const formData = new FormData(form);
+        //     const url = form.getAttribute('action');
+        //     const method = 'PUT'; // Specify the method as PUT
+
+        //     // Send an AJAX request
+        //     fetch(url, {
+        //         method: method,
+        //         body: formData
+        //     })
+        //         .then(response => {
+        //             if (response.ok) {
+        //                 // If the response is okay, redirect to /userProfile
+        //                 window.location.href = '/userProfile';
+        //             } else {
+        //                 // If there's an error, handle it accordingly
+        //                console.error('Error updating the address======',error)
+        //                 throw new Error('Error updating address');
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error('Error updating address:', error);
+        //             // Handle error here
+        //         });
+        // });
 
 
-if (isValid) {
-    input.setCustomValidity(''); // Clear any previous validation error message
-} else {
-    input.setCustomValidity('Please enter a valid 10-digit mobile number.'); // Set custom validation error message
-}
-}
-</script>
+
+    </script>

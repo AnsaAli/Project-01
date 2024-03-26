@@ -1,46 +1,128 @@
+<%- include('../layout/header.ejs') %>
 
-<form method="post" action="/addData">
-    <div class="form-group ">
-        <input type="file"  name="user_image" >
-    </div>                        
-    <div class="form-group">
-        <input type="string" required name="mobilenumber" placeholder="Contact number" oninput="validateNumber(this)">
-    </div>
-    <h3>Address</h3>
-    <div class="form-group">
-        <input required="" type="string" name="house_num" placeholder="House number">
-    </div>
-    <div class="form-group ">
-        <input required="" type="text" name="apartment_name" placeholder="Apartment name">
-    </div>
-    <div class="form-group ">
-        <input required="" type="text" name="city" placeholder="city">
-    </div>
-    <div class="form-group ">
-        <input required="" type="text" name="district" placeholder="District">
-    </div>
-    <div class="form-group ">
-        <input required="" type="string" name="pinCode" placeholder="Pincode">
-    </div>
-    
-    <div class="form-group">
-         <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Add</button>
-    </div>
-</form>
+    <main class="main">
 
 
+        <div class="container col-lg-6">
+            <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
+                <div class="padding_eight_all bg-white">
+                    <div class="heading_s1">
+                        <h3 class="mb-30">Create an Account</h3>
+                    </div>
+                    <!-- <p class="mb-50 font-sm">
+                   Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our privacy policy
+               </p>
+              -->
+                    <div id="form">
+
+                        <form method="post" action="/addData">
+
+                            <div class=" ">
+                                <input type="file" name="user_image">
+                                <!-- <br><small id="name-error" class="error-msg"></small> -->
+                            </div>
+                            <div class="form-group ">
+                                <input type="string" required name="address_type" placeholder="is it home,office?">
+                            </div>
+                            <div class="form-group ">
+                                <input type="string" required name="address_customer_name" placeholder="Enter name ">
+                            </div>
+
+                            <div class="form-group ">
+                                <input type="string" required name="mobile_num" placeholder="Contact number">
+                            </div>
+
+                            <h3>Address</h3>
+                            <div class="form-group">
+                                <input required="" type="string" name="house_num" placeholder="House number">
+                            </div>
+                            <div class="form-group ">
+                                <input required="" type="text" name="apartment_name" placeholder="Apartment name">
+                            </div>
+                            <div class="form-group ">
+                                <input required="" type="text" name="city" placeholder="city">
+                            </div>
+                            <div class="form-group ">
+                                <input required="" type="text" name="landmark" placeholder="Landmark">
+                            </div>
+                            <div class="form-group ">
+                                <input required="" type="string" name="district" placeholder="District">
+                            </div>
+                            <div class="form-group ">
+                                <input required="" type="string" name="pincode" placeholder="Pincode">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-fill-out btn-block hover-up"
+                                    name="login">Add</button>
+
+                            </div>
+                            <a href="/userProfile">cancel</a>
+
+                        </form>
+                    </div>
+
+                </div>
 
 
-<script>
-    function validateNumber(input) {
-    const mobileNumber = input.value;
-    const isValid = validateMobileNumber(mobileNumber);
+
+    </main>
+    <%- include('../layout/footer.ejs') %>
+        <!-- Preloader Start -->
+        <div id="preloader-active">
+            <div class="preloader d-flex align-items-center justify-content-center">
+                <div class="preloader-inner position-relative">
+                    <div class="text-center">
+                        <h5 class="mb-5">Now Loading</h5>
+                        <div class="loader">
+                            <div class="bar bar1"></div>
+                            <div class="bar bar2"></div>
+                            <div class="bar bar3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function isValidMobileNumber(mobilenumber) {
+
+                const mobileNumberRegex = /^[0-9]{10}$/; // Matches 10 digits only
+                return mobileNumberRegex.test(mobilenumber);
+            }
+            function confirmDelete(addressId) {
+
+                if (confirm("Are you sure you want to delete this address?")) {
+
+                    document.getElementById("deleteForm_" + addressId).submit();
+                    console.log(addressId, 'is the id address')
+                }
+            }
+        </script>
 
 
-if (isValid) {
-    input.setCustomValidity(''); // Clear any previous validation error message
-} else {
-    input.setCustomValidity('Please enter a valid 10-digit mobile number.'); // Set custom validation error message
-}
-}
-</script>
+        <!-- Vendor JS-->
+        <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+        <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+        <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+        <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+        <script src="assets/js/plugins/slick.js"></script>
+        <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
+        <script src="assets/js/plugins/wow.js"></script>
+        <script src="assets/js/plugins/jquery-ui.js"></script>
+        <script src="assets/js/plugins/perfect-scrollbar.js"></script>
+        <script src="assets/js/plugins/magnific-popup.js"></script>
+        <script src="assets/js/plugins/select2.min.js"></script>
+        <script src="assets/js/plugins/waypoints.js"></script>
+        <script src="assets/js/plugins/counterup.js"></script>
+        <script src="assets/js/plugins/jquery.countdown.min.js"></script>
+        <script src="assets/js/plugins/images-loaded.js"></script>
+        <script src="assets/js/plugins/isotope.js"></script>
+        <script src="assets/js/plugins/scrollup.js"></script>
+        <script src="assets/js/plugins/jquery.vticker-min.js"></script>
+        <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
+        <!-- Template  JS -->
+        <script src="assets/js/main.js"></script>
+
+
+
+        </body>

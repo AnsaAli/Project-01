@@ -1,0 +1,91 @@
+<%- include('../layout/adminHeader.ejs') %>
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Order Details </h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead class=" text-primary">
+                  <th>Date</th>
+                  <th>Products</th>
+                  <th>Customer email</th>
+                  <th>Payment method</th>
+                  <th>Status</th>
+                  <th>Action</th>
+
+
+                </thead>
+                <tbody>
+                  <% orderDetails.forEach(order=> { %>
+                    <tr>
+                      <td>
+                        <%= order.orderDate.toDateString() %>
+                      </td>
+                      <td>
+                        <% order.items.forEach(item=> { %>
+                          Quantity: <%= item.quantity %><br>
+                            <% }); %>
+                      </td>
+                      <td>
+                        <%= order.user_id.email %>
+                      </td>
+                      <td>
+                        <%= order.paymentMethod %>
+                      </td>
+                      <td>
+                        <%= order.orderStatus %>
+                      </td>
+                      <td><a href="/cancelOrder/<%= order._id %>">Cancel</a></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class=" container-fluid ">
+      <nav>
+        <ul>
+          <li>
+            <a href="https://www.creative-tim.com">
+              GoEasy-Admin
+            </a>
+          </li>
+          <li>
+            <a href="http://presentation.creative-tim.com">
+              About Us
+            </a>
+          </li>
+          <li>
+            <a href="http://blog.creative-tim.com">
+              Blog
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="copyright" id="copyright">
+        &copy;
+        <script>
+          document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
+        </script>, Designed by <a href="https://www.invisionapp.com" target="_blank">Invision</a>.
+        Coded by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
+      </div>
+    </div>
+  </footer>
+
+  </div>
+  </div>
+  </body>
+
+  </html>

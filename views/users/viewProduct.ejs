@@ -1,57 +1,174 @@
 <%- include('../layout/header.ejs') %>
 
 
-
-<!-- Displaying product details -->
-<div class="container mt-5">
-    <!-- <img src="/images/<%= product.image %>" alt="Product Image"> -->
    
-    <div class="pdtData">
-        <% product.image.forEach(image => { %>
-            <img src="/images/<%= image %>" alt="Product Image" class="pdtImg ">
-        <% }); %>
-    
-        <h2><%= product.name %></h2>
-        <p>Price: <%= product.price %></p>
-        <p>Description: <%= product.description %></p>
-        
-    </div>
+                                            <div class="slider-nav-thumbnails pl-15 pr-15">
+                                                <div><img src="assets/imgs/shop/thumbnail-3.jpg" alt="product image">
+                                                </div>
+                                                <div><img src="assets/imgs/shop/thumbnail-4.jpg" alt="product image">
+                                                </div>
+                                                <div><img src="assets/imgs/shop/thumbnail-5.jpg" alt="product image">
+                                                </div>
+                                                <div><img src="assets/imgs/shop/thumbnail-6.jpg" alt="product image">
+                                                </div>
+                                                <div><img src="assets/imgs/shop/thumbnail-7.jpg" alt="product image">
+                                                </div>
+                                                <div><img src="assets/imgs/shop/thumbnail-8.jpg" alt="product image">
+                                                </div>
+                                                <div><img src="assets/imgs/shop/thumbnail-9.jpg" alt="product image">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Gallery -->
+                                        <div class="social-icons single-share">
+                                            <ul class="text-grey-5 d-inline-block">
+                                                <li><strong class="mr-10">Share this:</strong></li>
+                                                <li class="social-facebook"><a href="#"><img
+                                                            src="assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                                                </li>
+                                                <li class="social-twitter"> <a href="#"><img
+                                                            src="assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                                                </li>
+                                                <li class="social-instagram"><a href="#"><img
+                                                            src="assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                                                </li>
+                                                <li class="social-linkedin"><a href="#"><img
+                                                            src="assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 col-xs-12">
+                                        <% if(typeof successMessage !='undefined' ){ %>
+                                            <p style="color: green;">
+                                                <%= successMessage %>
+                                            </p>
+                                            <% } %>
+                                                <% if(typeof errorMessage !='undefined' ){ %>
+                                                    <p style="color: red;">
+                                                        <%= errorMessage %>
+                                                    </p>
+                                                    <% } %>
+                                                        <div class="detail-info">
+                                                            <h2 class="title-detail">
+                                                                <%= product.name %>
+                                                            </h2>
+                                                            <div class="product-detail-rating">
+                                                                <div class="pro-details-brand">
+                                                                    <span> Category: <a href="shop-grid-right.html">
+                                                                            <%= product.category %>
+                                                                        </a></span>
+                                                                </div>
+                                                                <div class="product-rate-cover text-end">
+                                                                    <div class="product-rate d-inline-block">
+                                                                        <div class="product-rating" style="width:90%">
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="font-small ml-5 text-muted"> (25
+                                                                        reviews)</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clearfix product-price-cover">
+                                                                <div class="product-price primary-color float-left">
+                                                                    <select id="quantitySelect" name="quantity"
+                                                                        onchange="updatePrice()">
+                                                                        <option value="250g">250g</option>
+                                                                        <option value="500g">500g</option>
+                                                                        <option value="1kg">1kg</option>
+                                                                    </select>
+                                                                    <input type="hidden" id="productPrices"
+                                                                        value="<%= JSON.stringify(product.prices) %>">
 
-    <!-- <form action="/product/<%= product._id %>/rate" method="POST">
-        <input type="radio" name="rating" value="1"> 1
-        <input type="radio" name="rating" value="2"> 2
-      
-        <button type="submit">Submit Rating</button>
-    </form> -->
-</div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="bt-1 border-color-1 mt-15 mb-15"></div>
+                                                            <div class="short-desc mb-30">
+                                                                <p>
+                                                                    <%= product.description %>
+                                                                </p>
+                                                            </div>
+                                                            <div class="product_sort_info font-xs mb-30">
+                                                                <ul>
+                                                                    <li class="mb-10"><i class="fi-rs-crown mr-5"></i>
+                                                                        <%= product.description %>
+                                                                    </li>
+                                                                    <li class="mb-10"><i class="fi-rs-refresh mr-5"></i>
+                                                                        Return Policy
+                                                                    </li>
+                                                                    <li><i class="fi-rs-credit-card mr-5"></i> Cash on
+                                                                        Delivery
+                                                                        available</li>
+                                                                </ul>
+                                                            </div>
+                                                            <!-- <div class="attr-detail attr-color mb-15">
+                                            <strong class="mr-10">Color</strong>
+                                            <ul class="list-filter color-filter">
+                                                <li><a href="#" data-color="Red"><span class="product-color-red"></span></a></li>
+                                                <li><a href="#" data-color="Yellow"><span class="product-color-yellow"></span></a></li>
+                                                <li class="active"><a href="#" data-color="White"><span class="product-color-white"></span></a></li>
+                                                <li><a href="#" data-color="Orange"><span class="product-color-orange"></span></a></li>
+                                                <li><a href="#" data-color="Cyan"><span class="product-color-cyan"></span></a></li>
+                                                <li><a href="#" data-color="Green"><span class="product-color-green"></span></a></li>
+                                                <li><a href="#" data-color="Purple"><span class="product-color-purple"></span></a></li>
+                                            </ul>
+                                        </div> -->
+                                                            <!-- <div class="attr-detail attr-size">
+                                            <strong class="mr-10">Size</strong>
+                                            <ul class="list-filter size-filter font-small">
+                                                <li><a href="#">S</a></li>
+                                                <li class="active"><a href="#">M</a></li>
+                                                <li><a href="#">L</a></li>
+                                                <li><a href="#">XL</a></li>
+                                                <li><a href="#">XXL</a></li>
+                                            </ul>
+                                        </div> -->
+                                                            <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                                            <div class="detail-extralink">
+                                                                <div class="detail-qty border radius">
+                                                                    <a href="#" class="qty-down"><i
+                                                                            class="fi-rs-angle-small-down"></i></a>
+                                                                    <span class="qty-val">1</span>
+                                                                    <a href="#" class="qty-up"><i
+                                                                            class="fi-rs-angle-small-up"></i></a>
+                                                                </div>
+                                                                <div class="product-extra-link2">
+                                                                    <button type="submit"
+                                                                        class="button button-add-to-cart">Add to
+                                                                        cart</button>
+                                                                    <a aria-label="Add To Wishlist"
+                                                                        class="action-btn hover-up"
+                                                                        href="shop-wishlist.html"><i
+                                                                            class="fi-rs-heart"></i></a>
+                                                                    <a aria-label="Compare" class="action-btn hover-up"
+                                                                        href="shop-compare.html"><i
+                                                                            class="fi-rs-shuffle"></i></a>
+                                                                </div>
+                                                            </div>
+                                                            <ul class="product-meta font-xs color-grey mt-50">
+                                                                <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
+                                                                <li class="mb-5">Tags: <a href="#" rel="tag">Cloth</a>,
+                                                                    <a href="#" rel="tag">Women</a>, <a href="#"
+                                                                        rel="tag">Dress</a> </li>
+                                                                <li>Availability:<span
+                                                                        class="in-stock text-success ml-5">8 Items In
+                                                                        Stock</span></li>
+                                                            </ul>
+                                                        </div>
+                                                        <!-- Detail Info -->
+                                    </div>
+                                </div>
 
 
+                            </div>
 
-<style>
-    .pdtImg{
-        height: 250px;
-        width: auto;
-       
-    }
-    .pdtImg {
-  padding: 50px;
-  background-color: rgba(243, 255, 243, 0.628);
-  transition: transform .2s; /* Animation */
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-}
 
-.pdtImg:hover {
-  transform: scale(1.5);
-  background-color: rgba(198, 255, 198, 0.898);
-}
-.pdtData{
-    border-radius: 25px;
-    background-color: rgb(236, 255, 255);
-    padding: 20px;
-    width:80%;
-    height: auto;
-   
-}
-</style>
+                            <script>
+                                function updatePrice() {
+                                    var selectedQuantity = document.getElementById("quantitySelect").value;
+                                    var productPrices = JSON.parse(document.getElementById("productPrices").value);
+                                    document.getElementById("selectedPrice").innerHTML = "Price: " + productPrices[selectedQuantity];
+                                }
+                            </script>
+
+
+    </body>
