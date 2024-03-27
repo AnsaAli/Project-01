@@ -73,7 +73,7 @@ user_route.post("/editAddress/:index" ,userAuthenticationController.updateUserAd
 
 
 user_route.get('/changePassword',authMiddleware.is_login, userAuthenticationController.loadChngePassword)
-user_route.post('/changePassword',authMiddleware.is_login, userAuthenticationController.chngePassword)
+user_route.post('/changePassword', userAuthenticationController.chngePassword)
 
 user_route.get('/addData',authMiddleware.is_login, userAuthenticationController.loadAddProfile)
 user_route.post('/addData', userAuthenticationController.addProfile)

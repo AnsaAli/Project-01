@@ -605,6 +605,7 @@ const addProfile= async(req,res)=>{
 const deleteAddress=async(req,res)=>{
     try {
         const { index } = req.params; 
+        // console.log(index,'==========is the index')
         const userId = req.session.user_id;
 
         const user = await User.findById(userId).populate('address');
@@ -625,28 +626,55 @@ const deleteAddress=async(req,res)=>{
 }
 const loadChngePassword= async(req,res)=>{
     try {
-        const userData = await User.findById(req.session.user_id)
-        res.render('changePassword',{userData:userData})
+        
+        const userId= req.session.user_id;
+        // console.log(userId, 'is the userId')
+        const userData = await User.findById(userId)
+        // console.log(userData, 'is the userData===========632')
+        res.render('changePassword',{userData})
     } catch (error) {
         console.log('Error while loading change password page',error.message)
     }
 }
 const chngePassword= async(req,res)=>{
     try {
-        const {email,password,confirmpassword}= req.body;
-        const existingEmail= await User.findOne({email});
-        if(!existingEmail){
+        // console.log('============21')
+        const {epassword,password,confirmpassword}= req.body;
+        userId= req.session.user_id
+        // console.log(userId, 'is the userId============1')
+        const user= await User.findById(userId);
+        
+    //    console.log(user,'is the user============646')
+        // console.log(spassword,'existing passowrd from the body')
+        if(user){
+            // console.log(userId, 'is the userId============22222')
+            const passwordCheck= await bcrypt.compare(epassword,user.password);
+            if(passwordCheck){
+                // console.log(passwordCheck, 'is the ============3333')
+                if(password !== confirmpassword){
+                    return res.render('changePassword',{errorMessage:'Password is not matching.'})
+        
+                }else{
+                    user.password= await seccurePassword(password)
+                    await user.save();
+                    // console.log(userId, 'is the userId============77777')
+                    // return res.render('myProfile',{successMessageMessage:'Password successfully changed.'})
+                    res.redirect('/userProfile')
+                }
+
+            }else{
+                console.log(userId, 'is the userId============88888')
+                return res.render('changePassword',{errorMessage:'Please enter your existing password'})
+            }
+        }else{
+            console.log(userId, 'is the userId============99999')
             return res.render('changePassword',{errorMessage:'Email not found,please register'})
         }
-        if(password !== confirmpassword){
-            return res.render('changePassword',{errorMessage:'Password is not matching.'})
-
-        }
-        existingEmail.password= await seccurePassword(password)
-        await existingEmail.save();
-        return res.redirect('/userProfile')
+       
+        
     } catch (error) {
-        console.log('Error while changing the password')
+        console.log('Error while changing the password', error)
+        return res.render('changePassword', { errorMessage: 'An error occurred while changing the password' });
     }
 
 }
