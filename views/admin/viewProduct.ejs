@@ -1,6 +1,6 @@
 <%- include('../layout/adminHeader.ejs') %>
 
-<!-- <% products.forEach(product => { %>
+  <!-- <% products.forEach(product => { %>
   <% product.images.forEach(imageUrl => { %>
       <img src="<%= imageUrl %>" alt="Product Image" style="width: 100px; height: 100px;">
   <% }) %>
@@ -8,42 +8,56 @@
   <div class="row pdt-view-card  mt-5 mb-5">
     <% products.forEach(product=> { %>
       <%= product.image %>
-      <div class="col-md-3 col-sm-4 mb-3 ml-5">
-        <div class="card">
-          <div class="card-img-top" style="height: 200px; overflow: hidden;">
-            <% product.images.forEach(imageUrl => { %>
-              <img src="<%= imageUrl %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
-              style="width:100%">
-          <% }) %>
-            
-          </div>
-          <div class="card-body" style="height: 250px;">
-            <h5 class="card-title">
-              <%= product.name %>
-            </h5>
-            <p class="card-text">Category: <%= product.category %>
-            </p>
-            <p class="card-text">Stock: <%= product.stock %>
-            </p>
-            <p class="card-text">Total Quantity: <%= product.quantity %>g</p>
-            <p class="card-text">Total(₹): <%= product.total_price %>
-            </p>
-            <p class="card-text">Offer Price(₹): <%= product.offer_price %>
-            </p>
-          </div>
-          <div class="card-footer">
-            <form action="/admin/editProduct" method="GET" class="mb-3">
-              <input type="hidden" name="_id" value="<%= product._id %>">
-              <button type="submit" class="btn btn-primary">View/Edit</button>
-            </form>
-            <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
-              <input type="hidden" name="_id" value="<%= product._id %>">
-              <button type="submit" class="btn btn-primary">Delete</button>
-            </form>
+        <div class="col-md-3 col-sm-4 mb-3 ml-5">
+          <div class="card">
+            <div class="card-img-top" style="height: 250px; overflow: hidden;">
+              <% product.images.forEach(imageUrl=> { %>
+                <img src="<%= imageUrl %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
+                  style="width:100%">
+                <% }) %>
+
+            </div>
+            <div class="card-body" style="height: 350px; padding: 2px;">
+              <h5 class="card-title">
+                <%= product.productName %>
+              </h5>
+              <p class="card-text">Category: <%= product.category.name %>
+              </p>
+              <p class="card-text">Quantity: <%= product.totalQuantity %>kg
+              </p>
+              <p class="card-text">Total: ₹<%= product.totalPrice %>
+              </p>
+              <p class="card-text">Offer Percentage: <%= product.offerPercentage %>%
+              </p>
+              <p class="card-text">Offer Price: ₹<%= product.offerPrice %>
+              </p>
+              <p class="card-text">Available Weights:</p>
+              <select id="weightOptions" class="card-text">
+                <% product.weightOptions.forEach(option=> { %>
+                  <option value="<%= option.weight %>">
+                    <%= option.weight %>g - ₹<%= option.weightPrice %> (<%= option.priceAfterDiscount %> after discount)
+                  </option>
+                  <% }) %>
+              </select>
+             
+              </p>
+              <p class="card-text ">Description: <%= product.description %>
+              </p>
+
+            </div>
+            <div class="card-footer bott">
+              <form action="/admin/editProduct" method="GET" class="mb-3">
+                <input type="hidden" name="_id" value="<%= product._id %>">
+                <button type="submit" class="btn btn-primary">Edit</button>
+              </form>
+              <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
+                <input type="hidden" name="_id" value="<%= product._id %>">
+                <button type="submit" class="btn btn-primary">Delete</button>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-      <% }); %>
+        <% }); %>
   </div>
 
   <style>
@@ -76,3 +90,5 @@
       opacity: 0.7;
     }
   </style>
+
+  

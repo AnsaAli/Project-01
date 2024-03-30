@@ -29,7 +29,11 @@
                             </div>
 
                             <div class="form-group ">
-                                <input type="string" required name="mobile_num" placeholder="Contact number">
+                                <input type="string" id="mobile_num" required name="mobile_num" placeholder="Contact number"
+                                pattern='[0-9]{10}'
+                                title="Must be a 10 digit. ">
+                                
+
                             </div>
 
                             <h3>Address</h3>
@@ -84,10 +88,18 @@
         </div>
 
         <script>
-            function isValidMobileNumber(mobilenumber) {
-
+           
+                const phoneInput = document.getElementById(mobile_num);
+                function isValidMobileNumber(mobile_num) {
+                    const phoneNumer= phoneInput.value;
                 const mobileNumberRegex = /^[0-9]{10}$/; // Matches 10 digits only
-                return mobileNumberRegex.test(mobilenumber);
+                if(!mobileNumberRegex.test(phoneNumer)){
+                    alert('Please enter a valid 10-digit number')
+                    phoneInput.focus();
+                    return false
+                }
+                return true
+                
             }
             function confirmDelete(addressId) {
 
@@ -96,6 +108,15 @@
                     document.getElementById("deleteForm_" + addressId).submit();
                     console.log(addressId, 'is the id address')
                 }
+            }
+            //to validate name
+            function validateName(name) {
+
+                //regular expression
+                const nameRegex = /^[a-zA-Z]{3,25}$/;
+
+                //to test the name
+                return nameRegex.test(name);
             }
         </script>
 

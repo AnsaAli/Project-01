@@ -12,15 +12,12 @@ cloudinary.config({
     api_secret: '_gG35Qz2WyuPdPh53Iges-oDSBQ'
 });
 
-//to validate name
-function validateName(name) {
 
-    //regular expression
-    const nameRegex = /^[a-zA-Z]{3,25}$/;
-
-    //to test the name
-    return nameRegex.test(name);
+function validate(name) {
+    const regexPattern = /^(?=.*[a-zA-Z])[a-zA-Z\s]{3,}$/;
+    return regexPattern.test(name);
 }
+
 
 
 const loadAdminLogin = async (req, res) => {
@@ -140,22 +137,24 @@ const loadAddCategory = async (req, res) => {
 
 const addCategory = async (req, res) => {
     try {
-        const { name, image, description } = req.body;
-
-        //check the name
-        if (!validateName(name)) {
-            return res.status(400).json({ errorMessage: 'Invalid category name. Name must contain only letters, with a min length of 3  and a maximum length of 25 .' });
+        console.log('============== 135')
+        const { name, description } = req.body;
+        if (!validate(name)) {
+            return res.status(500).redirect('/admin/category?error=ProductNameInvalid');
         }
+        console.log(name, description, '=========input values 137')
+
 
         //if category already exist
         const existingCategory = await Category.findOne({ name })
         if (existingCategory) {
-            return res.status(400).json({ errorMessage: 'Category with the same name already exists' });
+            return res.status(400).redirect('/admin/category?error=CategoryAlreadyExists');
         }
-        const newCategory = new Category({ name, image, description, is_deleted: false })
+        const newCategory = new Category({ name, description, is_deleted: false })
         await newCategory.save()
-        //console.log(newCategory, 'Is the new category')
-        res.status(200).json({ successMessage: 'Category added successfully!' });
+        console.log(newCategory, 'Is the new category')
+        // Redirect with success message
+        res.redirect('/admin/category?success=CategoryAddedSuccessfully');
     } catch (error) {
         console.log('Error while adding category', error.message)
     }
@@ -170,7 +169,7 @@ const loadEditCategory = async (req, res) => {
             res.render('editCategory', { category: categoryData })
         } else {
             console.log('Error while loading edit-category page with data')
-            redirect('/admin/category')
+            res.redirect('/admin/category')
         }
 
     } catch (error) {
@@ -181,9 +180,7 @@ const loadEditCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
     try {
         const { id, name, image, description } = req.body;
-        if (!validateName(name)) {
-            return res.status(400).json({ errorMessage: 'Invalid category name. Name must contain only letters, with a min length of 3  and a maximum length of 25 .' });
-        }
+
 
         //update
         await Category.findByIdAndUpdate({ _id: req.body.id }, { $set: { name: req.body.name, image: req.body.image, description: req.body.description } })
@@ -229,6 +226,7 @@ const cropImage = async (imagePath, width, height) => {
 
 const loadAddProducts = async (req, res) => {
     try {
+        const id = req.query._id;
         const products = await Product.find({})
         const categories = await Category.find({})
         res.render('addProducts', { products: products, categories: categories })
@@ -246,46 +244,72 @@ const addProducts = async (req, res) => {
         const files = req.files;
         // console.log(files,'fies')
         const uploadedImages = [];
+
         for (const file of files) {
             // console.log('inside file loop')
             const result = await cloudinary.uploader.upload(file.path);
             // console.log(result, 'is the result ')
             uploadedImages.push(result.url); // Store the secure URL of the uploaded image
         }
-        // console.log('================================250')
+        console.log(uploadedImages, 'images ================================250 A addProducts')
         const {
             productName,
-            description,
             category,
+            description,
             totalQuantity,
+            pricePer100g,
             totalPrice,
             offerPercentage,
             offerPrice,
-            weightOptions1 
-        } = req.body;
 
-        if (!validateName(productName)) {
-            return res.status(400).json({ errorMessage: 'Invalid category name. Name must contain only letters, with a min length of 3  and a maximum length of 25 .' });
+        } = req.body;
+        if (!validate(productName)) {
+            return res.render('addProducts', { errorMessage: 'Please add a valid product name!' });
         }
-        console.log('================================890')
+        if (totalQuantity < 0) {
+            return res.render('addProducts', { errorMessage: 'Quantity must be greater than 0!' });
+
+        }
+        if (pricePer100g < 0) {
+            return res.render('addProducts', { errorMessage: 'Price must be greater than 0!' });
+        }
+        if (offerPercentage < 0) {
+            return res.render('addProducts', { errorMessage: 'Offer percentage must be greater than 0!' });
+        }
+        if (offerPercentage > 80) {
+            return res.render('addProducts', { errorMessage: "Offer percentage can't be be greater than 80%!" });
+        }
+        if (offerPrice > totalPrice) {
+            return res.render('addProducts', { errorMessage: "Offer price allways lesser than total price!" });
+
+        }
+
+        console.log('================================270 B addProducts')
+        //100g= 5 
+        let price1g = pricePer100g / 100;
+        let price250 = price1g * 250;
+        let price500 = price1g * 500
+        let price1Kg = price1g * 1000;
+
+        let offerprice100 = pricePer100g - (pricePer100g * offerPercentage / 100)
+        let offerprice250 = price250 - (price250 * offerPercentage / 100)
+        let offerprice500 = price500 - (price500 * offerPercentage / 100)
+        let offerprice1kg = price1Kg - (price1Kg * offerPercentage / 100)
+
+
+        console.log('================================890 C addProducts')
 
         //if product is exist
         const existingProduct = await Product.findOne({ productName })
         if (existingProduct) {
             return res.render('addProducts', {
                 errorMessage: 'Product with the same name already exists',
-                categories: await Category.find({})
+
             })
         }
-        console.log('================================893')
+        console.log('================================893 D addProducts')
 
-        // Construct weightOptions array
-        const weightOptions = weightOptionsData.map(option => ({
-            weight: option.weight,
-            weightPrice: option.weightPrice,
-            priceAfterDiscount:priceAfterDiscount
-          
-        }));
+
 
         // Save the product to the database
         const newProduct = new Product({
@@ -293,26 +317,47 @@ const addProducts = async (req, res) => {
             description: description,
             category: category,
             totalQuantity: totalQuantity,
+            pricePer100g: pricePer100g,
             totalPrice: totalPrice,
             offerPercentage: offerPercentage,
             offerPrice: offerPrice,
-            weightOptions: weightOptions1
-            ,
-            images: uploadedImages
+            images: uploadedImages,
+            weightOptions: [{
+                weight: 100,
+                weightPrice: pricePer100g,
+                priceAfterDiscount: offerprice100
+            },
+            {
+                weight: 250,
+                weightPrice: price250,
+                priceAfterDiscount: offerprice250
+            },
+            {
+                weight: 500,
+                weightPrice: price500,
+                priceAfterDiscount: offerprice500
+            },
+            {
+                weight: 1000,
+                weightPrice: price1Kg,
+                priceAfterDiscount: offerprice1kg
+            }
+            ]
         });
-        console.log('================================895')
+        console.log('================================296 D addProducts')
         await newProduct.save();
         req.session.uploadedImages = uploadedImages
-        res.redirect('/admin/viewProducts');
+        console.log('================================299 E addProducts')
+        return res.status(200).json({ success: true, redirectTo: '/admin/viewProducts' });
     } catch (error) {
-        console.log('Error adding product:', error);
-        res.status(500).send('Error adding product');
+        console.log('Error, in the catch addProducts=====302 :', error);
+        res.status(500).json({ errorMessage: 'Error adding product' })
     }
 };
 
 const loadViewProducts = async (req, res) => {
     try {
-        const products = await Product.find({ is_deleted: false });
+        const products = await Product.find({ is_deleted: false }).populate('category');
         //console.log('Products:', products); 
         res.render('viewProduct', { products: products });
     } catch (error) {
@@ -324,6 +369,7 @@ const loadViewProducts = async (req, res) => {
 const loadEditProduct = async (req, res) => {
     try {
         const id = req.query._id;
+        console.log(id, '===============id 308')
         const products = await Product.findById({ _id: id }).populate('category');
         const categories = await Category.find({})
         if (!products) {
@@ -334,30 +380,86 @@ const loadEditProduct = async (req, res) => {
         }
 
     } catch (error) {
-        console.log('Error while loading the edit product page', error.message)
+        console.log('Error while loading the edit product page', error)
     }
 }
 
 
 const updateProduct = async (req, res) => {
     try {
-        const { id, name, category, description, quantity, stock, total_price, offer_price } = req.body;
+        console.log('inside the update product')
 
-        // let additionalImages = [];
+        const id = req.body.id;
+        const productName = req.body.productName;
+        const category = req.body.category;
+        const description = req.body.description;
+        const totalQuantity = req.body.totalQuantity;
+        const pricePer100g = req.body.pricePer100g;
+        const totalPrice = req.body.totalPrice;
+        const offerPercentage = req.body.offerPercentage;
+        const offerPrice = req.body.offerPrice;
 
-        // if (req.files && req.files.length>0){
-        //     additionalImages = req.files.additionalImages.map(file => file.path);
-        // }
+        console.log(id,
+            productName,
+            category,
+            description,
+            totalQuantity,
+            pricePer100g,
+            totalPrice,
+            offerPercentage,
+            offerPrice
+        )
+       
+        let price1g = pricePer100g / 100;
+        let price250 = price1g * 250;
+        let price500 = price1g * 500
+        let price1Kg = price1g * 1000;
+
+        let offerprice100 = pricePer100g - (pricePer100g * offerPercentage / 100)
+        let offerprice250 = price250 - (price250 * offerPercentage / 100)
+        let offerprice500 = price500 - (price500 * offerPercentage / 100)
+        let offerprice1kg = price1Kg - (price1Kg * offerPercentage / 100)
+
 
         const product = await Product.findByIdAndUpdate(
-            { _id: id },
-            { $set: { name, category, description, quantity, total_price, offer_price } },
+            id,
+            { $set: { 
+                productName, 
+                category, 
+                description, 
+                totalQuantity, 
+                pricePer100g, 
+                totalPrice, 
+                offerPercentage, 
+                offerPrice,
+                weightOptions:[{
+                    weight: 100,
+                    weightPrice: pricePer100g,
+                    priceAfterDiscount: offerprice100
+                },
+                {
+                    weight: 250,
+                    weightPrice: price250,
+                    priceAfterDiscount: offerprice250
+                },
+                {
+                    weight: 500,
+                    weightPrice: price500,
+                    priceAfterDiscount: offerprice500
+                },
+                {
+                    weight: 1000,
+                    weightPrice: price1Kg,
+                    priceAfterDiscount: offerprice1kg
+    
+                }]
+             } },
             { new: true }
         )
 
         res.redirect('/admin/viewProducts')
     } catch (error) {
-        console.log('Error while updating the product', error.message)
+        console.log('Error while updating the product', error)
     }
 }
 const deleteProduct = async (req, res) => {

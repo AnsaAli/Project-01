@@ -53,9 +53,13 @@ admin_route.post('/category/:id/delete',adminController.softDeleteCategory)
 
 admin_route.get('/addProducts',authMiddleware.is_login,adminController.loadAddProducts)
 admin_route.post('/addProducts',upload.array('image', 12),adminController.addProducts)
+
+// admin_route.post('/deleteImages',adminController.deleteImage)
+
+
 admin_route.get('/viewProducts',authMiddleware.is_login,adminController.loadViewProducts)
 admin_route.get('/editProduct',authMiddleware.is_login,adminController.loadEditProduct)
-admin_route.post('/editProduct',adminController.updateProduct)
+admin_route.post('/editProduct',upload.array('image', 12),adminController.updateProduct)
 admin_route.post('/viewProducts/:id/deleteProduct',adminController.deleteProduct)
 
 admin_route.get('/orders',authMiddleware.is_login,adminController.loadOrderDetails)

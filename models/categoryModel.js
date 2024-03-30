@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const categorySchema = new Schema({
     name: {
         type: String,
-        require: true,
+        required: true,
     },
     image: {
         type: String,
-        require: true
+       
     },
 
     description: {
@@ -29,7 +29,7 @@ const Category = mongoose.model('Category', categorySchema)
 const productSchema = new Schema({
     productName: {
         type: String,
-        require: true
+        required: true,
     },
     description: {
         type: String
@@ -43,6 +43,11 @@ const productSchema = new Schema({
         required: true,
     
     },
+    pricePer100g: {
+        type: Number,
+        required: true,
+    
+    },
     totalPrice: {
         type: Number,
         required: true,
@@ -51,26 +56,26 @@ const productSchema = new Schema({
     offerPercentage: {
         type: Number,
         min: 0,
-        max: 100
+        max: 80
     },
     offerPrice: {
         type: Number,
-        required: true,
+        
        
     },
     weightOptions: [{
         weight: {
             type: Number,
-            required: true
+            
         },
         weightPrice: {
             type: Number,
-            required: true,
+           
            
         },
         priceAfterDiscount: {
             type: Number,
-            required: true,
+          
            
         }
     }],

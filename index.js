@@ -15,7 +15,7 @@ app.use(express.static(__dirname + '/views/public'))
 
 const admin_route= require('./routes/adminRoute')
 app.use('/admin',admin_route)
-app.use('/images', express.static(__dirname + '/views/public/adinAssets/img'));
+app.use('/images', express.static(__dirname + '/uploads'));
 
 
 app.listen(PORT,()=>{

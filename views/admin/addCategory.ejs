@@ -1,104 +1,97 @@
 <%- include('../layout/adminHeader.ejs') %>
 
-    <div class="content">
-      <div class="row">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="title">Add Category</h5>
-            </div>
-            <div class="card-body">
-              <form action="/admin/addCategory" method="POST" id="addCategoryForm">
-                
-                <div class="row">
-                  <div class="col-md-5 pr-1">
-                    <div class="form-group">
-                        <label for="name">Category Name</label>
-                        <input type="text"  class="form-control" id="name" name="name" required>
-                        <div id="nameError" class="error-message"></div>
-                        <div id="successMessage" class="success-message" style="display: none;">
-                          Category added successfully!
-                      </div>
-                    </div>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="title">Add Category</h5>
+          </div>
+          <div class="card-body">
+            <form action="/admin/addCategory" method="POST" id="addCategoryForm">
+              <div class="row">
+                <div class="col-md-5 pr-1">
+                  <div class="form-group">
+                    <label for="name">Category Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                    <div id="successMessage" style="display: none; color: green;"></div>
+                    <div id="errorMessage" style="display: none; color: red;"></div>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-md-6 pr-1">
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea name="description" rows="4" cols="80" class="form-control" id="description" required></textarea>
-                    </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 pr-1">
+                  <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" rows="4" cols="80" class="form-control" id="description"
+                      required></textarea>
                   </div>
                 </div>
-              
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-fill-out btn-block hover-up">Add Category</button>
-                        <button type="submit" class="btn btn-fill-out btn-block hover-up"><a href="/admin/category" class="viewCate">View Categories</a></button>
-                    </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-fill-out btn-block hover-up">Add Category</button>
+                    <button type="submit" class="btn btn-fill-out btn-block hover-up"><a href="/admin/category"
+                        class="viewCate">View Categories</a></button>
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
+
           </div>
         </div>
-        
       </div>
+
     </div>
+  </div>
 
 
 
-    
-    
+
+
   <style>
-   .viewCate{
-    text-decoration: none;
-    color: beige;
-   }
+    .viewCate {
+      text-decoration: none;
+      color: beige;
+    }
   </style>
-  
-</body>
-<!-- <script src="/views/scriptCode/categoryMessage.js"></script> -->
+
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const addCategoryForm = document.getElementById('addCategoryForm');
-    const nameInput = document.getElementById('name');
-    const nameError = document.getElementById('nameError');
-
-    addCategoryForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        const response = await fetch("/admin/addCategory", {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json()
-        if (!response.ok) {
-            if (data.errorMessage) {
-                nameError.textContent = data.errorMessage
-            }
-        } else {
-            // clear the error message if the request is successful
-            nameError.textContent = ''
-            const successMessage = document.getElementById('successMessage');
-            successMessage.style.display = 'block';
-
-            addCategoryForm.reset();
-
-            setTimeout(() => {
-            window.location.href = '/admin/category'; 
-        }, 2000);
-        }
-    })
-})
+      // Retrieve URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const successMessage = urlParams.get('success');
+      const errorMessage = urlParams.get('error');
+      
+      // Get references to message elements
+      const successDiv = document.getElementById('successMessage');
+      const errorDiv = document.getElementById('errorMessage');
+      
+      // Display success message if present
+      if (successMessage) {
+          successDiv.textContent = successMessage;
+          successDiv.style.display = 'block';
+      }
+      
+      // Display error message if present
+      if (errorMessage) {
+          errorDiv.textContent = errorMessage;
+          errorDiv.style.display = 'block';
+      }
+  });
 </script>
-</html>
+
+
+
+  </body>
+
+  </html>
 
 
 
 
 
 
-<%- include('../layout/adminfooter.ejs') %>
+  <%- include('../layout/adminfooter.ejs') %>
