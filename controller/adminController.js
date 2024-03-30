@@ -242,7 +242,8 @@ const addProducts = async (req, res) => {
     try {
         // console.log('inside the add pro')
         const files = req.files;
-        // console.log(files,'fies')
+        console.log(files,'fies')
+        
         const uploadedImages = [];
 
         for (const file of files) {
