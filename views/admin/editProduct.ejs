@@ -38,9 +38,12 @@
                 <div class="col-md-6 pr-1">
                   <div class="form-group">
                     <label for="productName">Product name:</label>
-                    <input type="text" class="form-control" id="productName" name="productName" value="<%= products.productName %>"
-                      required>
-                      <div id="nameError"></div>
+                    <input type="text" class="form-control" id="productName" name="productName"
+                      value="<%= products.productName %>" required>
+                    <div id="nameError"></div>
+                    <div id="successMessage" class="success-message" style="display: none;">
+                      Product updated successfully!
+                    </div>
                   </div>
                 </div>
               </div>
@@ -160,7 +163,7 @@
     }
   </style>
   <script>
-  
+
 
     //image preview
     document.getElementById('imageInput').addEventListener('change', function (event) {
@@ -285,13 +288,13 @@
 
     //==========================================================================================
 
- // validate product name
- document.addEventListener('DOMContentLoaded', function () {
+    // validate product name
+    document.addEventListener('DOMContentLoaded', function () {
       const editProductForm = document.getElementById('editProductForm');
       const productName = document.getElementById('productName');
       const nameError = document.getElementById('nameError');
-      
-      console.log(productName.value,'is the product name in the ejs ')
+
+      console.log(productName.value, 'is the product name in the ejs ')
 
       // Function to validate input
       function validate(productName) {
@@ -303,7 +306,7 @@
         event.preventDefault();
         const isValid = validate(productName.value);
 
-        console.log(isValid,'=============is valid in the editProduct ejs===179 in editProduct.ejs ')
+        console.log(isValid, '=============is valid in the editProduct ejs===179 in editProduct.ejs ')
 
         if (!isValid) {
           nameError.textContent = 'Product name must contain at least minimun letter.';
@@ -312,23 +315,28 @@
         const formData = new FormData(this);
         console.log([...formData]);
         try {
-         
+
           const response = await fetch("/admin/editProduct", {
             method: 'POST',
             body: formData
           });
           const responseData = await response.text();
-          console.log(responseData,'============================191 editProduct.ejs')
+
+          console.log(responseData, '============================191 editProduct.ejs')
           if (!response.ok) {
             throw new Error('Failed to add product');
           }
-          const data = await response.json();
+          
 
           // Handle successful response
           nameError.textContent = '';
           const successMessage = document.getElementById('successMessage');
           successMessage.style.display = 'block';
           editProductForm.reset();
+
+          setTimeout(() => {
+            window.location.href = '/admin/viewProducts';
+          }, 1000); // 2000 milliseconds = 2 seconds
 
         } catch (error) {
           console.error('Error:', error);
