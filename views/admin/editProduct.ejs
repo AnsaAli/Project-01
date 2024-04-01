@@ -30,7 +30,7 @@
                   <div>
                     <div id="imagePreview" class="imagePreview">
                     </div>
-                    <input type="file" name="images" id="imageInput" class="m-3" multiple>
+                    <input type="file" name="image" id="imageInput" class="m-3" multiple>
                   </div>
                 </div>
               </div>
@@ -209,6 +209,8 @@
       var files = event.target.files;
       var imagePreview = document.getElementById('imagePreview');
 
+      imagePreview.innerHTML = '' //clear the previous one
+
       for (var i = 0; i < files.length; i++) {
         var file = files[i];
         var reader = new FileReader();
@@ -216,8 +218,8 @@
         reader.onload = function (e) {
           var img = document.createElement('img');
           img.src = e.target.result;
-          img.width = 100; // Adjust as needed
-          img.height = 100; // Adjust as needed
+          img.width = 200; // Adjust as needed
+          img.height = 200; // Adjust as needed
           img.style.marginBottom = '5px'; // Adjust as needed
 
           var container = document.createElement('div');

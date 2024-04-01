@@ -400,7 +400,7 @@ const loadEditProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         console.log('inside the update product')
-
+       
         const id = req.body.id;
         const productName = req.body.productName;
         const category = req.body.category;
@@ -410,7 +410,25 @@ const updateProduct = async (req, res) => {
         const totalPrice = req.body.totalPrice;
         const offerPercentage = req.body.offerPercentage;
         const offerPrice = req.body.offerPrice;
-        const images = req.body.images;
+        const files = req.files;
+
+        const existingProduct = await Product.findById(id);
+
+        const uploadedImages = [];
+        for (const file of files) {
+            try {
+                const result = await cloudinary.uploader.upload(file.path);
+                uploadedImages.push({
+                    url: result.url,
+                    public_id: result.public_id
+                });
+            } catch (error) {
+                console.error('Error uploading image to Cloudinary:', error);
+            }
+        }
+
+       // Concatenate the existing images with the newly uploaded images
+       const combinedImages = existingProduct.images.concat(uploadedImages);
 
         console.log(id,
             productName,
@@ -446,7 +464,7 @@ const updateProduct = async (req, res) => {
                     totalPrice,
                     offerPercentage,
                     offerPrice,
-                    images,
+                    images: combinedImages,
                     weightOptions: [{
                         weight: 100,
                         weightPrice: pricePer100g,
