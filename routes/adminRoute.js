@@ -44,7 +44,7 @@ const upload = multer({ storage: storage });
 const uploadMiddleware = (req, res, next) => {
     console.log('===========uploadMiddleware 1')
     // Use multer upload instance
-    upload.array('image', 5)(req, res, (err) => {
+    upload.array('image', 12)(req, res, (err) => {
       if (err) {
         return res.status(400).json({ error: err.message });
       }
@@ -61,10 +61,12 @@ const uploadMiddleware = (req, res, next) => {
         console.log('===========uploadMiddleware 3')
 
         if (!allowedTypes.includes(file.mimetype)) {
+          console.log('Invalid file type in upload middleware')
           errors.push(`Invalid file type: ${file.originalname}`);
         }
   
         if (file.size > maxSize) {
+          console.log('File too large in upload middleware')
           errors.push(`File too large: ${file.originalname}`);
         }
       });
@@ -118,13 +120,12 @@ admin_route.post('/category/:id/delete',adminController.softDeleteCategory)
 admin_route.get('/addProducts',authMiddleware.is_login,adminController.loadAddProducts)
 admin_route.post('/addProducts',uploadMiddleware,adminController.addProducts)
 
-// admin_route.post('/deleteImages',adminController.deleteImage)
-
-
 admin_route.get('/viewProducts',authMiddleware.is_login,adminController.loadViewProducts)
 admin_route.get('/editProduct',authMiddleware.is_login,adminController.loadEditProduct)
 admin_route.post('/editProduct',upload.array('image', 12),adminController.updateProduct)
 admin_route.post('/viewProducts/:id/deleteProduct',adminController.deleteProduct)
+
+admin_route.post("/deleteImage/:productId/:imageId", adminController.deleteImages)
 
 admin_route.get('/orders',authMiddleware.is_login,adminController.loadOrderDetails)
 

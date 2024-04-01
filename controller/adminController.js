@@ -1,3 +1,7 @@
+const { ObjectId } = require('mongodb');
+
+const shortid = require('shortid');
+const uniqueId = shortid.generate();
 
 const adminModel = require('../models/userAuthenticationModel')
 const { Category, Product } = require('../models/categoryModel')
@@ -240,17 +244,24 @@ const loadAddProducts = async (req, res) => {
 const addProducts = async (req, res) => {
 
     try {
-        // console.log('inside the add pro')
+        console.log('inside the add pro')
         const files = req.files;
-        console.log(files,'fies')
-        
+        console.log(files, 'fies')
+
         const uploadedImages = [];
 
         for (const file of files) {
-            // console.log('inside file loop')
-            const result = await cloudinary.uploader.upload(file.path);
-            // console.log(result, 'is the result ')
-            uploadedImages.push(result.url); // Store the secure URL of the uploaded image
+            try {
+                // console.log('inside file loop')
+                const result = await cloudinary.uploader.upload(file.path);
+                console.log(result, 'is the result ')
+                uploadedImages.push({
+                    url: result.url,
+                    public_id: result.public_id
+                });
+            } catch (error) {
+                console.error('Error uploading image to Cloudinary:', error);
+            }
         }
         console.log(uploadedImages, 'images ================================250 A addProducts')
         const {
@@ -399,6 +410,7 @@ const updateProduct = async (req, res) => {
         const totalPrice = req.body.totalPrice;
         const offerPercentage = req.body.offerPercentage;
         const offerPrice = req.body.offerPrice;
+        const images = req.body.images;
 
         console.log(id,
             productName,
@@ -410,7 +422,7 @@ const updateProduct = async (req, res) => {
             offerPercentage,
             offerPrice
         )
-       
+
         let price1g = pricePer100g / 100;
         let price250 = price1g * 250;
         let price500 = price1g * 500
@@ -424,37 +436,40 @@ const updateProduct = async (req, res) => {
 
         const product = await Product.findByIdAndUpdate(
             id,
-            { $set: { 
-                productName, 
-                category, 
-                description, 
-                totalQuantity, 
-                pricePer100g, 
-                totalPrice, 
-                offerPercentage, 
-                offerPrice,
-                weightOptions:[{
-                    weight: 100,
-                    weightPrice: pricePer100g,
-                    priceAfterDiscount: offerprice100
-                },
-                {
-                    weight: 250,
-                    weightPrice: price250,
-                    priceAfterDiscount: offerprice250
-                },
-                {
-                    weight: 500,
-                    weightPrice: price500,
-                    priceAfterDiscount: offerprice500
-                },
-                {
-                    weight: 1000,
-                    weightPrice: price1Kg,
-                    priceAfterDiscount: offerprice1kg
-    
-                }]
-             } },
+            {
+                $set: {
+                    productName,
+                    category,
+                    description,
+                    totalQuantity,
+                    pricePer100g,
+                    totalPrice,
+                    offerPercentage,
+                    offerPrice,
+                    images,
+                    weightOptions: [{
+                        weight: 100,
+                        weightPrice: pricePer100g,
+                        priceAfterDiscount: offerprice100
+                    },
+                    {
+                        weight: 250,
+                        weightPrice: price250,
+                        priceAfterDiscount: offerprice250
+                    },
+                    {
+                        weight: 500,
+                        weightPrice: price500,
+                        priceAfterDiscount: offerprice500
+                    },
+                    {
+                        weight: 1000,
+                        weightPrice: price1Kg,
+                        priceAfterDiscount: offerprice1kg
+
+                    }]
+                }
+            },
             { new: true }
         )
 
@@ -490,6 +505,40 @@ const loadOrderDetails = async (req, res) => {
     }
 }
 
+const deleteImages = async (req, res) => {
+    try {
+        console.log('========inside the deletion')
+
+        // console.log(req,'==============505')
+        const imageId = req.params.imageId; // Get image ID
+        console.log(imageId, 'image id')
+        console.log(typeof (imageId), ' typpe of image id')
+        const productId = (req.params.productId).trim();
+        console.log(productId, 'product id=====')
+        console.log(productId.length, 'length of product id=====')
+        console.log(productId.length, 'length of product id=====')
+        console.log( ObjectId.isValid(productId) , 'valid  product id=====')
+       
+
+        try {
+            await Product.updateOne(
+                { _id:ObjectId.createFromHexString(productId) },
+                { $pull: { images: { public_id: imageId } } }
+            );
+
+            console.log('Image deleted successfully');
+            res.status(200).json({ deletedImageId: imageId });
+
+        } catch (error) {
+            console.log("Error can't delete", error);
+            res.status(500).json({ error: "Error while deleting the image" });
+        }
+    } catch (error) {
+        console.log('Error while deleting the image', error)
+        res.status(500).send('Error while deleting the image');
+    }
+}
+
 module.exports = {
     loadAdminLogin,
     verifyAdminLogin,
@@ -510,5 +559,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     cropImage,
-    loadOrderDetails
+    loadOrderDetails,
+    deleteImages
 }

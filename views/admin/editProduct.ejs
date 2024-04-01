@@ -14,15 +14,17 @@
                 <div class="col-md-5 pr-1">
                   <div>
                     <label for="images">Product Images</label>
-                    <div id="imagePreview" class="imagePreview">
+                    <div  class="imagePreview">
                       <% products.images.forEach(image=> { %>
-                        <img src="<%= image %>">
+                        <img src="<%= image.url %>"> 
+                        <a href="#" class="deleteImage" data-product-id=" <%=products._id %>"  data-image-id="<%=image.public_id %>">Delete</a>
+
                         <% }) %>
                     </div>
                   </div>
                 </div>
               </div>
-              <a href="/deleteImages" id="deleteImagesButton">Delete</a>
+
               <div class="row">
                 <div class="col-md-5 pr-1">
                   <div>
@@ -163,6 +165,43 @@
     }
   </style>
   <script>
+    //delete image from the dom
+   document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.deleteImage').forEach(link => {
+        link.addEventListener('click', async function (event) {
+            event.preventDefault();
+            console.log('Delete link clicked');
+
+            const productId = this.dataset.productId;
+            const imageId = this.dataset.imageId;
+            console.log(productId, '====================productId')
+            console.log(imageId, '====================imageId')
+            try {
+                const response = await fetch(`/admin/deleteImage/${productId}/${imageId}`, {
+                    method: 'POST'
+                });
+                console.log(response,'===============================response in edit ');
+                if (response.ok) {
+                    const deletedImageId = await response.json();
+                    console.log("Deleted image ID:", deletedImageId);
+                    
+                    const imageElement = document.querySelector(`[data-image-id=="${deletedImageId}"]`);
+                    if (imageElement) {
+                        const parentElement = imageElement.parentNode;
+                        console.log("Parent element:", parentElement);
+                        parentElement.remove(); 
+                    } else {
+                        console.error("Image element not found.");
+                    }
+                } else {
+                    console.error('Failed to delete the image');
+                }
+            } catch (error) {
+                console.error('Error deleting the image===========catch error editProduct:', error);
+            }
+        });
+    });
+});
 
 
     //image preview
@@ -184,6 +223,16 @@
           var container = document.createElement('div');
           container.classList.add('me-3', 'mb-3');
           container.appendChild(img);
+
+          // Create delete button
+          var deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+          deleteButton.addEventListener('click', function () {
+            // Remove the parent container when delete button is clicked
+            container.remove();
+          });
+          container.appendChild(deleteButton);
 
           // Append each image to the imagePreview container
           imagePreview.appendChild(container);
@@ -326,7 +375,7 @@
           if (!response.ok) {
             throw new Error('Failed to add product');
           }
-          
+
 
           // Handle successful response
           nameError.textContent = '';

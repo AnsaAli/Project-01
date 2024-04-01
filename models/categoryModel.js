@@ -79,10 +79,10 @@ const productSchema = new Schema({
            
         }
     }],
-    images: {
-        type: Array,
-
-    },
+    images:[{
+        url: String, 
+        public_id: String, 
+    }],
     is_deleted: {
         type: Boolean,
         default: false
