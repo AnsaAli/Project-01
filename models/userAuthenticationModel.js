@@ -57,15 +57,15 @@
             type:Schema.Types.ObjectId,
             ref:'UserAddress'
         }],
-        cart:{
+
+        userCart:{
             type: Schema.Types.ObjectId,
-            ref:'Cart'
+            ref:'Cartabc'
         },
-        orders:{
+        userOrders:{
             type:Schema.Types.ObjectId,
             ref:'Order'
         }
-    },{timestamps: true});
+    },{timestamps: true})
 
-   
     module.exports = mongoose.model('UserAuth',userAuthenticationSchema)

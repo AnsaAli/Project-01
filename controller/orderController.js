@@ -1,10 +1,10 @@
-const User = require('../models/userAuthenticationModel')
+
 const { Category, Product } = require('../models/categoryModel')
 const Review = require('../models/reviewModel')
 const Address = require('../models/addressModel')
 const Cart = require('../models/cartModel')
 const CartItem = require('../models/cartItemModel')
-
+const User = require('../models/userAuthenticationModel')
 const { v4: uuidv4 } = require('uuid')
 
 const Order = require('../models/orderModel')

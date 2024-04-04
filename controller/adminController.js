@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+const { mongodb } = require('mongodb');
 
 const shortid = require('shortid');
 const uniqueId = shortid.generate();
@@ -273,6 +273,8 @@ const addProducts = async (req, res) => {
             totalPrice,
             offerPercentage,
             offerPrice,
+            nutritionalInfo,
+            recipies
 
         } = req.body;
         if (!validate(productName)) {
@@ -298,15 +300,15 @@ const addProducts = async (req, res) => {
 
         console.log('================================270 B addProducts')
         //100g= 5 
-        let price1g = pricePer100g / 100;
-        let price250 = price1g * 250;
-        let price500 = price1g * 500
-        let price1Kg = price1g * 1000;
+        let price1g = pricePer100g / 100;;
+        let price250 =( price1g * 250).toFixed(2);
+        let price500 = (price1g * 500).toFixed(2)
+        let price1Kg = (price1g * 1000).toFixed(2);
 
-        let offerprice100 = pricePer100g - (pricePer100g * offerPercentage / 100)
-        let offerprice250 = price250 - (price250 * offerPercentage / 100)
-        let offerprice500 = price500 - (price500 * offerPercentage / 100)
-        let offerprice1kg = price1Kg - (price1Kg * offerPercentage / 100)
+        let offerprice100 = (pricePer100g - (pricePer100g * offerPercentage / 100)).toFixed(2)
+        let offerprice250 = (price250 - (price250 * offerPercentage / 100)).toFixed(2)
+        let offerprice500 = (price500 - (price500 * offerPercentage / 100)).toFixed(2)
+        let offerprice1kg = (price1Kg - (price1Kg * offerPercentage / 100)).toFixed(2)
 
 
         console.log('================================890 C addProducts')
@@ -334,6 +336,8 @@ const addProducts = async (req, res) => {
             offerPercentage: offerPercentage,
             offerPrice: offerPrice,
             images: uploadedImages,
+            nutritionalInfo:nutritionalInfo,
+            recipies:recipies,
             weightOptions: [{
                 weight: 100,
                 weightPrice: pricePer100g,
@@ -405,6 +409,8 @@ const updateProduct = async (req, res) => {
         const productName = req.body.productName;
         const category = req.body.category;
         const description = req.body.description;
+        const nutritionalInfo = req.body.nutritionalInfo;
+        const recipies = req.body.recipies;
         const totalQuantity = req.body.totalQuantity;
         const pricePer100g = req.body.pricePer100g;
         const totalPrice = req.body.totalPrice;
@@ -464,6 +470,8 @@ const updateProduct = async (req, res) => {
                     totalPrice,
                     offerPercentage,
                     offerPrice,
+                    nutritionalInfo,
+                    recipies,
                     images: combinedImages,
                     weightOptions: [{
                         weight: 100,
@@ -540,7 +548,7 @@ const deleteImages = async (req, res) => {
 
         try {
             await Product.updateOne(
-                { _id:ObjectId.createFromHexString(productId) },
+                { _id:mongodb.createFromHexString(productId) },
                 { $pull: { images: { public_id: imageId } } }
             );
 

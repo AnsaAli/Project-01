@@ -82,12 +82,15 @@ user_route.get('/delete/:index', userAuthenticationController.deleteAddress)
 
 
 user_route.get('/home',authMiddleware.is_login, productController.loadHome)
-user_route.get('/viewProduct/:id',authMiddleware.is_login, productController.loadViewProduct)
+user_route.get('/viewProduct',authMiddleware.is_login, productController.loadViewProduct)
 user_route.post('/product/:id/rate',productController.rating) 
 
 //add to cart
+
 user_route.post('/addToCart',cartContrller.addToCart)
+
 user_route.get('/listCartItems',cartContrller.listCartItems)
+
 user_route.delete('/removeCartItem/:id',((req,res,next)=>{
     console.log('Inside the route')
     next();

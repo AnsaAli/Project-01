@@ -1,11 +1,11 @@
-const User= require('../models/userAuthenticationModel')
+
 const Address= require('../models/addressModel')
 const Cart= require('../models/cartModel')
 const CartItem = require('../models/cartItemModel')
 const mongoose= require('mongoose')
 const Order=require('../models/orderModel')
 const {Product}= require('../models/categoryModel')
-
+const User= require('../models/userAuthenticationModel')
 const loadcheckOut= async(req,res)=>{
     try {
         const user_id = req.session.user_id

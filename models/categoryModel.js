@@ -34,6 +34,12 @@ const productSchema = new Schema({
     description: {
         type: String
     },
+    nutritionalInfo: {
+        type: String
+    },
+    recipies: {
+        type: String
+    },
     category: {
         type: Schema.Types.ObjectId,
         ref: 'Category'
