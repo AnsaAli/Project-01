@@ -84,6 +84,7 @@
                                                         <th>Date</th>
                                                         <th>Status</th>
                                                         <th>Total</th>
+                                                        <th>Payment Method</th>
                                                         <th>Actions</th>
                                                     </tr>
                                                 </thead>
@@ -99,7 +100,9 @@
                                                             <td id="orderStatus_<%= order._id %>">
                                                                 <%= order.orderStatus %>
                                                             </td>
-                                                            <td>₹<%= order.totalPrice.toFixed(2) %>
+                                                            <td>COD
+                                                            </td>
+                                                            <td>₹<%= order.totalPrice%>
                                                             </td>
 
                                                             <!-- <td><a href='/cancelOrder/<%= order.order_id %>' class="btn-small d-block">cancel order</a></td>  -->

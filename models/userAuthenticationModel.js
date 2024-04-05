@@ -57,14 +57,13 @@
             type:Schema.Types.ObjectId,
             ref:'UserAddress'
         }],
-
         userCart:{
             type: Schema.Types.ObjectId,
-            ref:'Cartabc'
+            ref:'carts'
         },
         userOrders:{
             type:Schema.Types.ObjectId,
-            ref:'Order'
+            ref:'orders'
         }
     },{timestamps: true})
 

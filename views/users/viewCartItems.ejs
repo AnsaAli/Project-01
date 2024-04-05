@@ -1,0 +1,117 @@
+<%- include('../layout/header.ejs') %>
+<%- include('../layout/cartAndwishlist.ejs') %>
+
+
+<!-- <h3>ViewCArt Page</h3>
+
+<% if (cartData) { %>
+    <ul>
+        <% cartData.cartItems.forEach(cartItem => { %>
+            <li>
+                <p>Product Name: <%= cartItem.productId.productName %></p>
+                <p>Weight: <%= cartItem.weight %></p>
+                <p>Price: <%= cartItem.price %></p>
+                <p>Quantity: <%= cartItem.quantity %></p>
+            </li>
+        <% }); %>
+    </ul>
+    <p>Total Price: <%= cartData.totalPrice %></p>
+<% } else { %>
+    <p>No items in the cart</p>
+<% } %>
+ -->
+
+
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Shop
+                <span></span> Your Cart
+            </div>
+        </div>
+    </div>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table shopping-summery text-center clean">
+                            <thead>
+                                <tr class="main-heading">
+                                    <th scope="col">Image</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Subtotal</th>
+                                    <th scope="col">Weight</th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (cartData) { %>
+                                    
+                                    <% cartData.cartItems.forEach(cartItem => { %>
+                                        <tr>
+                                            <td class="image product-thumbnail">
+                                               
+                                                <img src="<%= cartItem.productId.images[0].url %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
+                                                style="width:100%">
+                                            </td>
+                                            <td class="product-des product-name">
+                                                <h5 class="product-name"><a href="shop-product-right.html"> <%= cartItem.productId.productName %></a></h5>
+                                            </td>
+                                            <td class="price" data-title="Price"><span> ₹<%= cartItem.price %></span></td>
+                                            <td class="text-center" data-title="Quantity">
+                                                <div class="detail-qty border radius  m-auto">
+                                                    <span class="qty-val"><a href="" style="font-size: 30px;">-</a> <%= cartItem.quantity %> <a href="" style="font-size: 20px;">+</a></span>
+                                                
+                                                </div>
+                                            </td>
+                                            <td class="text-right" data-title="Subtotal">
+                                                <span>₹<%= cartItem.price * cartItem.quantity %></span>
+                                            </td>
+                                            <td class="text-right" data-title="Weight">
+                                                <span><%= cartItem.weight %>g </span>
+                                            </td>
+                                            <td class="action" data-title="Remove"><a href="/removeCartItem/<%= cartItem._id %>" class="text-muted"><i class="fi-rs-trash"></i></a></td>
+                                        </tr>
+                                    <% }); %>
+                                    <tr>
+                                        <td colspan="6" class="text-end">
+                                            <a href="#" class="text-muted"> <i class="fi-rs-cross-small"></i> Clear Cart</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="text-right">
+                                            <p>Total Price: ₹<%= cartData.totalPrice %></p>
+                                        </td>
+                                    </tr>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">
+                                            <p>No items in the cart</p>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                              
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cart-action text-end">
+                        <a class="btn "><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
+                        <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i class="fi-rs-shuffle mr-10"></i>Checkout</a>
+                       
+                    </div>
+                    <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+
+</script>

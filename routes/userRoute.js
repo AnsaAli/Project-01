@@ -91,10 +91,9 @@ user_route.post('/addToCart',cartContrller.addToCart)
 
 user_route.get('/listCartItems',cartContrller.listCartItems)
 
-user_route.delete('/removeCartItem/:id',((req,res,next)=>{
-    console.log('Inside the route')
-    next();
-}),cartContrller.removeCartItem)
+user_route.get('/viewCartItems',cartContrller.viewCartItems)
+
+user_route.get('/removeCartItem/:id',cartContrller.removeCartItem)
 
 //order
 user_route.get('/order',authMiddleware.is_login, orderController.loadUserOrder)

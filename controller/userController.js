@@ -26,19 +26,7 @@ function generateOTP() {
     // Generate a random 6-digit OTP
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
-// const saveOtp= async (email,otp)=>{
-//     try {
-//         const user=await User.findOne({email:email})
-//         if(!user){
-//             throw new Error('User not found')
-//         }
-//         user.otp= otp
-//         await user.save()
-        
-//     } catch (error) {
-//         throw new Error("Error saving OTP to database" +error.message)
-//     }
-// }
+
 const saveOtp = async (email, otp, expiresAt) => {
     try {
         const user = await User.findOne({ email: email });

@@ -24,6 +24,7 @@ const addToCart = async (req, res) => {
         if (cartItem) {
             // If the product exists, update its quantity
             cartItem.quantity += 1;
+            cartItem.weight += weight;
         } else {
             // If the product does not exist, create a new cart item
             cartItem = new CartItem({
@@ -33,7 +34,7 @@ const addToCart = async (req, res) => {
                 quantity: 1
             });
         }
-        console.log(cartItem, '===============================38')
+        // console.log(cartItem, '===============================38')
 
         // Save the updated/new cart item to the database
         const savedCartItem = await cartItem.save();
@@ -51,7 +52,8 @@ const addToCart = async (req, res) => {
         cart.cartItems.push(savedCartItem._id);
 
         // Calculate and update the total price of the cart
-        cart.totalPrice += price;
+        cart.totalPrice += Math.ceil(price* cartItem.quantity);
+      
 
         // Save the updated cart to the database
         const savedCart = await cart.save();
@@ -75,7 +77,7 @@ const listCartItems = async (req, res) => {
         const user_id = req.session.user_id
         console.log(user_id, '===========is user_id')
 
-        const user = await User.find({  user_id})
+        const user = await User.find({ user_id })
         console.log(user, '===========is user')
 
         // const userCart = await Cart.findById({ user_id })
@@ -106,32 +108,62 @@ const listCartItems = async (req, res) => {
 
 const removeCartItem = async (req, res) => {
     try {
-        console.log('inside the controoler, removeCartItem')
-        const productId = req.params.product_id
-        //console.log(productId,'is the product id params')
+        console.log('inside  removeCartItem')
+        const cartItemId = req.params.id;
+        console.log(cartItemId, 'is the cartItemId')
 
         //find the cart item from the db
-        const cartItem = await CartItem.findOneAndDelete({ product_id: productId });
-        if (!cartItem) {
-            return res.status(404).json({ error: 'Cart Item not found' });
+        const removedCartItem = await CartItem.findById(cartItemId);
+        if (!removedCartItem) {
+            return res.status(404).json({ error: 'Cart item not found' });
         }
 
-        //recalte the total amount
-        const total_price = await calculateTotalPriceOfCart();
-        console.log('inside the controoler,after calculateTotalPriceOfCart')
-        //if removed
-        res.json({ message: 'Cart item removed successfully', total_price })
+        // Find the user's cart
+        const userId = req.session.user_id;
+        const cart = await Cart.findOne({ userId });
 
+        // Remove the cart item ID from the cart's cartItems array
+        cart.cartItems.pull(cartItemId);
 
+        // Subtract the removed item's price from the total price
+        cart.totalPrice -= removedCartItem.price;
+
+        // Save the updated cart to the database
+        await cart.save();
+
+        // Remove the cart item from the database
+        await CartItem.findByIdAndDelete(cartItemId);
+
+        res.redirect('/viewCartItems')
     } catch (error) {
         console.log('Error while removing the items from the cart', error.message);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
-
+const viewCartItems = async (req, res) => {
+    try {
+        const userId = req.session.user_id;
+        console.log(userId, 'userId')
+        const cartData = await Cart.findOne({ userId }).populate({
+            path: 'cartItems',
+            populate: {
+                path: 'productId',
+                model: 'Product'
+            }
+        });
+        if (!cartData) {
+            return res.render('viewCartItems', { cartData: null });
+        }
+        console.log(cartData,'cartData')
+        res.render('viewCartItems', { cartData })
+    } catch (error) {
+        console.log('Error while loading the view cart items')
+    }
+}
 module.exports = {
     addToCart,
     listCartItems,
-    removeCartItem
+    removeCartItem,
+    viewCartItems
 }

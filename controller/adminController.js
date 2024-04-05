@@ -1,4 +1,4 @@
-const { mongodb } = require('mongodb');
+const { ObjectId } = require('mongodb');
 
 const shortid = require('shortid');
 const uniqueId = shortid.generate();
@@ -300,15 +300,25 @@ const addProducts = async (req, res) => {
 
         console.log('================================270 B addProducts')
         //100g= 5 
-        let price1g = pricePer100g / 100;;
-        let price250 =( price1g * 250).toFixed(2);
-        let price500 = (price1g * 500).toFixed(2)
-        let price1Kg = (price1g * 1000).toFixed(2);
+        // let price1g = pricePer100g / 100;;
+        // let price250 =( price1g * 250).toFixed(2);
+        // let price500 = (price1g * 500).toFixed(2)
+        // let price1Kg = (price1g * 1000).toFixed(2);
 
-        let offerprice100 = (pricePer100g - (pricePer100g * offerPercentage / 100)).toFixed(2)
-        let offerprice250 = (price250 - (price250 * offerPercentage / 100)).toFixed(2)
-        let offerprice500 = (price500 - (price500 * offerPercentage / 100)).toFixed(2)
-        let offerprice1kg = (price1Kg - (price1Kg * offerPercentage / 100)).toFixed(2)
+        // let offerprice100 = (pricePer100g - (pricePer100g * offerPercentage / 100)).toFixed(2)
+        // let offerprice250 = (price250 - (price250 * offerPercentage / 100)).toFixed(2)
+        // let offerprice500 = (price500 - (price500 * offerPercentage / 100)).toFixed(2)
+        // let offerprice1kg = (price1Kg - (price1Kg * offerPercentage / 100)).toFixed(2)
+
+        let price1g = pricePer100g / 100;
+let price250 = Math.ceil(price1g * 250);
+let price500 = Math.ceil(price1g * 500);
+let price1Kg = Math.ceil(price1g * 1000);
+
+let offerprice100 = Math.ceil(pricePer100g - (pricePer100g * offerPercentage / 100));
+let offerprice250 = Math.ceil(price250 - (price250 * offerPercentage / 100));
+let offerprice500 = Math.ceil(price500 - (price500 * offerPercentage / 100));
+let offerprice1kg = Math.ceil(price1Kg - (price1Kg * offerPercentage / 100));
 
 
         console.log('================================890 C addProducts')
@@ -548,7 +558,7 @@ const deleteImages = async (req, res) => {
 
         try {
             await Product.updateOne(
-                { _id:mongodb.createFromHexString(productId) },
+                { _id:ObjectId.createFromHexString(productId) },
                 { $pull: { images: { public_id: imageId } } }
             );
 

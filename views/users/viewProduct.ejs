@@ -1,105 +1,7 @@
 <%- include('../layout/header.ejs') %>
-    <header>
-        <div class="header-bottom sticky-bar sticky-white-bg">
-            <div class="container">
+<%- include('../layout/cartAndwishlist.ejs') %>
 
-                <div class="header-action-right">
-                    <!-- <div class="search-style-2">
-                <form action="#">
-                    <select class="select-active">
-                        <option>Search in</option>
-                        <option>Fruits</option>
-                        <option>Vegetables</option>
-                        <option>Sprouts</option>
-                        <option>Consumer Electronics</option>
-                        <option>Jewelry & Accessories</option>
-                        <option>Home & Garden</option>
-                        <option>Luggage & Bags</option>
-                        <option>Shoes</option>
-                        <option>Mother & Kids</option>
-                    </select>
-                    <input type="text" placeholder="Search for items…">
-                </form>
-            </div> -->
-                    <div class="header-action-2">
-                        <div class="header-action-icon-2">
-                            <a href="shop-wishlist.html">
-                                <img class="svgInject" alt="GoEAsy" src="/assets/imgs/theme/icons/icon-heart.svg">
-                                <span class="pro-count blue"></span>
-                            </a>
-                        </div>
-                        <div class="header-action-icon-2">
-                            <a class="mini-cart-icon" href=""> <span id="cartCount"></span>
-                                <p class="pro-count "><img alt="GoEAsy" src="/assets/imgs/theme/icons/icon-cart.svg">
-                                    Cart</p>
-                            </a>
 
-                            <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                <ul id="cart-items-list">
-                                    <!-- Cart items will be dynamically generated here -->
-                                </ul>
-                                <div class="shopping-cart-footer">
-                                    <div class="shopping-cart-total">
-                                        <h4>Total <span id="total-price">0.00</span></h4>
-                                    </div>
-                                    <div class="shopping-cart-button">
-                                        <a href="">View cart</a>
-                                        <a href="/checkOut">Checkout</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <section class="product-tabs section-padding position-relative wow fadeIn animated">
-
-        <div class="container">
-            <div class="tab-header" style="margin-top: 20px; margin-bottom: 20px;">
-
-                <!-- <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="nav-tab-one" data-bs-toggle="tab" data-bs-target="#tab-one"
-                        type="button" role="tab" aria-controls="tab-one" aria-selected="true">Vegetables</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="nav-tab-two" data-bs-toggle="tab" data-bs-target="#tab-two"
-                        type="button" role="tab" aria-controls="tab-two" aria-selected="false">Fruits</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="nav-tab-three" data-bs-toggle="tab" data-bs-target="#tab-three"
-                        type="button" role="tab" aria-controls="tab-three" aria-selected="false">Sprouts</button>
-                </li>
-            </ul> -->
-                <!-- <a href="#" class="view-more d-none d-md-flex">View More<i
-                    class="fi-rs-angle-double-small-right"></i></a> -->
-
-            </div>
-            <!--End nav-tabs-->
-
-            <div class="tab-content wow fadeIn animated" id="myTabContent">
-                <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
-                    <div class="row product-grid-4">
-
-                        <!-- sorting buttons -->
-                        <div class="col-12 mb-3">
-                            <div class="btn-group" role="group" style="margin-top: 20px; margin-bottom: 20px;">
-                                <a href="" class="btn m-2" style="border-radius: 5px;">Vegetables</a>
-                                <a href="" class="btn m-2" style="border-radius: 5px;">Fruits</a>
-                                <a href="" class="btn m-2" style="border-radius: 5px;">Sprouts</a>
-                                <a href="/home?sort=low_to_high" class="btn m-2" style="border-radius: 5px;">Price: Low
-                                    to High</a>
-                                <a href="/home?sort=high_to_low" class="btn  m-2" style="border-radius: 5px;">Price:
-                                    High to Low</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </section>
 
     <body>
         <div class="containerProduct">
@@ -127,7 +29,7 @@
                                         <div class=""
                                             style="border: 1px solid #333; padding: 5px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
 
-                                            <a <% if ( productData.totalQuantity===0 ) { %> disabled
+                                            <a <% if ( productData.totalQuantity === 0 ) { %> disabled
                                                 <% } %>
                                                     href="#"
                                                     class="p-2"
