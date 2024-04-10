@@ -9,25 +9,7 @@ const multer= require('multer')
 const fs = require('fs');
 const path = require('path');
 
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//       cb(null, '/uploads')
-//     },
-//     filename: function (req, file, cb) {
-//       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-//       cb(null, file.fieldname + '-' + uniqueSuffix)
-//     }
-//   })
-  
-//   const upload = multer({
-//     storage: storage,
-//     limits: { fileSize: 1024 * 1024 } 
-//   });
 
-// const upload = multer({dest:"uploads/"});
-
-
-// Configure multer storage and file name
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'uploads/');
@@ -107,15 +89,15 @@ admin_route.get('/logout',authMiddleware.is_login,adminController.adminLogout)
 admin_route.get('/dashboard',authMiddleware.is_login,adminController.loadDashboard)
 
 admin_route.get('/customerProfile',authMiddleware.is_login,adminController.loadUserProfile)
-admin_route.post('/customerProfile/:id/status/:action',adminController.userBlockUnblock)
+admin_route.post('/customerProfile/:id/status/:action',authMiddleware.is_login,adminController.userBlockUnblock)
 
 //category
 admin_route.get('/category',authMiddleware.is_login,adminController.loadCategory)
 admin_route.get('/addCategory',authMiddleware.is_login,adminController.loadAddCategory)
-admin_route.post('/addCategory',adminController.addCategory)
+admin_route.post('/addCategory',authMiddleware.is_login,adminController.addCategory)
 admin_route.get('/editCategory',authMiddleware.is_login,adminController.loadEditCategory)
-admin_route.post('/editCategory',adminController.updateCategory)
-admin_route.post('/category/:id/delete',adminController.softDeleteCategory)
+admin_route.post('/editCategory',authMiddleware.is_login,adminController.updateCategory)
+admin_route.post('/category/:id/delete',authMiddleware.is_login,adminController.softDeleteCategory)
 
 admin_route.get('/addProducts',authMiddleware.is_login,adminController.loadAddProducts)
 admin_route.post('/addProducts',uploadMiddleware,adminController.addProducts)
@@ -123,11 +105,17 @@ admin_route.post('/addProducts',uploadMiddleware,adminController.addProducts)
 admin_route.get('/viewProducts',authMiddleware.is_login,adminController.loadViewProducts)
 admin_route.get('/editProduct',authMiddleware.is_login,adminController.loadEditProduct)
 admin_route.post('/editProduct',upload.array('image', 12),adminController.updateProduct)
-admin_route.post('/viewProducts/:id/deleteProduct',adminController.deleteProduct)
+admin_route.post('/viewProducts/:id/deleteProduct',authMiddleware.is_login,adminController.deleteProduct)
 
-admin_route.post("/deleteImage/:productId/:imageId", adminController.deleteImages)
+admin_route.get('/viewSingleProduct',authMiddleware.is_login,adminController.loadViewSingleProducts)
+
+admin_route.post("/deleteImage/:productId/:imageId",authMiddleware.is_login, adminController.deleteImages)
 
 admin_route.get('/orders',authMiddleware.is_login,adminController.loadOrderDetails)
+admin_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, adminController.cancelOrder)
+
+admin_route.get('/viewOrderDetails',authMiddleware.is_login,adminController.loadSingleOrderDetails)
+
 
 admin_route.get('*',(req,res)=>{
     res.redirect('/admin')

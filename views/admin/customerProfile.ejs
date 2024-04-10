@@ -26,7 +26,7 @@
                           <td><%= user.email %></td>
                           <td></td>
                           <td></td>
-                          <td> <%= user.createdAt %></td>
+                          <td> <%= user.createdAt .toDateString()%></td>
                           <td>
                             <form id="blockForm_<%= user._id %>" class="block-form" data-user-id="<%= user._id %>" action="/admin/customerProfile/<%= user._id %>/status/<%= user.is_blocked ? 'unblock' : 'block' %>" method="POST">
                               <% if (user.is_blocked) { %>

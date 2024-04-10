@@ -4,16 +4,43 @@
   <div class="content">
     <div class="row">
       <div class="col-md-12">
+      
         <div class="card">
           <div class="card-header">
+            <form action="/admin/category" method="GET" class="mb-3">
+              <div class="row ">
+                <div class="col-md-5">
+                  <label for="searchQuery"></label>
+                  <input type="text" class="form-control" id="searchQuery" name="searchQuery"
+                    placeholder="Search ">
+                </div>
+                <div class="col-md-1">
+                  <button type="submit" class="btn btn-primary" style="border-radius: 10px; margin-left: 0px;"><i
+                      class="fa fa-search"></i></button>
+                </div>
+              </div>
+             
+            </form>
             <h4 class="card-title"> Category List</h4>
           </div>
           <div class="card-header">
             <h6 class="card-title"> <a href="/admin/addCategory">Add Category</a></h6>
           </div>
           <div class="card-body">
+          
             <div class="table-responsive">
               <table class="table">
+                <% if(typeof successMessage !='undefined' ){ %>
+                  <p style="color: green;">
+                      <%= successMessage %>
+                  </p>
+                  <% } %>
+                      <% if(typeof errorMessage !='undefined' ){ %>
+                          <p style="color: red;">
+                              <%= errorMessage %>
+                          </p>
+                          <% } %>
+              
                 <thead class=" text-primary">
                   <th>
                     ID
@@ -52,7 +79,7 @@
                     </tr>
                     <% }); %>
                 </tbody>
-              </table>
+              </table>    
             </div>
           </div>
         </div>

@@ -3,9 +3,9 @@
   
       
 
-    <div class="container-home">
+    <div class="container-home m-5">
       <% products.forEach(product=> { %>
-      <div class="product-wrapper">
+      <div class="product-wrapper p-2" >
         <div class="product">
           <p class="card-text"><%= product.category.name %>
           <div class="img">
@@ -70,6 +70,7 @@
         width: calc(25% - 20px);
         background: rgb(255, 255, 255);
         overflow: hidden;
+        border: 1px solid #ccc;
         border-radius: 10px 10px 10px 10px;
         transform: scale(0.95);
       }

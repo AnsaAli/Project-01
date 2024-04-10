@@ -2,165 +2,173 @@
 
 
 
-<main class="main">
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="index.html" rel="nofollow">Home</a>
-                <span></span> Pages
-                <span></span> Account
-            </div>
-        </div>
-    </div>
+   
 
-    <%- include('../layout/cartAndwishlist.ejs') %>
-    
-    <section class="pt-150 pb-150">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 m-auto">
+            <section class="pt-150 pb-150">
+                <div class="container">
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="dashboard-menu">
-                                <ul class="nav flex-column" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab" href="/myProfile"
-                                            role="tab" aria-controls="dashboard" aria-selected="false"><i
-                                                class="fi-rs-settings-sliders mr-10"></i>My Profile</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab" href="#dashboard"
-                                            role="tab" aria-controls="dashboard" aria-selected="false"><i
-                                                class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
-                                    </li>
-                                    <li class="nav-item ">
-                                        <a class="nav-link  active" id="orders-tab" data-bs-toggle="tab" href="/order"
-                                            role="tab" aria-controls="orders" aria-selected="false"><i
-                                                class="fi-rs-shopping-bag mr-10"></i>Orders</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
-                                            href="/trackOrder" role="tab" aria-controls="track-orders"
-                                            aria-selected="false"><i class="fi-rs-shopping-cart-check mr-10"></i>Track
-                                            Your Order</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link " id="address-tab" data-bs-toggle="tab" href="/userProfile"
-                                            role="tab" aria-controls="address" aria-selected="true"><i
-                                                class="fi-rs-marker mr-10"></i>My Address</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
-                                            href="#account-detail" role="tab" aria-controls="account-detail"
-                                            aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
-                                            href="/changePassword" role="tab" aria-controls="change-password"
-                                            aria-selected="true"><i class="fi-rs-user mr-10"></i>Change Password</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="/logout"><i
-                                                class="fi-rs-sign-out mr-10"></i>Logout</a>
+                        <div class="col-lg-12 m-auto">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="dashboard-menu">
+                                        <ul class="nav flex-column" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
+                                                    href="/myProfile" role="tab" aria-controls="dashboard"
+                                                    aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
+                                                    Profile</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
+                                                    href="#dashboard" role="tab" aria-controls="dashboard"
+                                                    aria-selected="false"><i
+                                                        class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+                                            </li>
+                                            <li class="nav-item ">
+                                                <a class="nav-link  active" id="orders-tab" data-bs-toggle="tab"
+                                                    href="/order" role="tab" aria-controls="orders"
+                                                    aria-selected="false"><i
+                                                        class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
+                                                    href="/trackOrder" role="tab" aria-controls="track-orders"
+                                                    aria-selected="false"><i
+                                                        class="fi-rs-shopping-cart-check mr-10"></i>Track
+                                                    Your Order</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="address-tab" data-bs-toggle="tab"
+                                                    href="/userProfile" role="tab" aria-controls="address"
+                                                    aria-selected="true"><i class="fi-rs-marker mr-10"></i>My
+                                                    Address</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
+                                                    href="#account-detail" role="tab" aria-controls="account-detail"
+                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Account
+                                                    details</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
+                                                    href="/changePassword" role="tab" aria-controls="change-password"
+                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
+                                                    Password</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/logout"><i
+                                                        class="fi-rs-sign-out mr-10"></i>Logout</a>
 
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- //order deatils -->
-                        <div class="col-md-8">
-                            <div class="tab-content dashboard-content">
-
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Your Orders</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Order</th>
-                                                        <th>Date</th>
-                                                        <th>Status</th>
-                                                        <th>Total</th>
-                                                        <th>Payment Method</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% orderPlaced.forEach(order=> { %>
-                                                        <tr id="orderRow_<%= order._id %>">
-                                                            <td>
-                                                                <%= order.order_id %>
-                                                            </td>
-                                                            <td>
-                                                                <%= order.orderDate.toDateString() %>
-                                                            </td>
-                                                            <td id="orderStatus_<%= order._id %>">
-                                                                <%= order.orderStatus %>
-                                                            </td>
-                                                            <td>COD
-                                                            </td>
-                                                            <td>₹<%= order.totalPrice%>
-                                                            </td>
-
-                                                            <!-- <td><a href='/cancelOrder/<%= order.order_id %>' class="btn-small d-block">cancel order</a></td>  -->
-                                                            <td class="form-group"><button class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"  
-                                                                    data-order-id="<%= order._id %>">Cancel
-                                                                    Order</button></td>
-                                                        </tr>
-                                                        <% }); %>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
+                                <!-- //order deatils -->
+                                <div class="col-md-9">
+                                    <div class="tab-content dashboard-content">
 
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Your Orders</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Order</th>
+                                                                <th>Date</th>
+                                                                <th>Product List</th>
+                                                                <th>Status</th>
+                                                                <th>Total</th>
+                                                                <th>Payment Method</th>
+                                                                <th>Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% orderPlaced.forEach(order=> { %>
+                                                                <tr id="orderRow_<%= order._id %>">
+                                                                    <td>
+                                                                        <%= order.order_id %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= order.orderDate.toDateString() %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%order.orderedWeight.forEach((pdt)=>{%> 
+                                                                            <%=pdt.name%> : <%=pdt.weight%>g <br>
+                                                                            <%}) %>
+                                                                    </td>
+                                                                    <td id="orderStatus_<%= order._id %>">
+                                                                        <%= order.orderStatus %>
+                                                                    </td>
+                                                                    <td>₹<%= order.totalPrice%>
+                                                                    <td>COD
+                                                                    </td>
+                                                                   
+                                                                    </td>
+
+                                                                    <!-- <td><a href='/cancelOrder/<%= order.order_id %>' class="btn-small d-block">cancel order</a></td>  -->
+                                                                    <td class="form-group"><button
+                                                                            class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
+                                                                            data-order-id="<%= order._id %>" type="submit"
+                                                                            onclick="confirmCancel()">Cancel
+                                                                            Order</button></td>
+                                                                </tr>
+                                                                <% }); %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
                             </div>
-
                         </div>
+
                     </div>
                 </div>
-
-            </div>
-        </div>
-    </section>
-</main>
-
-<script>
-
-
-    // Add event listener to all cancel order buttons
-    document.querySelectorAll('.cancelOrderBtn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const orderId = btn.dataset.orderId;
-
-            // Send a DELETE request to cancel the order
-            try {
-                const response = await fetch(`/cancelOrder/${orderId}`, {
-                    method: 'DELETE',
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to cancel order');
-                }
-
-                // Update the UI to reflect the cancelled order
-                const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
-                orderStatusCell.textContent = 'Cancelled';
-
-                btn.textContent = 'Order Cancelled' //chnage the buttn
-                btn.disabled = true;
-            } catch (error) {
-                console.error('Error cancelling order:', error);
-                alert('Failed to cancel order. Please try again.');
+            </section>
+  
+    <script>
+        function confirmCancel() {
+            if (confirm("Are you sure you want to delete this product?")) {
+                document.getElementById('deleteForm').submit();
             }
+        }
+
+        // Add event listener to all cancel order buttons
+        document.querySelectorAll('.cancelOrderBtn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const orderId = btn.dataset.orderId;
+
+                // Send a DELETE request to cancel the order
+                try {
+                    const response = await fetch(`/cancelOrder/${orderId}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to cancel order');
+                    }
+
+                    // Update the UI to reflect the cancelled order
+                    const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
+                    orderStatusCell.textContent = 'Cancelled';
+
+                    btn.textContent = 'Order Cancelled' //chnage the buttn
+                    btn.disabled = true;
+                } catch (error) {
+                    console.error('Error cancelling order:', error);
+                    alert('Failed to cancel order. Please try again.');
+                }
+            });
         });
-    });
 
-</script>
+    </script>
 
-</html>
+    </html>
 
-<%- include('../layout/footer.ejs') %>
+    <%- include('../layout/footer.ejs') %>

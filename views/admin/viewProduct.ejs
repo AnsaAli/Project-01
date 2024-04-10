@@ -5,90 +5,225 @@
       <img src="<%= imageUrl %>" alt="Product Image" style="width: 100px; height: 100px;">
   <% }) %>
 <% }) %> -->
-  <div class="row pdt-view-card  mt-5 mb-5">
-    <% products.forEach(product=> { %>
-      <%= product.image %>
-        <div class="col-md-3 col-sm-4 mb-3 ml-5">
-          <div class="card">
-            <div class="card-img-top" style="height: 250px; overflow: hidden;">
-              <% product.images.forEach(imageUrl=> { %>
-                <img src="<%= imageUrl.url %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
-                  style="width:100%">
-                <% }) %>
 
-            </div>
-            <div class="card-body" style="height: 350px; padding: 2px;">
-              <h5 class="card-title">
-                <%= product.productName %>
-              </h5>
-              <p class="card-text">Category: <%= product.category.name %>
-              </p>
-              <p class="card-text">Quantity: <%= product.totalQuantity %>kg
-              </p>
-              <p class="card-text">Total: ₹<%= product.totalPrice %>
-              </p>
-              <p class="card-text">Offer Percentage: <%= product.offerPercentage %>%
-              </p>
-              <p class="card-text">Offer Price: ₹<%= product.offerPrice %>
-              </p>
-              <p class="card-text">Available Weights:</p>
-              <select id="weightOptions" class="card-text">
-                <% product.weightOptions.forEach(option=> { %>
-                  <option value="<%= option.weight %>">
-                    <%= option.weight %>g - ₹<%= option.weightPrice %> (<%= option.priceAfterDiscount %> after discount)
-                  </option>
+  <!-- Add these links to your head section -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+
+  <body>
+
+    <!-- <div class="row pdt-view-card  mt-5 mb-5">
+      <% products.forEach(product=> { %>
+        <%= product.image %>
+          <div class="col-md-3 col-sm-4 mb-3 ml-5">
+            <div class="card">
+              <div class="card-img-top" style="height: 250px; overflow: hidden;">
+                <% product.images.forEach(imageUrl=> { %>
+                  <img src="<%= imageUrl.url %>" alt="Product Image" class="img-fluid mx-auto d-block"
+                    alt="Product Image" style="width:100%">
                   <% }) %>
-              </select>
-             
-              </p>
-              <!-- <p class="card-text ">Description: <%= product.description %>
-              </p> -->
+
+              </div>
+              <div class="card-body" style="height: 350px; padding: 2px;">
+                <h5 class="card-title">
+                  <%= product.productName %>
+                </h5>
+                <p class="card-text">Category: <%= product.category.name %>
+                </p>
+                <p class="card-text">Quantity: <%= product.totalQuantity %>kg
+                </p>
+                <p class="card-text">Total: ₹<%= product.totalPrice %>
+                </p>
+                <p class="card-text">Offer Percentage: <%= product.offerPercentage %>%
+                </p>
+                <p class="card-text">Offer Price: ₹<%= product.offerPrice %>
+                </p>
+                <p class="card-text">Available Weights:</p>
+                <select id="weightOptions" class="card-text">
+                  <% product.weightOptions.forEach(option=> { %>
+                    <option value="<%= option.weight %>">
+                      <%= option.weight %>g - ₹<%= option.weightPrice %> (<%= option.priceAfterDiscount %> after
+                            discount)
+                    </option>
+                    <% }) %>
+                </select>
+
+                </p>
+         
+
+              </div>
+              <div class="card-footer bott">
+                <form action="/admin/editProduct" method="GET" class="mb-3">
+                  <input type="hidden" name="_id" value="<%= product._id %>">
+                  <button type="submit" class="btn btn-primary">Edit</button>
+                </form>
+                <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
+                  <input type="hidden" name="_id" value="<%= product._id %>">
+                  <button type="submit" class="btn btn-primary">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+    </div> -->
+
+    <div class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              
+                <!-- sorting -->
+                <div class="row ">
+
+                  <div class="col-md-5">
+                    <label for="sortBy"></label>
+                    <select id="sortBy" name="sortby" class="form-control sort">
+                      <option>Sort by:</option>
+                      <option value="totalQuantity">Quantity</option>
+                      <option value="offerPercentage">Offer Percentage</option>
+                    </select>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary mt-2 btn-block">Sort</button>
+                  </div>
+                </div>
+              </form>
+
 
             </div>
-            <div class="card-footer bott">
-              <form action="/admin/editProduct" method="GET" class="mb-3">
-                <input type="hidden" name="_id" value="<%= product._id %>">
-                <button type="submit" class="btn btn-primary">Edit</button>
-              </form>
-              <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
-                <input type="hidden" name="_id" value="<%= product._id %>">
-                <button type="submit" class="btn btn-primary">Delete</button>
-              </form>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table" id="productTable">
+                  <thead class=" text-primary">
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Stock</th>
+                    <th>Offer Percentage</th>
+                    <th>Action</th>
+
+                  </thead>
+                  <tbody>
+                    <% products.forEach(product=> { %>
+                      <%= product.image %>
+                        <tr>
+                          <td>
+                            <img src="<%= product.images[0].url %>" alt="Product Image"
+                              class="img-fluid mx-auto d-block" alt="Product Image" style="width:200px; height: 200px;">
+
+                          </td>
+                          <td>
+                            <%= product.productName %>
+                          </td>
+                          <td>
+                            <%= product.category && product.category.name ? product.category.name
+                              : 'No category assigned' %>
+                          </td>
+                          <td>
+                            <%= product.totalQuantity %>kg
+                          </td>
+                          <td>
+                            <% if (product.totalQuantity <=0) { %>
+                              <p>Not in stock. Quantity: <%= product.totalQuantity %>
+                              </p>
+
+                              <% } else { %>
+                                <p>In Stock</p>
+                                <% } %>
+                          </td>
+                          <td>
+                            <%= product.offerPercentage %>%
+                          </td>
+                          <td>
+                            <form action="/admin/viewSingleProduct" method="GET" class="mb-3">
+                              <input type="hidden" name="_id" value="<%= product._id %>">
+                              <button type="submit" class="btn btn-primary">View</button>
+                            </form>
+                            <form action="/admin/editProduct" method="GET" class="mb-3">
+                              <input type="hidden" name="_id" value="<%= product._id %>">
+                              <button type="submit" class="btn btn-primary">Edit</button>
+                            </form>
+                            <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
+                              <input type="hidden" name="_id" value="<%= product._id %>">
+                              <button type="submit" class="btn btn-primary" onclick="confirmDelete()">Delete</button>
+                            </form>
+                          </td>
+                        </tr>
+                        <% }); %>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-        <% }); %>
-  </div>
 
-  <style>
-    .card {
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      max-width: 300px;
-      margin: auto;
-      text-align: center;
-      font-family: arial;
-    }
+      </div>
+    </div>
 
-    .price {
-      color: grey;
-      font-size: 22px;
-    }
+    <style>
+      .sort
+     {
+        height: 40px;
+        padding-bottom: 10px;
+      }
 
-    .card button {
-      border: none;
-      outline: 0;
-      padding: 12px;
-      color: white;
-      background-color: #000;
-      text-align: center;
-      cursor: pointer;
-      width: 100%;
-      font-size: 18px;
-    }
 
-    .card button:hover {
-      opacity: 0.7;
-    }
-  </style>
 
-  
+      .userTable {
+        width: 100%;
+        height: 200px;
+
+      }
+    
+
+      table,
+      th,
+      td {
+        margin-top: 30px;
+        border: 1px solid rgb(0, 48, 18);
+        border-collapse: collapse;
+        text-align: center;
+      }
+
+      th {
+        background-color: #1b0347;
+        color: white;
+
+      }
+
+      .card button {
+        margin-left: 0;
+       padding: 20px;
+        color: rgb(255, 39, 39);
+        background-color: #ffffff;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        font-size: 12px;
+      }
+
+      .card button:hover {
+        opacity: 0.7;
+      }
+    </style>
+
+    <script>
+      function confirmDelete() {
+        if (confirm("Are you sure you want to delete this product?")) {
+          document.getElementById('deleteForm').submit();
+        }
+      }
+
+      $(document).ready(function () {
+        $('#productTable').DataTable({
+          "bInfo": false  
+        });
+      });
+
+    </script>
+  </body>

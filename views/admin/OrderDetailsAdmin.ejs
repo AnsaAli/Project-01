@@ -27,20 +27,30 @@
                         <%= order.orderDate.toDateString() %>
                       </td>
                       <td>
-                        <% order.items.forEach(item=> { %>
-                          Quantity: <%= item.quantity %><br>
-                            <% }); %>
+                        <%order.orderedWeight.forEach(pdt=>{ %> <%=pdt.name %> <br>
+                            <%}) %>
+
                       </td>
                       <td>
-                        <%= order.user_id.email %>
+                        <%= order.user_id.email %> 
                       </td>
                       <td>
                         <%= order.paymentMethod %>
                       </td>
-                      <td>
+                      <td id="orderStatus_<%= order._id %>">
                         <%= order.orderStatus %>
                       </td>
-                      <td><a href="/cancelOrder/<%= order._id %>">Cancel</a></td>
+                      <!-- <td><a href="/admin/cancelOrder/<%= order._id %>">Cancel</a></td> -->
+                      <td class="order">
+                        <button class="cancelOrderBtn btn-small d-block btn btn-danger btn-fill-out btn-block hover-up"
+                          data-order-id="<%= order._id %>" type="submit" onclick="confirmCancel()">Cancel
+                          Order</button>
+
+                        <form action="/admin/viewOrderDetails" method="GET" class="mb-3">
+                          <input type="hidden" name="_id" value="<%= order._id %>">
+                          <button type="submit" class="btn btn-primary">View Details</button>
+                        </form>
+                      </td>
                     </tr>
                     <% }); %>
                 </tbody>
@@ -53,39 +63,91 @@
     </div>
   </div>
 
-  <footer class="footer">
-    <div class=" container-fluid ">
-      <nav>
-        <ul>
-          <li>
-            <a href="https://www.creative-tim.com">
-              GoEasy-Admin
-            </a>
-          </li>
-          <li>
-            <a href="http://presentation.creative-tim.com">
-              About Us
-            </a>
-          </li>
-          <li>
-            <a href="http://blog.creative-tim.com">
-              Blog
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="copyright" id="copyright">
-        &copy;
-        <script>
-          document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
-        </script>, Designed by <a href="https://www.invisionapp.com" target="_blank">Invision</a>.
-        Coded by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
-      </div>
-    </div>
-  </footer>
+
+
 
   </div>
   </div>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+
+    /* Style for table header */
+    th {
+      background-color: #1b0347;
+      color: white;
+
+    }
+
+    /* Style for alternating rows */
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .order button {
+      margin-left: 0;
+      padding: 8px;
+      margin-top: 25px;
+      color: rgb(255, 39, 39);
+      background-color: #ffffff;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      font-size: 12px;
+    }
+  </style>
+
+  <script>
+    function confirmCancel() {
+      if (confirm("Are you sure you want to cancel this order?")) {
+        document.getElementById('deleteForm').submit();
+      }
+    }
+
+    // Add event listener to all cancel order buttons
+    document.querySelectorAll('.cancelOrderBtn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const orderId = btn.dataset.orderId;
+        console.log(orderId, 'orderId===========in OrderDetails')
+        // Send a DELETE request to cancel the order
+        try {
+          const response = await fetch(`/admin/cancelOrder/${orderId}` ,
+            {
+              method: 'DELETE',
+            });
+          console.log(response.ok, '=========response')
+
+          if (response.ok) {
+            // Update the UI to reflect the cancelled order
+            const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
+            orderStatusCell.textContent = 'Cancelled';
+
+            btn.textContent = 'Order Cancelled' //chnage the buttn
+            btn.disabled = true;
+
+          } else {
+            throw new Error('Failed to cancel order');
+          }
+
+
+        } catch (error) {
+          console.error('Error cancelling order:', error);
+          alert('Failed to cancel order. Please try again.');
+        }
+      });
+    });
+
+  </script>
   </body>
 
   </html>

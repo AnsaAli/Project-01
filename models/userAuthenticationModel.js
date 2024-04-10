@@ -56,15 +56,7 @@
         address: [{
             type:Schema.Types.ObjectId,
             ref:'UserAddress'
-        }],
-        userCart:{
-            type: Schema.Types.ObjectId,
-            ref:'carts'
-        },
-        userOrders:{
-            type:Schema.Types.ObjectId,
-            ref:'orders'
-        }
+        }]
     },{timestamps: true})
 
     module.exports = mongoose.model('UserAuth',userAuthenticationSchema)

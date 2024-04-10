@@ -1,135 +1,144 @@
 <%- include('../layout/header.ejs') %>
-  <%- include('../layout/cartAndwishlist.ejs') %>
-  
-  <h3>Checkout</h3>
+    <%- include('../layout/cartAndwishlist.ejs') %>
 
-  <!-- <%= cart.cartItems[0].productId.productName%>
+        <h3>Checkout</h3>
+
+        <!-- <%= cart.cartItems[0].productId.productName%>
   <%= existingAddress[0].address_customer_name %> -->
-  <main class="main">
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="index.html" rel="nofollow">Home</a>
-                <span></span> Shop
-                <span></span> Checkout
-            </div>
-        </div>
-    </div>
-
-    <section class="mt-50 mb-50">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 mb-sm-15">
-
-                </div>
-                <!-- coupon -->
-                <div class="col-lg-6">
-                    <div class="toggle_info">
-                        <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a
-                                href="#coupon" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click
-                                here to enter your code</a></span>
+        <main class="main">
+            <div class="page-header breadcrumb-wrap">
+                <div class="container">
+                    <div class="breadcrumb">
+                        <a href="index.html" rel="nofollow">Home</a>
+                        <span></span> Shop
+                        <span></span> Checkout
                     </div>
-                    <div class="panel-collapse collapse coupon_form " id="coupon">
-                        <div class="panel-body">
-                            <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
-                            <form method="post">
-                                <div class="form-group">
-                                    <input type="text" placeholder="Enter Coupon Code...">
+                </div>
+            </div>
+
+            <section class="mt-50 mb-50">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 mb-sm-15">
+
+                        </div>
+                        <!-- coupon -->
+                        <div class="col-lg-6">
+                            <div class="toggle_info">
+                                <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a
+                                        href="#coupon" data-bs-toggle="collapse" class="collapsed"
+                                        aria-expanded="false">Click
+                                        here to enter your code</a></span>
+                            </div>
+                            <div class="panel-collapse collapse coupon_form " id="coupon">
+                                <div class="panel-body">
+                                    <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
+                                    <form method="post">
+                                        <div class="form-group">
+                                            <input type="text" placeholder="Enter Coupon Code...">
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div class="form-group">
-                                    <button class="btn  btn-md" name="login">Apply Coupon</button>
-                                </div>
-                            </form>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="divider mt-50 mb-50"></div>
                         </div>
                     </div>
-                </div>
 
-            </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-25">
+                                <h4>Billing Details</h4>
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="divider mt-50 mb-50"></div>
-                </div>
-            </div>
+                                <form method="post" action="/placeOrder">
+                                    <% existingAddress.forEach(address=> { %>
+                                        <div class="address mt-5">
+                                            <input type="radio" id="address_<%= address._id %>" name="shippingAddress"
+                                                value="<%= address._id %>">
+                                            <label for="address_<%= address._id %>">
+                                                <ul>
+                                                    <li>
+                                                        <%= address.address_customer_name %>
+                                                    </li>
+                                                    <li>
+                                                        <%= address.mobile_num %>
+                                                    </li>
+                                                    <li>house num:<%= address.house_num %>
+                                                    </li>
+                                                    <li>house name:<%= address.apartment_name %>
+                                                    </li>
+                                                    <li>
+                                                        <%= address.city %>
+                                                    </li>
+                                                    <li>
+                                                        <%= address.district %>
+                                                    </li>
+                                                </ul>
+                                            </label>
+                                        </div>
+                                        <% }); %>
+                                            <div>
+                                                <p>Add another address? <a href="/addData">click here</a></p>
+                                            </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-25">
-                        <h4>Billing Details</h4>
+                            </div>
 
-                        <form method="post" action="/placeOrder">
-                            <% existingAddress.forEach(address=> { %>
-                                <div class="address mt-5">
-                                    <input type="radio" id="address_<%= address._id %>" name="shippingAddress"
-                                        value="<%= address._id %>">
-                                    <label for="address_<%= address._id %>">
-                                        <ul>
-                                            <li>
-                                                <%= address.address_customer_name %>
-                                            </li>
-                                            <li>
-                                                <%= address.mobile_num %>
-                                            </li>
-                                            <li>house num:<%= address.house_num %>
-                                            </li>
-                                            <li>house name:<%= address.apartment_name %>
-                                            </li>
-                                            <li>
-                                                <%= address.city %>
-                                            </li>
-                                            <li>
-                                                <%= address.district %>
-                                            </li>
-                                        </ul>
-                                    </label>
-                                </div>
-                                <% }); %>
-                                    <div>
-                                        <p>Add another address? <a href="/addData">click here</a></p>
-                                    </div>
-
-                    </div>
-
-                </div>
-                <div class="col-md-6">
-                    <div class="order_review">
-                        <div class="mb-20">
-                            <h4>Your Orders</h4>
                         </div>
-                        <div class="table-responsive order_table text-center">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2">Product</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% let subtotal=0; %>
-                                        <% cart.cartItems.forEach(item=> { %>
+                        <div class="col-md-6">
+                            <div class="order_review">
+                                <div class="mb-20">
+                                    <h4>Your Orders</h4>
+                                </div>
+                                <div class="table-responsive order_table text-center">
+                                    <table class="table">
+                                        <thead>
                                             <tr>
-                                                <td class="image product-thumbnail">
-                                                        <img src="<%= item.productId.images[0].url %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
-                                                style="width:100%">
-                                                <td>
-                                                    <h5><a href="">
-                                                            <%= item.productId.productName %>
-                                                        </a></h5>
-                                                    <span class="product-qty">x <%= item.quantity %></span>
-                                                </td>
-                                                <td>
-                                                    <%= item.price %>
-                                                </td>
+                                                <th colspan="2">Product</th>
+                                                <th>Total</th>
                                             </tr>
-                                            <% subtotal +=item.price * item.quantity; %>
-                                                <% }); %>
+                                        </thead>
+                                        <tbody>
+                                            <% cart.cartItems.forEach(item=> { %>
+                                                <tr>
+                                                    <td class="image product-thumbnail">
+                                                        <img src="<%= item.productId.images[0].url %>"
+                                                            alt="Product Image" class="img-fluid mx-auto d-block"
+                                                            style="width:100%">
+                                                    </td>
+                                                    <td>
+                                                        <h5><a href="">
+                                                                <%= item.productId.productName %>
+                                                            </a></h5>
+                                                        <input type="hidden" value=" <%= item.productId.productName %>"
+                                                            name="items">
+                                                        <span class="product-qty">x <%= item.weight %>g</span>
+                                                        <input type="hidden" value=" <%= item.weight %>" name="weight">
+                                                    </td>
+                                                    <td>
+                                                        <%= item.price %>
+                                                    </td>
+                                                </tr>
+                                                <!-- <% let totalWeightLeft=0; cart.cartItems.forEach(item=> {
+                                                    totalWeightLeft += (item.productId.totalQuantity - item.weight);
+                                                    });
+                                                    %>
+                                                    <input type="hidden" value="<%= totalWeightLeft %>"
+                                                        name="weightLeft">-->
+                                             <% }); %>
 
                                                     <!-- Subtotal -->
                                                     <tr>
                                                         <th>SubTotal</th>
-                                                        <td class="product-subtotal" colspan="2">₹ <%=
-                                                                subtotal.toFixed(2) %>
-
+                                                        <td class="product-subtotal" colspan="2">₹ <%= cart.totalPrice
+                                                                %>
                                                         </td>
                                                     </tr>
 
@@ -144,96 +153,97 @@
                                                         <th>Total</th>
                                                         <td colspan="2" class="product-subtotal">
                                                             <span class="font-xl text-brand fw-900">₹ <%=
-                                                                    subtotal.toFixed(2) %></span>
+                                                                    cart.totalPrice %></span>
                                                             <input type="hidden" name="totalAmount"
-                                                                value="<%= subtotal.toFixed(2) %>">
+                                                                value="<%=  cart.totalPrice %>">
                                                         </td>
                                                     </tr>
-                                </tbody>
+                                        </tbody>
 
-                            </table>
-                        </div>
-                        <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                        <div class="payment_method">
-                            <div class="mb-25">
-                                <h5>Payment</h5>
-                            </div>
 
-                            <input type="radio" name="payment_option" id="cashOnDelivery" value="COD" checked>
-                            <label for="cashOnDelivery">Cash On Delivery</label>
-                        </div>
-                        <!-- <form method="post" action="/placeOrder">
+                                    </table>
+                                </div>
+                                <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                <div class="payment_method">
+                                    <div class="mb-25">
+                                        <h5>Payment</h5>
+                                    </div>
+
+                                    <input type="radio" name="payment_option" id="cashOnDelivery" value="COD" checked>
+                                    <label for="cashOnDelivery">Cash On Delivery</label>
+                                </div>
+                                <!-- <form method="post" action="/placeOrder">
                             <button class="btn btn-fill-out btn-block mt-30" >Place Order</button>
                         </form> -->
 
-                       
+
 
                                 <button class="btn btn-fill-out btn-block mt-30 place-order-btn">Place Order</button>
                                 </form>
 
 
+                            </div>
+                        </div>
                     </div>
+
                 </div>
-            </div>
-
-        </div>
-    </section>
-</main>
-
- 
-
-<style>
-    .address {
-        text-align: left;
-        background-color: #f9f9f9;
-        border: 1px solid #ffffff;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-    }
+            </section>
+        </main>
 
 
-    .address input[type="radio"] {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        width: 16px;
-        height: 16px;
-        border: 2px solid #ccc;
-        border-radius: 50%;
-        outline: none;
-        cursor: pointer;
-        margin-right: 5px;
-    }
 
-    .address input[type="radio"]:checked {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-
-    /* Custom radio button label styles */
-    .address label {
-        display: inline-flex;
-        align-items: center;
-    }
-</style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-
-    $(document).ready(function () {
-        // Handle change event of the payment method radio buttons
-        $('input[name="payment_option"]').change(function () {
-            const selectedPaymentMethod = $('input[name="payment_option"]:checked').val();
-            if (selectedPaymentMethod === 'Cash On Delivery') {
-                // Enable the "Place Order" button
-                $('.place-order-btn').prop('disabled', false);
-            } else {
-                // Disable the "Place Order" button
-                $('.place-order-btn').prop('disabled', true);
+        <style>
+            .address {
+                text-align: left;
+                background-color: #f9f9f9;
+                border: 1px solid #ffffff;
+                padding: 20px;
+                margin-bottom: 20px;
+                border-radius: 5px;
             }
-        });
-    });
 
-</script>
 
-</html>
+            .address input[type="radio"] {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                width: 16px;
+                height: 16px;
+                border: 2px solid #ccc;
+                border-radius: 50%;
+                outline: none;
+                cursor: pointer;
+                margin-right: 5px;
+            }
+
+            .address input[type="radio"]:checked {
+                background-color: #007bff;
+                border-color: #007bff;
+            }
+
+            /* Custom radio button label styles */
+            .address label {
+                display: inline-flex;
+                align-items: center;
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+
+            $(document).ready(function () {
+                // Handle change event of the payment method radio buttons
+                $('input[name="payment_option"]').change(function () {
+                    const selectedPaymentMethod = $('input[name="payment_option"]:checked').val();
+                    if (selectedPaymentMethod === 'Cash On Delivery') {
+                        // Enable the "Place Order" button
+                        $('.place-order-btn').prop('disabled', false);
+                    } else {
+                        // Disable the "Place Order" button
+                        $('.place-order-btn').prop('disabled', true);
+                    }
+                });
+            });
+
+        </script>
+
+        </html>

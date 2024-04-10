@@ -17,9 +17,27 @@ cloudinary.config({
 });
 
 
-function validate(name) {
-    const regexPattern = /^(?=.*[a-zA-Z])[a-zA-Z\s]{3,}$/;
-    return regexPattern.test(name);
+function validate(name, existingNames) {
+
+    // Check if the name is not empty
+    if (!name.trim()) {
+        return false;
+    }
+    
+    // Check if the name meets the pattern criteria
+    const regexPattern = /^[A-Za-z][a-z]{3,}$/;
+    if (!regexPattern.test(name)) {
+        return false;
+    }
+
+    // Check if the name is unique
+    const lowerCaseName = name.toLowerCase();
+    const lowerCaseExistingNames = existingNames.map(existingName => existingName.toLowerCase());
+    if (lowerCaseExistingNames.includes(lowerCaseName)) {
+        return false; // Duplicate found, return false
+    }
+
+    return true; // Name is valid and unique
 }
 
 
@@ -123,9 +141,15 @@ const userBlockUnblock = async (req, res) => {
 
 const loadCategory = async (req, res) => {
     try {
-        const categories = await Category.find({ is_deleted: false })
+        let myQuery= Category.find({ is_deleted: false })
+        const searchQuery= req.query.searchQuery;
+        if (searchQuery && searchQuery.trim() !== '') {
+           
+            myQuery.where('name').regex(new RegExp(searchQuery, 'i'));
+        }
+        const categories = await myQuery
 
-        res.render('category', { categories });
+        res.render('category', { categories,searchQuery:searchQuery });
     } catch (error) {
         console.log('Error wile loading category', error.message)
     }
@@ -143,26 +167,32 @@ const addCategory = async (req, res) => {
     try {
         console.log('============== 135')
         const { name, description } = req.body;
-        if (!validate(name)) {
-            return res.status(500).redirect('/admin/category?error=ProductNameInvalid');
+
+        const existingCategories = await Category.find({}, 'name');
+        const existingNames = existingCategories.map(category => category.name);
+        if (!validate(name, existingNames)) {
+            return res.status(500).redirect('/admin/category?errorMessage=InvalidCategoryName');
         }
         console.log(name, description, '=========input values 137')
 
-
-        //if category already exist
+        // Check if the category already exists
         const existingCategory = await Category.findOne({ name })
         if (existingCategory) {
-            return res.status(400).redirect('/admin/category?error=CategoryAlreadyExists');
+            return res.status(400).redirect('/admin/category?errorMessage=CategoryAlreadyExists');
         }
         const newCategory = new Category({ name, description, is_deleted: false })
         await newCategory.save()
         console.log(newCategory, 'Is the new category')
         // Redirect with success message
-        res.redirect('/admin/category?success=CategoryAddedSuccessfully');
+        res.redirect('/admin/category?successMessage=CategoryAddedSuccessfully');
     } catch (error) {
         console.log('Error while adding category', error.message)
+        res.status(500).redirect('/admin/category?errorMessage=ServerError');
+        // Handle errors appropriately
     }
 }
+
+
 
 const loadEditCategory = async (req, res) => {
     try {
@@ -277,7 +307,9 @@ const addProducts = async (req, res) => {
             recipies
 
         } = req.body;
-        if (!validate(productName)) {
+        const existingProducts = await Product.find({}, 'productName');
+        const existingNames = existingProducts.map(product => product.productName);
+        if (!validate(productName,existingNames)) {
             return res.render('addProducts', { errorMessage: 'Please add a valid product name!' });
         }
         if (totalQuantity < 0) {
@@ -311,14 +343,14 @@ const addProducts = async (req, res) => {
         // let offerprice1kg = (price1Kg - (price1Kg * offerPercentage / 100)).toFixed(2)
 
         let price1g = pricePer100g / 100;
-let price250 = Math.ceil(price1g * 250);
-let price500 = Math.ceil(price1g * 500);
-let price1Kg = Math.ceil(price1g * 1000);
+        let price250 = Math.ceil(price1g * 250);
+        let price500 = Math.ceil(price1g * 500);
+        let price1Kg = Math.ceil(price1g * 1000);
 
-let offerprice100 = Math.ceil(pricePer100g - (pricePer100g * offerPercentage / 100));
-let offerprice250 = Math.ceil(price250 - (price250 * offerPercentage / 100));
-let offerprice500 = Math.ceil(price500 - (price500 * offerPercentage / 100));
-let offerprice1kg = Math.ceil(price1Kg - (price1Kg * offerPercentage / 100));
+        let offerprice100 = Math.ceil(pricePer100g - (pricePer100g * offerPercentage / 100));
+        let offerprice250 = Math.ceil(price250 - (price250 * offerPercentage / 100));
+        let offerprice500 = Math.ceil(price500 - (price500 * offerPercentage / 100));
+        let offerprice1kg = Math.ceil(price1Kg - (price1Kg * offerPercentage / 100));
 
 
         console.log('================================890 C addProducts')
@@ -346,8 +378,8 @@ let offerprice1kg = Math.ceil(price1Kg - (price1Kg * offerPercentage / 100));
             offerPercentage: offerPercentage,
             offerPrice: offerPrice,
             images: uploadedImages,
-            nutritionalInfo:nutritionalInfo,
-            recipies:recipies,
+            nutritionalInfo: nutritionalInfo,
+            recipies: recipies,
             weightOptions: [{
                 weight: 100,
                 weightPrice: pricePer100g,
@@ -383,9 +415,18 @@ let offerprice1kg = Math.ceil(price1Kg - (price1Kg * offerPercentage / 100));
 
 const loadViewProducts = async (req, res) => {
     try {
-        const products = await Product.find({ is_deleted: false }).populate('category');
+        
+       let query =  Product.find({is_deleted:false}).populate('category');
+      
+        // Handling sorting
+        const sortby = req.query.sortby;
+       
+         if (sortby === 'totalQuantity') { query = query.sort({ totalQuantity: 1 });} 
+        else if (sortby === 'offerPercentage') {query = query.sort({ offerPercentage: 1 });}
+
+        const products = await query;
         //console.log('Products:', products); 
-        res.render('viewProduct', { products: products });
+        res.render('viewProduct', { products: products});
     } catch (error) {
         console.log('Error while loading view product page:', error.message);
         res.status(500).send('Error while loading view product page');
@@ -414,7 +455,7 @@ const loadEditProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         console.log('inside the update product')
-       
+
         const id = req.body.id;
         const productName = req.body.productName;
         const category = req.body.category;
@@ -443,8 +484,8 @@ const updateProduct = async (req, res) => {
             }
         }
 
-       // Concatenate the existing images with the newly uploaded images
-       const combinedImages = existingProduct.images.concat(uploadedImages);
+        // Concatenate the existing images with the newly uploaded images
+        const combinedImages = existingProduct.images.concat(uploadedImages);
 
         console.log(id,
             productName,
@@ -532,10 +573,10 @@ const deleteProduct = async (req, res) => {
 
 const loadOrderDetails = async (req, res) => {
     try {
-
+       
         const orderDetails = await Order.find({}).populate('user_id')
 
-        res.render('OrderDetailsAdmin', { orderDetails })
+        res.render('OrderDetailsAdmin', { orderDetails})
     } catch (error) {
         console.log('Error while loading order deatls page')
     }
@@ -553,12 +594,12 @@ const deleteImages = async (req, res) => {
         console.log(productId, 'product id=====')
         console.log(productId.length, 'length of product id=====')
         console.log(productId.length, 'length of product id=====')
-        console.log( ObjectId.isValid(productId) , 'valid  product id=====')
-       
+        console.log(ObjectId.isValid(productId), 'valid  product id=====')
+
 
         try {
             await Product.updateOne(
-                { _id:ObjectId.createFromHexString(productId) },
+                { _id: ObjectId.createFromHexString(productId) },
                 { $pull: { images: { public_id: imageId } } }
             );
 
@@ -574,7 +615,60 @@ const deleteImages = async (req, res) => {
         res.status(500).send('Error while deleting the image');
     }
 }
+const cancelOrder = async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        console.log(orderId,'is the orderid')
+        const order = await Order.findById(orderId);
+        console.log(order,'is the order=======cancelOrder')
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        order.orderStatus = 'cancelled';
+        await order.save();
+        res.status(200).json({ message: 'Order cancelled successfully', orderId: order._id });
+    } catch (error) {
+        console.log('Error occure while canceling the order', error.message)
+    }
+}
 
+const loadViewSingleProducts= async(req,res)=>{
+    try {
+        const id = req.query._id;
+        console.log(id, '===============id 611 loadViewSingleProducts')
+        
+        const products = await Product.findById({ _id: id }).populate('category');
+        console.log(products.productName, '===============products  loadViewSingleProducts')
+
+        const categories = await Category.find({})
+      
+        if (!products) {
+            console.log('Error while loading edit-category page with data')
+            redirect('/admin/viewProducts')
+        } else {
+            console.log('=================622')
+            res.render('singleProduct', { products: products, categories: categories })
+        }
+       
+        
+    } catch (error) {
+        console.log('Error occure while viewing single product in loadViewSingleProducts', error)
+    }
+}
+const loadSingleOrderDetails= async(req,res)=>{
+    try {
+        const orderId= req.query._id;
+        
+        console.log(orderId,'==========orderId loadSingleOrderDetails')
+        
+        const orderDetails = await Order.findById({_id: orderId})
+        .populate('user_id shippingAddress')
+        .exec();
+        res.render('singleOrderDetails',{ orderDetails})
+    } catch (error) {
+        console.log('Error occure while loading loadSingleOrderDetails', error)
+    }
+}
 module.exports = {
     loadAdminLogin,
     verifyAdminLogin,
@@ -596,5 +690,8 @@ module.exports = {
     deleteProduct,
     cropImage,
     loadOrderDetails,
-    deleteImages
+    deleteImages,
+    cancelOrder,
+    loadViewSingleProducts,
+    loadSingleOrderDetails
 }

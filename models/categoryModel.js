@@ -49,6 +49,11 @@ const productSchema = new Schema({
         required: true,
     
     },
+    // totalQuantityLeft: {
+    //     type: Number,
+      
+    // }
+    // ,
     pricePer100g: {
         type: Number,
         required: true,

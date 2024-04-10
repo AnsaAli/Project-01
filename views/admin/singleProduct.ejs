@@ -1,0 +1,166 @@
+<%- include('../layout/adminHeader.ejs') %>
+
+    <body>
+
+        <div class="containerProduct">
+            <div class="row">
+                <div class="col-md-5">
+                    <form action="/admin/editProduct" method="GET" class="mb-3">
+                        <input type="hidden" name="_id" value="<%= products._id %>">
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </form>
+                    <form action="/admin/viewProducts/<%= products._id %>/deleteProduct" method="post">
+                        <input type="hidden" name="_id" value="<%= products._id %>">
+                        <button type="submit" class="btn btn-primary" onclick="confirmDelete()">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="product-details">
+                <div class="product-name m-4">
+                    <h4>
+                        <%= products.productName%>
+                    </h4>
+
+                </div>
+
+                <div class="product-images m-5">
+                    <div class="d-flex">
+                        <% products.images.forEach(imageUrl=> { %>
+                            <img src="<%= imageUrl.url %>" alt="Product Image" class="img-fluid mx-auto d-block"
+                                alt="Product Image" style="width:100%; max-width: 150px; margin-right: 10px;">
+                            <% }) %>
+                    </div>
+                </div>
+
+                <div class="quantity-selector m-4">
+                    <strong>
+                        <%= products.category.name%>
+                    </strong> <br><br>
+                    <label for="quantity">Available Quantities</label>
+                    <div class="">
+                        <% let offerDisplayed=false; %>
+                            <% products.weightOptions.forEach(option=> { %>
+                                <div>
+                                    <% if (products.totalPrice> products.offerPrice && !offerDisplayed) { %>
+                                        <% offerDisplayed=true; %>
+                                            <p>on offer of : <strong>
+                                                    <%= products.offerPercentage %> %</p></strong>
+                                            <% } %>
+                                                <div class=""
+                                                    style="border: 1px solid #333; padding: 5px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                                    <a <% if (products.totalQuantity===0) { %> disabled <% } %>
+                                                            href="#"
+                                                            class="p-2"
+                                                            style="font-size:20px;">
+                                                            <span>
+                                                                <%= option.weight %>g :
+                                                            </span>
+                                                            <% if (products.totalPrice> products.offerPrice) { %>
+                                                                <span>₹<%= option.priceAfterDiscount.toFixed(2)%></span>
+                                                                <% } else { %>
+                                                                    <span>₹<%= option.weightPrice.toFixed(2) %></span>
+                                                                    <% } %>
+                                                    </a>
+                                                </div>
+                                </div>
+                                <% }) %>
+                    </div>
+                </div>
+
+
+                <div class="product-description m-5 p-2">
+                    <hr>
+                    <h4 class="m-4">About <%= products.productName%>
+                    </h4>
+                    <p>
+                        <%= products.description %>
+                    </p>
+                    <hr>
+                    <h4 class="m-4">Health Benefits</h4>
+                    <p>
+                        <%= products.nutritionalInfo %>
+                    </p>
+                    <hr>
+                    <h4 class="m-4">Try this amazing recipes.</h4>
+                    <p>
+                        <%= products.recipies %>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <style>
+            .containerProduct {
+                max-width: 900px;
+                margin: 30px auto;
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .cartAndWish .button-form {
+                display: inline-block;
+                margin-right: 10px;
+            }
+
+            .product-images img {
+                max-width: 250px;
+                transition: transform 0.3s ease;
+
+            }
+
+            .product-images img:hover {
+                transform: scale(1.4);
+            }
+
+
+            .product-name {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .product-description {
+                margin-bottom: 20px;
+            }
+
+
+            .quantity-selector {
+                margin-bottom: 20px;
+            }
+
+
+
+            /* Responsive CSS */
+            @media screen and (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                }
+
+                .product-image img {
+                    width: 100%;
+                }
+            }
+
+            @media screen and (max-width: 480px) {
+                .product-name {
+                    font-size: 20px;
+                }
+
+
+            }
+        </style>
+
+        <script>
+            function confirmDelete() {
+                if (confirm("Are you sure you want to delete this product?")) {
+                    document.getElementById('deleteForm').submit();
+                }
+            }
+        </script>
+
+    </body>

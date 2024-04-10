@@ -1,50 +1,54 @@
 <%- include('../layout/header.ejs') %>
-
-    <section class="product-tabs section-padding position-relative wow fadeIn animated">
+<body>
+    
         <div class="container">
-            <div class="tab-header">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="nav-tab-one" data-bs-toggle="tab" data-bs-target="#tab-one"
-                            type="button" role="tab" aria-controls="tab-one" aria-selected="true">Vegetables</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="nav-tab-two" data-bs-toggle="tab" data-bs-target="#tab-two"
-                            type="button" role="tab" aria-controls="tab-two" aria-selected="false">Fruits</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="nav-tab-three" data-bs-toggle="tab" data-bs-target="#tab-three"
-                            type="button" role="tab" aria-controls="tab-three" aria-selected="false">Sprouts</button>
-                    </li>
-                </ul>
-                <a href="#" class="view-more d-none d-md-flex">View More<i
-                        class="fi-rs-angle-double-small-right"></i></a>
+           
+            <div class="blur-background">
+                <div class="success">
+                    <h3>Order confirmed <p><a href="/order">View Order Details</a></p></h3>  
+                    <form action="/home" class="form-group mt-15">
+                        <button class="btn btn-fill-out btn-block hover-up">Continue Shopping</button>
+                    </form>
+                </div>
             </div>
-            <!--End nav-tabs-->
-            <div>
-                <h3>Order confirmed</h3>
-                <% orderedProducts.forEach(order=> { %>
-                    <div>
-                        <p>Order ID: <%= order.order_id %>
-                        </p>
-                        <p>User ID: <%= order.user_id %>
-                        </p>
-                        <p>Total Price: <%= order.totalPrice %>
-                        </p>
-                        <p>Payment Method: <%= order.paymentMethod %>
-                        </p>
-                        <p>Order Date: <%= order.orderDate %>
-                        </p>
-                        <p>Products:</p>
-                        
-                    </div>
-                    <hr>
-                    <% }); %>
-            </div>
-
         </div>
-    </section>
+   
 
+        <style>
+            .container {
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+    
+            .blur-background {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                backdrop-filter: blur(5px);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+    
+            .success {
+                background-color: rgba(0, 0, 0, 0.8); 
+                padding: 20px;
+                border-radius: 10px;
+                color: antiquewhite;
+                text-align: center;
+                max-width: 50%; 
+                width: 100%;
+            }
+    
+            .success h3 {
+                color: white;
+            }
+        </style>
 </body>
 
-</html>
+
+ 
