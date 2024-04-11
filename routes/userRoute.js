@@ -85,6 +85,9 @@ user_route.get('/home',authMiddleware.is_login, productController.loadHome)
 user_route.get('/viewProduct',authMiddleware.is_login, productController.loadViewProduct)
 user_route.post('/product/:id/rate',productController.rating) 
 
+user_route.get('/allProducts',authMiddleware.is_login, productController.loadAllProducts)
+
+
 //add to cart
 
 user_route.post('/addToCart',cartContrller.addToCart)

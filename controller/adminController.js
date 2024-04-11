@@ -8,7 +8,8 @@ const { Category, Product } = require('../models/categoryModel')
 const bcrypt = require("bcrypt")
 const sharp = require('sharp')
 const Order = require('../models/orderModel')
-const User = require('../models/userAuthenticationModel')
+const User = require('../models/userAuthenticationModel');
+const nodemon = require('nodemon');
 const cloudinary = require('cloudinary').v2;
 cloudinary.config({
     cloud_name: 'dn6d0gspr',
