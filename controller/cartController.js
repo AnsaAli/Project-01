@@ -11,56 +11,54 @@ const addToCart = async (req, res) => {
         const { productId, weight, price, productName } = req.body;
 
         const userId = req.session.user_id;
-        console.log(userId, 'is the userId');
+        console.log(userId, 'is the userId addToCart');
 
         console.log('Product ID:', productId);
         console.log('Weight:', weight);
         console.log('Price:', price);
         console.log('Product Name:', productName);
 
+        let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
+
         // Check if the product already exists in the cart
         let cartItem = await CartItem.findOne({ productId: productId });
-        console.log('===============================23')
+
         if (cartItem) {
             // If the product exists, update its quantity
             cartItem.quantity += 1;
             cartItem.weight += weight;
+            console.log(' cartItem.quantity: ', cartItem.quantity, '&  cartItem.weight :', cartItem.weight)
+            await cartItem.save();
         } else {
             // If the product does not exist, create a new cart item
+            let cartUser = await Cart.findOne({ userId: userId });
             cartItem = new CartItem({
                 productId: productId,
                 weight: weight,
                 price: price,
                 quantity: 1
             });
+
+            if(!cartUser){
+                cart = new Cart({
+                    userId: userId,
+                    cartItems: cartItem,
+                    totalPrice: cartItem.price
+                })
+                console.log(cart,'=================after new cart========45')
+            } else {
+                console.log(cart,'=================before push=======1')
+                cart.cartItems.push(cartItem._id);
+            }
+            
+            await cartItem.save();
+           
+            console.log(cart,'=================after push========2')
+            const savedCart = await cart.save();
+            console.log(cart,'=================after savedCart========3')
         }
-        // console.log(cartItem, '===============================38')
 
-        // Save the updated/new cart item to the database
-        const savedCartItem = await cartItem.save();
-
-        // Get the user's cart
-        let cart = await Cart.findOne({ userId: userId });
-
-        if (!cart) {
-            // If the user does not have a cart, create a new cart
-            cart = new Cart({ userId: userId });
-        }
-        console.log('===============================50')
-
-        // Push the ID of the saved cart item to the cart's cartItems array
-        cart.cartItems.push(savedCartItem._id);
-
-        // Calculate and update the total price of the cart
-        cart.totalPrice += Math.ceil(price* cartItem.quantity);
-      
-
-        // Save the updated cart to the database
-        const savedCart = await cart.save();
-        console.log('===============================60')
-
-        // Return success response
-        res.status(200).json({ message: 'Product added to cart successfully', cart: savedCart });
+        res.status(200).json({ message: 'Product added to cart successfully' });
 
 
     } catch (error) {
@@ -71,46 +69,28 @@ const addToCart = async (req, res) => {
     }
 };
 
-const listCartItems = async (req, res) => {
-    try {
-        console.log('in listCartItems function')
-        const user_id = req.session.user_id
-        console.log(user_id, '===========is user_id')
+// const listCartItems = async (req, res) => {
+//     try {
+//         console.log('in listCartItems function')
+//         const user_id = req.session.user_id
+//         console.log(user_id, '===========is user_id listCartItems')
 
-        const user = await User.find({ user_id })
-        console.log(user, '===========is user')
+//         const user = await User.find({ user_id })
+//         console.log(user, '===========is user listCartItems')
 
-        // const userCart = await Cart.findById({ user_id })
 
-        // // console.log(userCart,'===========is userCart')
-
-        // if (!userCart) {
-        //     return res.status(404).json({ error: 'Cart not found' })
-        // }
-
-        // const cartItems = userCart.cartItems.map(cartItem => ({
-        //     _id: cartItem._id,
-        //     product: {
-        //         _id: cartItem.product._id,
-        //         name: cartItem.product.productName,
-        //         price: cartItem.price,
-        //         images: cartItem.product.images
-        //     },
-        //     quantity: cartItem.quantity
-        // }));
-        // console.log(cartItems, '===========is cartItems')
-        res.status(200).json({ cartItems });
-    } catch (error) {
-        console.log('Error while listing the cart items')
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
+//         res.status(200).json({ cartItems });
+//     } catch (error) {
+//         console.log('Error while listing the cart items', error)
+//         res.status(500).json({ error: 'Internal server error' });
+//     }
+// }
 
 const removeCartItem = async (req, res) => {
     try {
         console.log('inside  removeCartItem')
         const cartItemId = req.params.id;
-        console.log(cartItemId, 'is the cartItemId')
+        console.log(cartItemId, 'is the cartItemId removeCartItem')
 
         //find the cart item from the db
         const removedCartItem = await CartItem.findById(cartItemId);
@@ -155,7 +135,7 @@ const viewCartItems = async (req, res) => {
         if (!cartData) {
             return res.render('viewCartItems', { cartData: null });
         }
-        console.log(cartData,'cartData')
+        console.log(cartData, 'cartData viewCartItems')
         res.render('viewCartItems', { cartData })
     } catch (error) {
         console.log('Error while loading the view cart items')
@@ -163,7 +143,7 @@ const viewCartItems = async (req, res) => {
 }
 module.exports = {
     addToCart,
-    listCartItems,
+    // listCartItems,
     removeCartItem,
     viewCartItems
 }

@@ -92,7 +92,7 @@ user_route.get('/allProducts',authMiddleware.is_login, productController.loadAll
 
 user_route.post('/addToCart',cartContrller.addToCart)
 
-user_route.get('/listCartItems',cartContrller.listCartItems)
+// user_route.get('/listCartItems',cartContrller.listCartItems)
 
 user_route.get('/viewCartItems',cartContrller.viewCartItems)
 
