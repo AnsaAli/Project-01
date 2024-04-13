@@ -11,6 +11,8 @@ const cartContrller= require('../controller/cartController')
 const orderController= require('../controller/orderController')
 const checkOutController= require('../controller/checkOutController')
 
+
+
 // user_route.use(secret())
 user_route.use(sessionSecret())
 
@@ -24,6 +26,12 @@ user_route.use(express.urlencoded({extended:true}))
 
 user_route.use(fetchDataMiddleware)
 
+// Middleware to prevent caching
+const preventCache = (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    next();
+};
+user_route.use(preventCache);
                   ////signup\\\\\\
 
 //to load the register page
@@ -90,19 +98,19 @@ user_route.get('/allProducts',authMiddleware.is_login, productController.loadAll
 
 //add to cart
 
-user_route.post('/addToCart',cartContrller.addToCart)
-
+user_route.post('/addToCart',authMiddleware.is_login,cartContrller.addToCart)
+user_route.post('/updateQuantity',authMiddleware.is_login,cartContrller.updateQuantity)
 // user_route.get('/listCartItems',cartContrller.listCartItems)
 
-user_route.get('/viewCartItems',cartContrller.viewCartItems)
+user_route.get('/viewCartItems',authMiddleware.is_login,cartContrller.viewCartItems)
 
-user_route.get('/removeCartItem/:id',cartContrller.removeCartItem)
+user_route.get('/removeCartItem/:id',authMiddleware.is_login,cartContrller.removeCartItem)
 
 //order
 user_route.get('/order',authMiddleware.is_login, orderController.loadUserOrder)
 user_route.get('/successOrder',authMiddleware.is_login,orderController.loadConfirmOrder)
-user_route.post('/placeOrder', orderController.placeOrder)
-user_route.delete('/cancelOrder/:orderId', orderController.cancelOrder)
+user_route.post('/placeOrder',authMiddleware.is_login, orderController.placeOrder)
+user_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, orderController.cancelOrder)
 user_route.get('/trackOrder',authMiddleware.is_login, orderController.loadTrackOrder)
 
 //checkout

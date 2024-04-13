@@ -1,6 +1,8 @@
 <%- include('../layout/header.ejs') %>
 
 
+<body>
+    
 
 <!-- <h3>ViewCArt Page</h3>
 
@@ -43,7 +45,7 @@
                                     <th scope="col">Image</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Weight</th>
-                                    <th scope="col">Price</th>
+                                    <th scope="col">Unit Price</th>
                                     <th scope="col">Quantity</th>
                                     <th scope="col">Subtotal</th>
                                     <th scope="col">Remove</th>
@@ -62,23 +64,35 @@
                                             <td class="product-des product-name">
                                                 <h5 class="product-name"><a href="shop-product-right.html"> <%= cartItem.productId.productName %></a></h5>
                                             </td>
-                                            <td class="text-right" data-title="Weight">
-                                                <span><%= cartItem.weight %>g </span>
+                                            <td class="text-right Weight" data-title="Weight" id="cartItemWeight">
+                                                <span  class="weight-val"><%= cartItem.weight %>g </span>
                                             </td>
                                             <td class="price" data-title="Price"><span> ₹<%= cartItem.price %></span></td>
-                                            <td class="text-center" data-title="Quantity">
+                                            <!-- <td class="text-center" data-title="Quantity">
                                                 <div class="detail-qty border radius  m-auto">
                                                     <span class="qty-val"><a href="" style="font-size: 30px;">-</a> <%= cartItem.quantity %> <a href="" style="font-size: 20px;">+</a></span>
                                                 
                                                 </div>
+                                            </td> -->
+
+                                            <td class="text-center" data-title="Quantity">
+                                                <div class="detail-qty border radius m-auto">
+                                                    <span class="qty-val">
+                                                        <a href="#" class="quantity-btn" data-action="decrement" data-product-id="<%= cartItem.productId._id %>">-</a>
+                                                        <%= cartItem.quantity %>
+                                                        <a href="#" class="quantity-btn" data-action="increment" data-product-id="<%= cartItem.productId._id %>">+</a>
+                                                    </span>
+                                                </div>
                                             </td>
+
+
                                             <td class="text-right" data-title="Subtotal">
                                                 <span>₹<%= cartItem.price * cartItem.quantity %></span>
                                             </td>
                                             
                                             <td class="action" data-title="Remove"><a href="/removeCartItem/<%= cartItem._id %>" class="text-muted"><i class="fi-rs-trash"></i></a></td>
                                         </tr>
-                                    <% }); %>
+                                   
                                     <tr>
                                         <td colspan="6" class="text-end">
                                             <a href="#" class="text-muted"> <i class="fi-rs-cross-small"></i> Clear Cart</a>
@@ -86,9 +100,10 @@
                                     </tr>
                                     <tr>
                                         <td colspan="6" class="text-right">
-                                            <p>Total Price: ₹<%= cartData.totalPrice %></p>
+                                            <p>Total Price:  ₹<%= cartItem.price * cartItem.quantity %></p>
                                         </td>
                                     </tr>
+                                    <% }); %>
                                 <% } else { %>
                                     <tr>
                                         <td colspan="6">
@@ -112,7 +127,31 @@
         </div>
     </section>
 </main>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+ $(document).ready(function() {
+        $('.quantity-btn').on('click', function(e) {
+            e.preventDefault();
+            var action = $(this).data('action'); // Get the action (decrement or increment)
+            var productId = $(this).data('product-id'); // Get the product ID
+            var quantityElement = $(this).closest('.detail-qty').find('.qty-val'); // Get the quantity element
+            var weightEement=$(this).closest('.Weight').find('.weight-val');
+            $.ajax({
+                url: '/updateQuantity', // Endpoint to handle quantity updates
+                method: 'POST',
+                data: { productId: productId, action: action },
+                success: function(response) {
+                    // Handle success response, maybe update the UI
+                    quantityElement.text(response.quantity);
+                    weightEement.text(response.weight);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                }
+            });
+        });
+    });
 
 </script>
+
+</body>

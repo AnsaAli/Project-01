@@ -27,7 +27,7 @@ const addToCart = async (req, res) => {
             // If the product exists, update its quantity
             cartItem.quantity += 1;
             cartItem.weight += weight;
-            console.log(' cartItem.quantity: ', cartItem.quantity, '&  cartItem.weight :', cartItem.weight)
+            // console.log(' cartItem.quantity: ', cartItem.quantity, '&  cartItem.weight :', cartItem.weight)
             await cartItem.save();
         } else {
             // If the product does not exist, create a new cart item
@@ -39,23 +39,23 @@ const addToCart = async (req, res) => {
                 quantity: 1
             });
 
-            if(!cartUser){
+            if (!cartUser) {
                 cart = new Cart({
                     userId: userId,
                     cartItems: cartItem,
                     totalPrice: cartItem.price
                 })
-                console.log(cart,'=================after new cart========45')
+                // console.log(cart,'=================after new cart========45')
             } else {
-                console.log(cart,'=================before push=======1')
+                // console.log(cart,'=================before push=======1')
                 cart.cartItems.push(cartItem._id);
             }
-            
+
             await cartItem.save();
-           
-            console.log(cart,'=================after push========2')
+
+            // console.log(cart,'=================after push========2')
             const savedCart = await cart.save();
-            console.log(cart,'=================after savedCart========3')
+            // console.log(cart,'=================after savedCart========3')
         }
 
         res.status(200).json({ message: 'Product added to cart successfully' });
@@ -66,6 +66,58 @@ const addToCart = async (req, res) => {
         return res.status(500)
             .set('Error-Message', 'Internal server error')
             .json({ error: 'Internal server error' });
+    }
+};
+const updateQuantity = async (req, res) => {
+    try {
+        const { productId, action } = req.body;
+        const userId = req.session.user_id;
+        // console.log(req,'==========================req')
+
+        console.log('productId:', productId)
+        // console.log('productId:',productId, 'action:', action,'=========== 74 updateQuantity')
+        console.log('action:', action, '=========== 74 updateQuantity')
+
+
+        let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
+
+        let cartItem = await CartItem.findOne({ productId: productId });
+
+        console.log('=========== 82 updateQuantity')
+        if (!cartItem) {
+            return res.status(404).json({ error: 'Cart item not found' });
+        }
+        console.log('=========== 86 updateQuantity')
+
+        if (action === 'increment') {
+
+            console.log('inside the increment')
+
+            if (cartItem) {
+                console.log(' cartItem.quantity:==============95 ', cartItem.quantity)
+                cartItem.quantity += 1;
+                cartItem.weight += 100;//cartItem.productId.weightOptions[0].weight;
+                console.log(' cartItem.quantity:==============95 ', cartItem.quantity)
+            }
+            // console.log('increment cartItem.quantity: ', cartItem.quantity)
+        } else if (action === 'decrement') {
+            // If action is decrement, decrease quantity
+            if (cartItem.quantity > 1) {
+                cartItem.quantity -= 1;
+                cartItem.weight -= 100;
+                console.log('decrement cartItem.quantity: ', cartItem.quantity)
+            }
+        }
+        console.log('=========== 99 updateQuantity')
+
+        // Save the updated cart to the database
+        await cartItem.save();
+
+    
+        res.status(200).json({ message: 'Quantity updated successfully',quantity:cartItem.quantity,weight:  cartItem.weight  });
+    } catch (error) {
+        console.log('Error while updating quantity:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -124,7 +176,7 @@ const removeCartItem = async (req, res) => {
 const viewCartItems = async (req, res) => {
     try {
         const userId = req.session.user_id;
-        console.log(userId, 'userId')
+        // console.log(userId, 'userId')
         const cartData = await Cart.findOne({ userId }).populate({
             path: 'cartItems',
             populate: {
@@ -135,7 +187,7 @@ const viewCartItems = async (req, res) => {
         if (!cartData) {
             return res.render('viewCartItems', { cartData: null });
         }
-        console.log(cartData, 'cartData viewCartItems')
+        // console.log(cartData, 'cartData viewCartItems')
         res.render('viewCartItems', { cartData })
     } catch (error) {
         console.log('Error while loading the view cart items')
@@ -145,5 +197,6 @@ module.exports = {
     addToCart,
     // listCartItems,
     removeCartItem,
-    viewCartItems
+    viewCartItems,
+    updateQuantity
 }

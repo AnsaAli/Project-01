@@ -1,222 +1,279 @@
 <%- include('../layout/header.ejs') %>
-<%- include('../layout/cartAndwishlist.ejs') %>
+  <%- include('../layout/cartAndwishlist.ejs') %>
 
-<body>
-    <div class="container m-5">
-        <div class="row">
-            <div class="col-lg-10 m-auto">
-                <form action="/allProducts" method="GET">
-                    <div class="col-lg-6 ">
-    
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-5 ">
-                            <label for="searchQuery"></label>
-                            <input type="text" class="form-control" id="searchQuery" name="searchQuery"
-                              placeholder="Search ">
-                        </div>
-                        <div class="col-lg-1 m-4">
-                            <button type="submit" class="btn btn-primary" style="border-radius: 10px;"><i
-                                class="fa fa-search" ></i>Search</button>
-                        </div>
-            
-                    </div>
-                </form>
-                
-              
-            </div>
-         </div> 
-      </div>
-        
-    <div class="container">
-        <div class="container-home m-5">
-            <% products.forEach(product=> { %>
-            <div class="product-wrapper p-2" >
-              <div class="product">
-                <p class="card-text"><%= product.category.name %>
-                <div class="img">
-                 
-                    <img src="<%= product.images[0].url %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
-                      style="width:100%">
-                  
-                </div>
-                <div class="info">
-                  <div class="details">
-                    <h1> <%= product.productName %></h1>
-      
-                    <select name="selectedProduct">
-                      <% product.weightOptions.forEach(option => { %>
-                          <option value="<%= option.weight %><%= option.weightPrice.toFixed(2) %>,<%= option.priceAfterDiscount %>" >
-                              <%= option.weight %>g 
-                              <% if (product.offerPercentage !== 0) { %>
-                               <strong><p>on offer</p></strong> 
-                                  ₹<%=  option.priceAfterDiscount.toFixed(2) %>
-                                  <!-- <del>₹<%= option.weightPrice.toFixed(2) %></del> -->
-                              <% } else { %>  
-                                ₹<%= option.weightPrice.toFixed(2) %>
-                              <% } %>
-                          </option>
-                      <% }) %>
-                  </select>
-      
-                  </div>
-                  <div class="buy-btn">
-                    <form action="/viewProduct" method="GET">
-                      <input type="hidden" value="<%=product._id %>" name="productId">
-                      <button>Details</button>
-                    </form>
-                   
-                  </div>
-                 
-                </div>
-               
-                <!-- <a href="/addToCart">Add to cart</a> -->
+    <body>
+
+      <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-3">
+
+              <div class="widget-category mb-30">
+
+                <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
+                <ul class="categories">
+                  <% categories.forEach(category=> { %>
+                    <li><a href="/allProducts?category=<%= category._id %>" style="border-radius: 5px;">
+                        <%= category.name %>
+                      </a><br></li>
+                    <% }); %>
+                </ul>
               </div>
-              
+
+              <div class="m-5">
+                <ul class="categories">
+                  <li> <a href="/allProducts" style="border-radius: 5px;">Clear Filter</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="widget-category mb-30">
+                <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
+                <ul class="categories">
+                  <li><a href="/allProducts?sortby=onOffer">On Offer</a></li>
+                  <li><a href="/allProducts?sortby=lowerPrice">Price: Low to High</a></li>
+                  <li><a href="/allProducts?sortby=higherPrice">Price: High to Low</a></li>
+                </ul>
+              </div>
+
             </div>
-            <% }); %>
+
+            <!-- search -->
+            <div class="col-lg-9">
+              <div class="tab-header mb-15">
+                <div class="row product-grid-4">
+                  <div class="col-lg-12 col-md-8 col-12 col-sm-6">
+                    <form action="/allProducts" method="GET" class="d-flex">
+                      <label for="searchQuery"></label>
+                      <input type="text" class="  mr-2 " id="searchQuery" name="searchQuery" placeholder="Search ">
+                      <button type="submit" class="btn btn-primary btn-sm" style="border-radius: 5px;"><i
+                          class="fa fa-search"></i>Search</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+
+              <!--End nav-tabs-->
+              <div class="tab-content wow fadeIn animated mt-5" id="myTabContent">
+                <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
+
+                  <div class="row product-grid-4">
+                    <% products.forEach(product=> { %>
+                      <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+
+                        <div class="product-cart-wrap mb-30">
+                          <div class="product-img-action-wrap">
+                            <div class="product-img product-img-zoom">
+
+                              <a href="">
+
+                                <img src="<%= product.images[0].url %>" alt="Product Image"
+                                  class="img-fluid mx-auto d-block" alt="Product Image" style="width:100%">
+
+                              </a>
+                            </div>
+                            <div class="product-action-1">
+                              <!-- <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" href="/viewProduct"
+                                data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i>
+                              </a>
+                              <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i
+                                  class="fi-rs-heart"></i></a>
+                              <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i
+                                  class="fi-rs-shuffle"></i></a> -->
+                            </div>
+                            <div class="product-badges product-badges-position product-badges-mrg">
+                              <!-- <span class="hot">
+                             
+                              </span> -->
+                            </div>
+                          </div>
+                          <div class="product-content-wrap">
+                            <div class="product-category">
+                              <a href="shop-grid-right.html">
+                                <%= product.category.name %>
+                              </a>
+                            </div>
+                            <h2><a href="shop-product-right.html">
+                                <%= product.productName %>
+                              </a></h2>
+                            <div class="rating-result" title="90%">
+                              <span>
+                                <span>90%</span>
+                              </span>
+                            </div>
+                            <div class="product-price">
+                              <select name="selectedProduct">
+                                <% product.weightOptions.forEach(option=> { %>
+                                  <option
+                                    value="<%= option.weight %><%= option.weightPrice.toFixed(2) %>,<%= option.priceAfterDiscount %>">
+                                    <%= option.weight %>g
+                                      <% if (product.offerPercentage !==0) { %>
+                                        <strong>
+                                          <p>on offer</p>
+                                        </strong>
+                                        ₹<%= option.priceAfterDiscount.toFixed(2) %>
+                                          <!-- <del>₹<%= option.weightPrice.toFixed(2) %></del> -->
+                                          <% } else { %>
+                                            ₹<%= option.weightPrice.toFixed(2) %>
+                                              <% } %>
+                                  </option>
+                                  <% }) %>
+                              </select>
+                            </div>
+                            <div class="buy-btn">
+                              <form action="/viewProduct" method="GET">
+                                <input type="hidden" value="<%=product._id %>" name="productId">
+                                <button>Details</button>
+                              </form>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <% }); %>
+                        <!--End product-grid-4-->
+                  </div>
+                </div>
+                <!--End tab-content-->
+              </div>
+            </div>
           </div>
-      
-    </div>
-        
-        <style>
-          
-          .container-home{
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-          }
-    
-          del {
-            color: red;
-          }
-    
-          .product-wrapper {
-            width: calc(25% - 20px);
-            background: rgb(255, 255, 255);
-            overflow: hidden;
-            border: 1px solid #ccc;
-            border-radius: 10px 10px 10px 10px;
-            transform: scale(0.95);
-          }
-    
-          .product {
-            width: 100%;
-            background: #ffffff84;
-          }
-       
-          .product .img {
-            height: 80%;
-            width: 80%;
-          }
-    
-          .product .img img {
-            height: 100%;
-            width: 100%;
-            transition: all 0.5s;
-            object-fit: contain;
-          }
-    
-          .product .info {
-            width: 100%;
-            height: 20%;
-            transition: transform 0.5s;
-            display: flex;
-          }
-    
-          .info .details {
-            height: 100%;
-            width: 65%;
-            padding: 20px;
-          }
-    
-          h1 {
-            font-size: 15px;
-          }
-    
-          .buy-btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 35%;
-          }
-    
-          .buy-btn button {
-            cursor: pointer;
-            padding: 10px 20px;
-            border: 1px solid #046963;
-            background: #046963;
-            color: #fff;
-            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30),
-              0 15px 12px rgba(0, 0, 0, 0.22);
-            border-radius: 25px;
-          }
-    
-          @media screen and (max-width:1200px) {
-            .product-wrapper {
-              width: calc(33.33% - 20px);
-            }
-    
-            .container {
-              align-content: start;
-            }
-          }
-    
-          @media screen and (max-width:950px) {
-            .product-wrapper {
-              width: calc(50% - 20px);
-            }
-          }
-    
-          @media screen and (max-width:600px) {
-            .product-wrapper {
-              width: 100%;
-            }
-          }
-    
-          @media screen and (max-width:350px) {
-            .product-wrapper {
-              height: auto;
-            }
-    
-            .info .details {
-              width: 100%;
-            }
-    
-            .info {
-              flex-direction: column;
-            }
-    
-            .buy-btn {
-              width: 100%;
-              padding-bottom: 10px;
-            }
-          }
-        </style>
+      </section>
+
+
+
+      <!-- <div class="container m-5">
+        <div class="row">
+          <div class="col-lg-10 m-auto">
+            <form action="/allProducts" method="GET">
+              <div class="col-lg-5 ">
+                <label for="sortBy"></label>
+                <span>Sort by price</span>
+                <select id="sortBy" name="sortby" class="form-control sort">
+                  <option value="lowerPrice">Low To High</option>
+                  <option value="higherPrice">High To Low</option>
+                </select>
+
+              </div>
+              <div class="col-md-1">
+                <button type="submit" class="btn btn-primary mt-2 btn-block">Sort</button>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-5 ">
+              <form action="/allProducts" method="GET">
+                <label for="searchQuery"></label>
+                <input type="text" class="form-control" id="searchQuery" name="searchQuery" placeholder="Search ">
+            </div>
+            <div class="col-lg-1 m-4">
+              <button type="submit" class="btn btn-primary" style="border-radius: 10px;"><i
+                  class="fa fa-search"></i>Search</button>
+            </div>
+
+          </div>
+          </form>
+
+
+        </div>
+      </div>
+
+
+
+      <div class="container-home m-5">
+        <% products.forEach(product=> { %>
+          <div class="product-wrapper p-2">
+            <div class="product">
+              <p class="card-text">
+                <%= product.category.name %>
+                  <div class="img">
+
+                    <img src="<%= product.images[0].url %>" alt="Product Image" class="img-fluid mx-auto d-block"
+                      alt="Product Image" style="width:100%">
+
+                  </div>
+                  <div class="info">
+                    <div class="details">
+                      <h1>
+                        <%= product.productName %>
+                      </h1>
+
+                      <select name="selectedProduct">
+                        <% product.weightOptions.forEach(option=> { %>
+                          <option
+                            value="<%= option.weight %><%= option.weightPrice.toFixed(2) %>,<%= option.priceAfterDiscount %>">
+                            <%= option.weight %>g
+                              <% if (product.offerPercentage !==0) { %>
+                                <strong>
+                                  <p>on offer</p>
+                                </strong>
+                                ₹<%= option.priceAfterDiscount.toFixed(2) %>
+                                  <del>₹<%= option.weightPrice.toFixed(2) %></del>
+                                  <% } else { %>
+                                    ₹<%= option.weightPrice.toFixed(2) %>
+                                      <% } %>
+                          </option>
+                          <% }) %>
+                      </select>
+
+                    </div>
+                    <div class="buy-btn">
+                      <form action="/viewProduct" method="GET">
+                        <input type="hidden" value="<%=product._id %>" name="productId">
+                        <button>Details</button>
+                      </form>
+
+                    </div>
+
+                  </div>
+
+                  <a href="/addToCart">Add to cart</a>
+            </div>
+
+          </div>
+          <% }); %>
+      </div>
+      <h3>pagination</h3>
+      <div class=" pagination">
+        <% if (currentPage> 1) { %>
+          <a href="/allProducts?page=<%= currentPage - 1 %>&searchQuery=<%= searchQuery %>"> Previous</a>
+          <% } %>
+            <% if (products.length===perPage) { %>
+              <a href="/allProducts?page=<%= currentPage + 1 %>&searchQuery=<%= searchQuery %>">Next</a>
+              <% } %>
+      </div>
+      <h3>pagination</h3>
+      </div> -->
+
+      <!-- Pagination -->
+
+
+
+      <style>
+        .buy-btn {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 35%;
+        }
+
+        .buy-btn button {
+          cursor: pointer;
+          padding: 10px 20px;
+          border: 1px solid #046963;
+          background: #046963;
+          color: #fff;
+          box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30),
+            0 15px 12px rgba(0, 0, 0, 0.22);
+          border-radius: 25px;
+        }
+      </style>
       <script>
-        //to show zoomed images
-        document.addEventListener("DOMContentLoaded", function () {
-        const images = document.querySelectorAll("img");
-        images.forEach(image => {
-            image.addEventListener("mouseenter",
-                function () {
-                    this.style.transform = "scale(1.1) translateY(-15px)";
-                    this.style.boxShadow = "5px 20px 30px rgba(0, 0, 0, 0.2)";
-                });
-            image.addEventListener("mouseleave",
-                function () {
-                    this.style.transform = "scale(1) translateY(0)";
-                    this.style.boxShadow = "none";
-                });
-        });
-    });
+
       </script>
-        
-</body>
- 
-  
+
+    </body>
+
+
 
     <%- include('../layout/footer.ejs') %>
