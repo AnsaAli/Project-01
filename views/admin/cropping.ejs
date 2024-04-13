@@ -22,6 +22,109 @@
     </div>
 </div>
 </div>
+<!-- <div class="container m-5">
+        <div class="row">
+          <div class="col-lg-10 m-auto">
+            <form action="/allProducts" method="GET">
+              <div class="col-lg-5 ">
+                <label for="sortBy"></label>
+                <span>Sort by price</span>
+                <select id="sortBy" name="sortby" class="form-control sort">
+                  <option value="lowerPrice">Low To High</option>
+                  <option value="higherPrice">High To Low</option>
+                </select>
+
+              </div>
+              <div class="col-md-1">
+                <button type="submit" class="btn btn-primary mt-2 btn-block">Sort</button>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-5 ">
+              <form action="/allProducts" method="GET">
+                <label for="searchQuery"></label>
+                <input type="text" class="form-control" id="searchQuery" name="searchQuery" placeholder="Search ">
+            </div>
+            <div class="col-lg-1 m-4">
+              <button type="submit" class="btn btn-primary" style="border-radius: 10px;"><i
+                  class="fa fa-search"></i>Search</button>
+            </div>
+
+          </div>
+          </form>
+
+
+        </div>
+      </div>
+
+
+
+      <div class="container-home m-5">
+        <% products.forEach(product=> { %>
+          <div class="product-wrapper p-2">
+            <div class="product">
+              <p class="card-text">
+                <%= product.category.name %>
+                  <div class="img">
+
+                    <img src="<%= product.images[0].url %>" alt="Product Image" class="img-fluid mx-auto d-block"
+                      alt="Product Image" style="width:100%">
+
+                  </div>
+                  <div class="info">
+                    <div class="details">
+                      <h1>
+                        <%= product.productName %>
+                      </h1>
+
+                      <select name="selectedProduct">
+                        <% product.weightOptions.forEach(option=> { %>
+                          <option
+                            value="<%= option.weight %><%= option.weightPrice.toFixed(2) %>,<%= option.priceAfterDiscount %>">
+                            <%= option.weight %>g
+                              <% if (product.offerPercentage !==0) { %>
+                                <strong>
+                                  <p>on offer</p>
+                                </strong>
+                                ₹<%= option.priceAfterDiscount.toFixed(2) %>
+                                  <del>₹<%= option.weightPrice.toFixed(2) %></del>
+                                  <% } else { %>
+                                    ₹<%= option.weightPrice.toFixed(2) %>
+                                      <% } %>
+                          </option>
+                          <% }) %>
+                      </select>
+
+                    </div>
+                    <div class="buy-btn">
+                      <form action="/viewProduct" method="GET">
+                        <input type="hidden" value="<%=product._id %>" name="productId">
+                        <button>Details</button>
+                      </form>
+
+                    </div>
+
+                  </div>
+
+                  <a href="/addToCart">Add to cart</a>
+            </div>
+
+          </div>
+          <% }); %>
+      </div>
+      <h3>pagination</h3>
+      <div class=" pagination">
+        <% if (currentPage> 1) { %>
+          <a href="/allProducts?page=<%= currentPage - 1 %>&searchQuery=<%= searchQuery %>"> Previous</a>
+          <% } %>
+            <% if (products.length===perPage) { %>
+              <a href="/allProducts?page=<%= currentPage + 1 %>&searchQuery=<%= searchQuery %>">Next</a>
+              <% } %>
+      </div>
+      <h3>pagination</h3>
+      </div> -->
+
+      <!-- Pagination -->
 
 
 

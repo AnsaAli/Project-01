@@ -46,10 +46,10 @@ const loadAllProducts = async (req, res) => {
             }
         }
 
-        //pagination
-        const perPage = 10; // Number of products per page
-        const page = req.query.page || 1; // Current page, default is 1
-        const skip = (page - 1) * perPage; // Number of products to skip
+        // Pagination
+        const perPage = 6; //no: of producs
+        const page = parseInt(req.query.page) || 1; 
+        const skip = (page - 1) * perPage; 
 
         // let myQuery = Product.find({}).lean().populate('category');
         // let myQuery = Product.find({}).lean().populate('category').skip(skip).limit(perPage);
@@ -65,7 +65,7 @@ const loadAllProducts = async (req, res) => {
         }
         // Handling sorting
         const sortby = req.query.sortby;
-        
+
         if (sortby === 'lowerPrice') {
             myQuery = myQuery.sort({ 'weightOptions.priceAfterDiscount': 1 });
         } else if (sortby === 'higherPrice') {
@@ -76,6 +76,10 @@ const loadAllProducts = async (req, res) => {
 
         const products = await myQuery.exec();
 
+        // Count total products for pagination
+        const totalProducts = await Product.countDocuments();
+        const totalPages = Math.ceil(totalProducts / perPage);
+
         res.render('allProducts', {
             user_id: user_id,
             user_name: user_name,
@@ -83,7 +87,8 @@ const loadAllProducts = async (req, res) => {
             loggedIn: loggedIn,
             searchQuery: searchQuery,
             currentPage: page,
-            perPage: perPage
+            perPage: perPage,
+            totalPages: totalPages
         });
     } catch (error) {
         console.log("Error occurred while loading loadAllProducts", error);
