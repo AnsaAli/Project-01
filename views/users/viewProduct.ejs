@@ -208,44 +208,6 @@
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
             <script>
 
-                function fetchCartItems() {
-                    $.get('/listCartItems', function (response) {
-                        if (response.cartItems && response.cartItems.length > 0) {
-                            // Clear existing cart items
-                            $('#cart-items-list').empty();
-                            let totalPrice = 0;
-                            // Iterate over each cart item and append to the list
-                            response.cartItems.forEach(function (item) {
-                                const itemPrice = item.product.price * item.quantity;
-                                totalPrice += itemPrice;
-                                $('#cart-items-list').append(
-                                    `<li>
-                        <div class="cart-item">
-                            <img src="${item.product.images[0].url}" alt="${item.product.name}">
-                            <div class="cart-item-details">
-                                <h4>${item.product.name}</h4>
-                                <p>Price: $${item.product.price}</p>
-                                <p>Quantity: ${item.quantity}</p>
-                                <p>Subtotal: $${itemPrice.toFixed(2)}</p>
-                            </div>
-                        </div>
-                    </li>`
-                                );
-                            });
-                            // Update total price
-                            $('#total-price').text(totalPrice.toFixed(2));
-                        } else {
-                            // If cart is empty, display a message
-                            $('#cart-items-list').html('<li>No items in cart</li>');
-                            $('#total-price').text('0.00');
-                        }
-                    }).fail(function () {
-                        // Handle failure to fetch cart items
-                        $('#cart-items-list').html('<li>Error fetching cart items</li>');
-                        $('#total-price').text('0.00');
-                    });
-                }
-
 
                 function addToCart(productId, weight, price, productName) {
                     // Prepare data to send to the server

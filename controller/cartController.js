@@ -24,7 +24,7 @@ const addToCart = async (req, res) => {
         let cartItem = await CartItem.findOne({ productId: productId });
 
         if (cartItem) {
-            // If the product exists, update its quantity
+            cartItem.userAddedWeight.push(weight);
             cartItem.quantity += 1;
             cartItem.weight += weight;
             // console.log(' cartItem.quantity: ', cartItem.quantity, '&  cartItem.weight :', cartItem.weight)
@@ -38,6 +38,7 @@ const addToCart = async (req, res) => {
                 price: price,
                 quantity: 1
             });
+            cartItem.userAddedWeight.push(weight);
 
             if (!cartUser) {
                 cart = new Cart({
@@ -72,13 +73,9 @@ const updateQuantity = async (req, res) => {
     try {
         const { productId, action } = req.body;
         const userId = req.session.user_id;
-        // console.log(req,'==========================req')
 
         console.log('productId:', productId)
-        // console.log('productId:',productId, 'action:', action,'=========== 74 updateQuantity')
-        console.log('action:', action, '=========== 74 updateQuantity')
-
-
+      
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
 
         let cartItem = await CartItem.findOne({ productId: productId });
@@ -89,22 +86,26 @@ const updateQuantity = async (req, res) => {
         }
         console.log('=========== 86 updateQuantity')
 
+        let length=cartItem.userAddedWeight.length ;
+        console.log(length,'=========== lastIndex updateQuantity')
         if (action === 'increment') {
 
             console.log('inside the increment')
 
             if (cartItem) {
+              
                 console.log(' cartItem.quantity:==============95 ', cartItem.quantity)
                 cartItem.quantity += 1;
-                cartItem.weight += 100;//cartItem.productId.weightOptions[0].weight;
-                console.log(' cartItem.quantity:==============95 ', cartItem.quantity)
+                cartItem.weight +=cartItem.userAddedWeight[length-1] ;
+                cartItem.userAddedWeight.push(cartItem.userAddedWeight[length-1]); //user added weight need to push
             }
             // console.log('increment cartItem.quantity: ', cartItem.quantity)
         } else if (action === 'decrement') {
-            // If action is decrement, decrease quantity
+           
             if (cartItem.quantity > 1) {
                 cartItem.quantity -= 1;
-                cartItem.weight -= 100;
+                cartItem.weight -= cartItem.userAddedWeight[length-1];
+                cartItem.userAddedWeight.pop();
                 console.log('decrement cartItem.quantity: ', cartItem.quantity)
             }
         }
