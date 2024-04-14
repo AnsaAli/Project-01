@@ -11,15 +11,14 @@ const addToCart = async (req, res) => {
         const { productId, weight, price, productName } = req.body;
 
         const userId = req.session.user_id;
-        console.log(userId, 'is the userId addToCart');
+        // console.log(userId, 'is the userId addToCart');
 
-        console.log('Product ID:', productId);
-        console.log('Weight:', weight);
-        console.log('Price:', price);
-        console.log('Product Name:', productName);
+        // console.log('Product ID:', productId);
+        // console.log('Weight:', weight);
+        // console.log('Price:', price);
+        // console.log('Product Name:', productName);
 
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
-
         // Check if the product already exists in the cart
         let cartItem = await CartItem.findOne({ productId: productId });
 
@@ -55,7 +54,8 @@ const addToCart = async (req, res) => {
             await cartItem.save();
 
             // console.log(cart,'=================after push========2')
-            const savedCart = await cart.save();
+            cart.totalPrice += cartItem.price;
+            await cart.save();
             // console.log(cart,'=================after savedCart========3')
         }
 
@@ -74,48 +74,49 @@ const updateQuantity = async (req, res) => {
         const { productId, action } = req.body;
         const userId = req.session.user_id;
 
-        console.log('productId:', productId)
+        // console.log('productId:', productId)
+        let productData= await Product.findById(productId)
+       let priceper1g= (productData.pricePer100g)/100;
       
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
-
         let cartItem = await CartItem.findOne({ productId: productId });
 
-        console.log('=========== 82 updateQuantity')
         if (!cartItem) {
             return res.status(404).json({ error: 'Cart item not found' });
         }
-        console.log('=========== 86 updateQuantity')
-
-        let length=cartItem.userAddedWeight.length ;
-        console.log(length,'=========== lastIndex updateQuantity')
+        
+        let length = cartItem.userAddedWeight.length;
         if (action === 'increment') {
-
-            console.log('inside the increment')
-
             if (cartItem) {
-              
-                console.log(' cartItem.quantity:==============95 ', cartItem.quantity)
                 cartItem.quantity += 1;
-                cartItem.weight +=cartItem.userAddedWeight[length-1] ;
-                cartItem.userAddedWeight.push(cartItem.userAddedWeight[length-1]); //user added weight need to push
+                cartItem.weight += cartItem.userAddedWeight[cartItem.userAddedWeight.length - 1];
+                cartItem.userAddedWeight.push(cartItem.userAddedWeight[length - 1]); //user added weight need to push
             }
-            // console.log('increment cartItem.quantity: ', cartItem.quantity)
         } else if (action === 'decrement') {
-           
             if (cartItem.quantity > 1) {
                 cartItem.quantity -= 1;
-                cartItem.weight -= cartItem.userAddedWeight[length-1];
+                cartItem.weight -= cartItem.userAddedWeight[length - 1];
                 cartItem.userAddedWeight.pop();
-                console.log('decrement cartItem.quantity: ', cartItem.quantity)
+                console.log(' cartItem.weight: decrement',  cartItem.weight);
             }
         }
-        console.log('=========== 99 updateQuantity')
-
         // Save the updated cart to the database
         await cartItem.save();
+        // Calculate subtotal
+        const subtotal = cartItem.weight/100 * cartItem.price;
 
-    
-        res.status(200).json({ message: 'Quantity updated successfully',quantity:cartItem.quantity,weight:  cartItem.weight  });
+         // Update the corresponding cart item in the cart
+         cart.cartItems.forEach(item => {
+            if (item._id.toString() === cartItem._id.toString()) {
+                item.quantity = cartItem.quantity;
+                item.weight = cartItem.weight;
+            }
+        });
+        //to calculate total price in the cart for all the products
+        cart.totalPrice += cartItem.price;
+        await cart.save();
+        console.log('=========== cartItem.quantity:',cartItem.quantity,'cartItem.weight:',cartItem.weight,'subtotal:',subtotal)
+        res.status(200).json({ message: 'Quantity updated successfully', quantity:cartItem.quantity, weight:cartItem.weight, subtotal:subtotal,priceper1g:priceper1g });
     } catch (error) {
         console.log('Error while updating quantity:', error);
         res.status(500).json({ error: 'Internal server error' });

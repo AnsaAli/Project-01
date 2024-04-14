@@ -1,10 +1,10 @@
 <%- include('../layout/header.ejs') %>
 
 
-<body>
-    
+    <body>
 
-<!-- <h3>ViewCArt Page</h3>
+
+        <!-- <h3>ViewCArt Page</h3>
 
 <% if (cartData) { %>
     <ul>
@@ -24,134 +24,180 @@
  -->
 
 
-<main class="main">
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/home" rel="nofollow">Home</a>
-                <span></span> Shop
-                <span></span> Your Cart
+        <main class="main">
+            <div class="page-header breadcrumb-wrap">
+                <div class="container">
+                    <div class="breadcrumb">
+                        <a href="/home" rel="nofollow">Home</a>
+                        <span></span> Shop
+                        <span></span> Your Cart
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <section class="mt-50 mb-50">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="table-responsive">
-                        <table class="table shopping-summery text-center clean">
-                            <thead>
-                                <tr class="main-heading">
-                                    <th scope="col">Image</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Weight</th>
-                                    <th scope="col">Unit Price</th>
-                                    <th scope="col">Quantity</th>
-                                    <th scope="col">Subtotal</th>
-                                    <th scope="col">Remove</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (cartData) { %>
-                                    
-                                    <% cartData.cartItems.forEach(cartItem => { %>
-                                        <tr>
-                                            <td class="image product-thumbnail">
-                                               
-                                                <img src="<%= cartItem.productId.images[0].url %>" alt="Product Image" class="img-fluid mx-auto d-block" alt="Product Image"
-                                                style="width:100%">
-                                            </td>
-                                            <td class="product-des product-name">
-                                                <h5 class="product-name"><a href="shop-product-right.html"> <%= cartItem.productId.productName %></a></h5>
-                                            </td>
-                                            <td class="text-right Weight" data-title="Weight" id="cartItemWeight">
-                                                <span  class="weight-val"><%= cartItem.weight %>g </span>
-                                            </td>
-                                            <td class="price" data-title="Price"><span> ₹<%= cartItem.price %></span></td>
-                                            <!-- <td class="text-center" data-title="Quantity">
+            <section class="mt-50 mb-50">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table shopping-summery text-center clean">
+                                    <thead>
+                                        <tr class="main-heading">
+                                            <th scope="col">Image</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Weight</th>
+                                            <th scope="col">Unit Price</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Subtotal</th>
+                                            <th scope="col">Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (cartData) { %>
+
+                                            <% cartData.cartItems.forEach(cartItem=> { %>
+                                                <tr>
+                                                    <td class="image product-thumbnail">
+
+                                                        <img src="<%= cartItem.productId.images[0].url %>"
+                                                            alt="Product Image" class="img-fluid mx-auto d-block"
+                                                            alt="Product Image" style="width:100%">
+                                                    </td>
+                                                    <td class="product-des product-name">
+                                                        <h5 class="product-name"><a href="shop-product-right.html">
+                                                                <%= cartItem.productId.productName %>
+                                                            </a></h5>
+                                                    </td>
+                                                    <td class="text-right " data-title="Weight" id="cartItemWeight">
+
+                                                        <span class="weight-val">
+                                                            <%= cartItem.weight %>g
+                                                        </span>
+                                                    </td>
+                                                    <td class="price" data-title="Price"><span> ₹<%= cartItem.price %>
+                                                                </span></td>
+                                                    <!-- <td class="text-center" data-title="Quantity">
                                                 <div class="detail-qty border radius  m-auto">
                                                     <span class="qty-val"><a href="" style="font-size: 30px;">-</a> <%= cartItem.quantity %> <a href="" style="font-size: 20px;">+</a></span>
                                                 
                                                 </div>
                                             </td> -->
 
-                                            <td class="text-center" data-title="Quantity">
-                                                <div class="detail-qty border radius m-auto">
-                                                    <span class="qty-val">
-                                                        <a href="#" class="quantity-btn" data-action="decrement" data-product-id="<%= cartItem.productId._id %>">-</a>
-                                                        <%= cartItem.quantity %>
-                                                        <a href="#" class="quantity-btn" data-action="increment" data-product-id="<%= cartItem.productId._id %>">+</a>
-                                                    </span>
-                                                </div>
-                                            </td>
+                                                    <td class="text-center" data-title="Quantity">
+                                                        <div class="detail-qty  ">
+                                                            <span class="num">
+                                                                <a href="#" class="quantity-btn  btn"
+                                                                    data-action="decrement"
+                                                                    data-product-id="<%= cartItem.productId._id %>"> -
+                                                                </a>
+                                                                <p class="qty-val">
+                                                                    <%= cartItem.quantity %>
+                                                                </p>
+                                                                <a href="#" class="quantity-btn  btn"
+                                                                    data-action="increment"
+                                                                    data-product-id="<%= cartItem.productId._id %>">+
+                                                                </a>
+                                                            </span>
+                                                        </div>
+                                                    </td>
 
 
-                                            <td class="text-right" data-title="Subtotal">
-                                                <span>₹<%= cartItem.price * cartItem.quantity %></span>
-                                            </td>
-                                            
-                                            <td class="action" data-title="Remove"><a href="/removeCartItem/<%= cartItem._id %>" class="text-muted"><i class="fi-rs-trash"></i></a></td>
-                                        </tr>
-                                   
-                                    <tr>
-                                        <td colspan="6" class="text-end">
-                                            <a href="#" class="text-muted"> <i class="fi-rs-cross-small"></i> Clear Cart</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="6" class="text-right">
-                                            <p>Total Price:  ₹<%= cartItem.price * cartItem.quantity %></p>
-                                        </td>
-                                    </tr>
-                                    <% }); %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="6">
-                                            <p>No items in the cart</p>
-                                        </td>
-                                    </tr>
-                                <% } %>
-                              
-                            </tbody>
-                        </table>
+                                                    <td class="text-right" data-title="Subtotal ">
+                                                        <span class="subtotal-val">₹ <%= cartItem.subtotal %> </span>
+                                                    </td>
+
+                                                    <td class="action" data-title="Remove"><a
+                                                            href="/removeCartItem/<%= cartItem._id %>"
+                                                            class="text-muted"><i class="fi-rs-trash"></i></a></td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="6" class="text-end">
+                                                        <a href="#" class="text-muted"> <i
+                                                                class="fi-rs-cross-small"></i> Clear Cart</a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="6" class="text-right">
+                                                        <p>Total Price: ₹<%= cartData.totalPrice %>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                <p>No items in the cart</p>
+                                                            </td>
+                                                        </tr>
+                                                        <% } %>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="cart-action text-end">
+                                <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue
+                                    Shopping</a>
+                                <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i
+                                        class="fi-rs-shuffle mr-10"></i>Checkout</a>
+
+                            </div>
+                            <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
+
+                        </div>
                     </div>
-                    <div class="cart-action text-end">
-                        <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
-                        <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i class="fi-rs-shuffle mr-10"></i>Checkout</a>
-                       
-                    </div>
-                    <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
-                    
                 </div>
-            </div>
-        </div>
-    </section>
-</main>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
- $(document).ready(function() {
-        $('.quantity-btn').on('click', function(e) {
-            e.preventDefault();
-            var action = $(this).data('action'); // Get the action (decrement or increment)
-            var productId = $(this).data('product-id'); // Get the product ID
-            var quantityElement = $(this).closest('.detail-qty').find('.qty-val'); // Get the quantity element
-            var weightEement=$(this).closest('.Weight').find('.weight-val');
-            $.ajax({
-                url: '/updateQuantity', // Endpoint to handle quantity updates
-                method: 'POST',
-                data: { productId: productId, action: action },
-                success: function(response) {
-                    // Handle success response, maybe update the UI
-                    quantityElement.text(response.quantity);
-                    weightEement.text(response.weight);
-                },
-                error: function(xhr, status, error) {
-                    // Handle error
-                }
+            </section>
+        </main>
+        <style>
+            .num {
+                display: flex;
+                align-items: center;
+            }
+
+            .quantity-btn {
+                margin: 0 1px;
+                background-color: #04696200;
+                border: none;
+                padding: 2;
+                color: inherit;
+                text-decoration: none;
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('.quantity-btn ').on('click', function (e) {
+                    e.preventDefault();
+                    var action = $(this).data('action');
+                    var productId = $(this).data('product-id');
+                    var quantityElement = $(this).closest('.detail-qty').find('.qty-val');
+                    var weightEement = $(this).closest('tr').find('.weight-val');
+                    var subtotalElement = $(this).closest('tr').find('.subtotal-val');
+                    //    console.log('weightEement:',weightEement)
+                    //    console.log('quantityElement:',quantityElement)
+                    $.ajax({
+                        url: '/updateQuantity',
+                        method: 'POST',
+                        data: { productId: productId, action: action },
+                        success: function (response) {
+                            // Handle success response, update quantity, weight, and subtotal
+                            quantityElement.text(response.quantity);
+                            //    console.log(' quantityElement.text(response.quantity):', quantityElement.text(response.quantity))
+                            weightEement.text(response.weight);
+                            //    console.log('  weightEement.text(response.weight): ',  weightEement.text(response.weight))
+                            var subtotal = response.subtotal.toFixed(2); // Format the subtotal with 2 decimal places
+                            subtotalElement.text('₹' + subtotal);
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle error
+                            console.error('Error:', error);
+                            alert('An error occurred while updating quantity. Please try again later.');
+                        }
+                    });
+                });
             });
-        });
-    });
 
-</script>
+        </script>
 
-</body>
+
+    </body>
