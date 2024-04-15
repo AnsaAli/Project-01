@@ -19,10 +19,21 @@ const loadHome = async (req, res) => {
 
         let products = await Product.find().lean().populate('category');
 
+        // Organize products by category
+        const categorizedProducts = {};
+        products.forEach(product => {
+            const categoryName = product.category.name;
+            if (!categorizedProducts[categoryName]) {
+                categorizedProducts[categoryName] = [];
+            }
+            categorizedProducts[categoryName].push(product);
+        });
+
         res.render('home', {
             user_id: user_id,
             user_name: user_name,
             products: products,
+            categorizedProducts: categorizedProducts,
             loggedIn: loggedIn,
         });
     } catch (error) {

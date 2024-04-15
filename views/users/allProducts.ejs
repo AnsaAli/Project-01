@@ -106,14 +106,13 @@
                               <select name="selectedProduct">
                                 <% product.weightOptions.forEach(option=> { %>
                                   <option
-                                    value="<%= option.weight %><%= option.weightPrice.toFixed(2) %>,<%= option.priceAfterDiscount %>">
+                                    value="<%= option.weight %>,<%= option.weightPrice.toFixed(2) %>,<%= option.priceAfterDiscount %>">
                                     <%= option.weight %>g
                                       <% if (product.offerPercentage !==0) { %>
                                         <strong>
                                           <p>on offer</p>
                                         </strong>
                                         ₹<%= option.priceAfterDiscount.toFixed(2) %>
-                                          <!-- <del>₹<%= option.weightPrice.toFixed(2) %></del> -->
                                           <% } else { %>
                                             ₹<%= option.weightPrice.toFixed(2) %>
                                               <% } %>

@@ -73,8 +73,9 @@
                                                             <%= cartItem.weight %>g
                                                         </span>
                                                     </td>
-                                                    <td class="price" data-title="Price"><span> ₹<%= cartItem.price %>
+                                                    <td class="price" data-title="Price"><span> ₹<%=cartItem.productId.weightOptions[0].priceAfterDiscount %>
                                                                 </span></td>
+                                                                
                                                     <!-- <td class="text-center" data-title="Quantity">
                                                 <div class="detail-qty border radius  m-auto">
                                                     <span class="qty-val"><a href="" style="font-size: 30px;">-</a> <%= cartItem.quantity %> <a href="" style="font-size: 20px;">+</a></span>
@@ -87,8 +88,9 @@
                                                             <span class="num">
                                                                 <a href="#" class="quantity-btn  btn"
                                                                     data-action="decrement"
-                                                                    data-product-id="<%= cartItem.productId._id %>"> -
+                                                                    data-product-id="<%= cartItem.productId._id %> "> -
                                                                 </a>
+                                                          
                                                                 <p class="qty-val">
                                                                     <%= cartItem.quantity %>
                                                                 </p>
@@ -96,13 +98,14 @@
                                                                     data-action="increment"
                                                                     data-product-id="<%= cartItem.productId._id %>">+
                                                                 </a>
+                                                               
                                                             </span>
                                                         </div>
                                                     </td>
 
 
                                                     <td class="text-right" data-title="Subtotal ">
-                                                        <span class="subtotal-val">₹ <%= cartItem.subtotal %> </span>
+                                                        <span class="subtotal-val" >₹ <%= cartItem.subtotal  %> </span>
                                                     </td>
 
                                                     <td class="action" data-title="Remove"><a
@@ -122,6 +125,7 @@
                                                         </p>
                                                     </td>
                                                 </tr>
+                                               
                                                 <% }); %>
                                                     <% } else { %>
                                                         <tr>
@@ -132,6 +136,7 @@
                                                         <% } %>
 
                                     </tbody>
+                                    
                                 </table>
                             </div>
                             <div class="cart-action text-end">
@@ -144,6 +149,7 @@
                             <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
 
                         </div>
+                        
                     </div>
                 </div>
             </section>
@@ -185,8 +191,7 @@
                             //    console.log(' quantityElement.text(response.quantity):', quantityElement.text(response.quantity))
                             weightEement.text(response.weight);
                             //    console.log('  weightEement.text(response.weight): ',  weightEement.text(response.weight))
-                            var subtotal = response.subtotal.toFixed(2); // Format the subtotal with 2 decimal places
-                            subtotalElement.text('₹' + subtotal);
+                            subtotalElement.text('₹' + response.subtotal.toFixed(2));
                         },
                         error: function (xhr, status, error) {
                             // Handle error
