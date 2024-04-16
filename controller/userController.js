@@ -71,9 +71,7 @@ const sendOtp= async (email,otp)=>{
     }
 }
 
-
-
-////////////////////signup///////
+////////////////////signup\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const loadRegister=async(req,res)=>{
     try {
@@ -152,7 +150,7 @@ const registerUser= async(req,res)=>{
     }
 } 
 
-// Function to expire OTP after 5 minutes
+// Function to expire OTP after 5 minutes\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const expireOtp = async (email) => {
     try {
         await User.updateOne({ email: email }, { $set: { otp: null, otp_expires_at: null } });
@@ -162,7 +160,7 @@ const expireOtp = async (email) => {
     }
 }
 
-
+// Function email\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const loadExistingEmailVerification=async (req,res)=>{
     try {
@@ -194,6 +192,7 @@ const existingEmailVerification = async (req, res) => {
         return res.render('verifyEmail', { errorMessage: 'An error occurred. Please try again later.' });
     }
 }
+
 const loadexistingEmailVerifyOTP= async(req,res)=>{
      try {
         const userData = req.session.userData
@@ -209,6 +208,7 @@ const loadexistingEmailVerifyOTP= async(req,res)=>{
         res.render('verifyEmail', { errorMessage: 'An error occurred. Please try again later.' });
      }
 }
+
 const existingEmailVerifyOTP= async(req,res)=>{
     try {
         const { email, otp } = req.body;
@@ -231,6 +231,7 @@ const existingEmailVerifyOTP= async(req,res)=>{
     }
 
 }
+
 const loadresendOTP= async(req,res)=>{
     try {
         res.render('resendOtp')
@@ -238,6 +239,7 @@ const loadresendOTP= async(req,res)=>{
         console.log("Error occured while to the resendOTP page")
     }
 }
+
 const resendOTP = async (req,res)=>{
     try {
         const {email}=req.body;
@@ -262,7 +264,6 @@ const resendOTP = async (req,res)=>{
         console.log('Error occurred while resending the OTP, ' +error.message)
     }
 }
-
 
 const loadVerifyOtp= async(req,res)=>{
     try {
@@ -308,9 +309,7 @@ const veryfyOtp= async (req,res)=>{
     }
 }
 
-
-
-            //login
+////////////////////// user login\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const loadLogin=async (req,res)=>{
     try {
         const user_id= req.session.user_id
@@ -359,8 +358,6 @@ const verifyLogin=async (req,res)=>{
     }
 }
 
-
-
 const userLogout=async (req,res)=>{
     try {
         req.session.destroy();
@@ -372,9 +369,7 @@ const userLogout=async (req,res)=>{
 
 }
 
-
-
-//forgot
+////////////////////// user forgot login\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const loadForget=async (req,res)=>{
     try {
         res.render('forgotPass')
@@ -405,10 +400,8 @@ const verifyForgetLogin=async (req,res)=>{
     }
 }
 
+////////////////////// user profile\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
-
-//user profile\\
 const loadUserProfile= async(req,res)=>{
     try {
         const userData = await User.findById(req.session.user_id).populate('address')
@@ -521,14 +514,6 @@ const addProfile= async(req,res)=>{
             district, 
             pincode } = req.body;
 
-        // console.log(house_num,
-        //     address_customer_name,
-        //     mobile_num, 
-        //     apartment_name, 
-        //     city,landmark,address_type, 
-        //     district, 
-        //     pincode ,'from the body======538')
-
         const user_id= req.session.user_id
 
         console.log(user_id,'is the user id==========1')
@@ -536,7 +521,7 @@ const addProfile= async(req,res)=>{
         const user_image = req.file ? req.file.path : '';
 
         const existingUser = await User.findById({ _id: user_id }).populate('address');
-        console.log(existingUser.address,'is the user id=======2')
+        // console.log(existingUser.address,'is the user id=======2')
 
         if(!existingUser){
             return res.status(404).json({errorMessage:'User not found, Please complete your registration.'})
@@ -573,6 +558,7 @@ const addProfile= async(req,res)=>{
             pincode:pincode,
             mobile_num:mobile_num
         })
+        // existingUser.address.push(newAddress);
        await newAddress.save();
        console.log('==========5')
        // Update UserAuth  with the new address reference

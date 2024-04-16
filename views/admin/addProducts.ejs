@@ -23,17 +23,14 @@
                         <div>
                           <div id="imagePreview" class="imagePreview">
                             <!-- image preview -->
-                            <!-- <a href="/deleteImages">Delete</a> -->
+
                           </div>
                           <label for="imageInput">Choose images</label>
-                         
+
                           <input type="file" name="image" id="imageInput" multiple require>
                         </div>
                       </div>
                     </div>
-
-
-
                     <!-- Product name and Category -->
                     <div class="row">
                       <div class="col-md-5 pr-1">
@@ -49,19 +46,15 @@
                       <div class="col-md-5 pr-1">
                         <div class="form-group">
                           <label for="category">Choose Category </label>
-                          <!-- <input type="text"  class="form-control" id="name" name="name" required> -->
                           <select class="form-control" name="category" id="category">
                             <% categories.forEach(category=>{%>
                               <option value="<%= category._id %>">
                                 <%= category.name%>
                               </option>
-
                               <%} )%>
                           </select>
-
                         </div>
                       </div>
-
                     </div>
                     <!-- Product description -->
                     <div class="row">
@@ -83,9 +76,8 @@
                         </div>
                       </div>
                     </div>
-
-                     <!-- Recepies -->
-                     <div class="row">
+                    <!-- Recepies -->
+                    <div class="row">
                       <div class="col-md-6 pr-1">
                         <div class="form-group">
                           <label for="recipies">Recepies</label>
@@ -94,7 +86,6 @@
                         </div>
                       </div>
                     </div>
-
                     <!-- totalQuantity -->
                     <div class="row">
                       <div class="col-md-6 pr-1">
@@ -112,13 +103,12 @@
                       <div class="col-md-6 pr-1">
                         <div class="form-group">
                           <label for="pricePer100g">Price per 100g</label>
-                          <input type="number" class="form-control" placeholder="Price per grams" id="pricePer100g"
+                          <input type="number" class="form-control" placeholder="Price per 100grams" id="pricePer100g"
                             name="pricePer100g" required>
                           <div id="priceError" class="error-message"></div>
                         </div>
                       </div>
                     </div>
-
                     <div class="row">
                       <div class="col-md-6 pr-1">
                         <div class="form-group">
@@ -128,10 +118,8 @@
                         </div>
                       </div>
                     </div>
-
                     <button type="button" class="btn btn-primary" id="calculateButton" onclick="findTotal()">Find Total
                       Price</button>
-
                     <div class="row">
                       <div class="col-md-6 pr-1">
                         <div class="form-group">
@@ -149,11 +137,8 @@
                         </div>
                       </div>
                     </div>
-
                     <button type="button" class="btn btn-primary" id="calculateOffer" onclick="findOfferPrice()"> Total
                       Price(after offer)</button>
-
-
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
@@ -167,7 +152,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   </div>
@@ -188,31 +172,6 @@
     }
   </style>
   <script>
-    //  const addProductForm = document.getElementById('addProductForm');
-    //   const productName = document.getElementById('productName');
-    //   const nameError = document.getElementById('nameError');
-    //   addProductForm.addEventListener('submit',(e)=>{
-
-    //     // Function to validate input
-    //   function validate(productName) {
-    //     const regexPattern = /^[a-zA-Z\s]{3,45}$/
-    //     return regexPattern.test(productName);
-    //   }
-
-    //     let messages=[];
-
-    //     if(productName.value=== '' || productName.value== null){
-    //       messages.push('Name is require.')
-    //     }
-    //     if(!validate(productName) ){
-    //       messages.push('Name must be minimum of 3 letters and maximum of 45 letters.')
-    //     }
-    //     if(messages.length>0){
-    //       e.preventDefault();
-    //       nameError.innerText= messages.join(',')
-    //     }
-
-    //   })
 
     //image preview
     document.getElementById('imageInput').addEventListener('change', function (event) {
@@ -234,15 +193,15 @@
           container.classList.add('me-3', 'mb-3');
           container.appendChild(img);
 
-           // Create delete button
-           var deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
-            deleteButton.addEventListener('click', function () {
-                // Remove the parent container when delete button is clicked
-                container.remove();
-            });
-            container.appendChild(deleteButton);
+          // Create delete button
+          var deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+          deleteButton.addEventListener('click', function () {
+            // Remove the parent container when delete button is clicked
+            container.remove();
+          });
+          container.appendChild(deleteButton);
 
           // Append each image to the imagePreview container
           imagePreview.appendChild(container);
@@ -355,11 +314,13 @@
       const productName = document.getElementById('productName');
       const nameError = document.getElementById('nameError');
 
-      // Function to validate input
+    
+      // Frontend validation function
       function validate(productName) {
-        const regexPattern = /^[a-zA-Z\s]{3,}$/
-        return regexPattern.test(productName);
+        const regexPattern = /^[a-zA-Z\s]{3,50}$/;
+        return regexPattern.test(productName.trim());
       }
+
 
       addProductForm.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -374,7 +335,7 @@
           console.log('===================189')
           const response = await fetch("/admin/addProducts", {
             method: 'POST',
-            body: formData  
+            body: formData
           });
 
           console.log('===================195')

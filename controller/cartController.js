@@ -188,7 +188,6 @@ const removeCartItem = async (req, res) => {
         if (!removedCartItem) {
             return res.status(404).json({ error: 'Cart item not found' });
         }
-
         // Find the user's cart
         const userId = req.session.user_id;
         const cart = await Cart.findOne({ userId });

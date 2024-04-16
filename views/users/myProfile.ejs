@@ -1,7 +1,7 @@
 <%- include('../layout/header.ejs') %>
 
+<body>
 
-    
     <main class="main">
         <div class="page-header breadcrumb-wrap">
             <div class="container">
@@ -12,7 +12,6 @@
                 </div>
             </div>
         </div>
-
         <section class="pt-150 pb-150">
             <div class="container">
                 <div class="row">
@@ -74,48 +73,53 @@
 
                                             <h5 class="mb-0">My profile</h5>
                                             <p>
-                                                <%= userData.address_type %>
+                                                <%= userData.address[0].address_type %>
                                             </p>
                                         </div>
-                                        <div class="card-body">
+                                        <div class="card-body" style="display: flex; justify-content: space-between;">
+                                            <div>
+                                                <p>
+                                                    <%= userData.name %>
+                                                </p>
+                                                <p>
+                                                    <%= userData.email %>
+                                                </p>
+                                                <p>
+                                                    <%= userData.address[0].mobile_num %>
+                                                </p>
+                                            </div>
+                                            <div style="font-size: small;">
+                                                <a href="/changeMyProfile">Edit</a>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card-body"> 
+                                           
                                             <p>
-                                                <%= userData.name %>
+                                                <%=userData.address[0].house_num %>
                                             </p>
                                             <p>
-                                                <%= userData.email %>
-
+                                                <%= userData.address[0].apartment_name %>
                                             </p>
                                             <p>
-                                                <%= userData.address.mobile_num %>
+                                                <%= userData.address[0].city %>
+                                            </p>
+                                            <p>
+                                                <%= userData.address[0].district %>
+                                            </p>
+                                            <p>Pincode:
+                                                <%= userData.address[0].pincode %>
                                             </p>
                                         </div>
-                                        <div class="card-body">
-                                            <h4>
-                                                <%=userData.address.address_type %>
-                                            </h4>
-                                            <p>
-                                                <%=userData.address.house_num %>
-                                            </p>
-                                            <p>
-                                                <%= userData.address.apartment_name %>
-                                            </p>
-                                            <p>
-                                                <%= userData.address.city %>
-                                            </p>
-                                            <p>
-                                                <%= userData.address.district %>
-                                            </p>
-                                            <p>Pincode: 
-                                                <%= userData.address.pincode %>
-                                            </p>
-                                        </div>
-
-
                                     </div>
-                                </div>
+                                </div>   
                             </div>
+                        </div>
+                    </div>
+                 </div>
+             </div>
         </section>
-        </body>
+      
     </main>
-
+</body>
     <%- include('../layout/footer.ejs') %>

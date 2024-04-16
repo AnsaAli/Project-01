@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 
 const shortid = require('shortid');
 const uniqueId = shortid.generate();
-
+const UserAddress= require('../models/addressModel');
 const adminModel = require('../models/userAuthenticationModel')
 const { Category, Product } = require('../models/categoryModel')
 const bcrypt = require("bcrypt")
@@ -18,30 +18,26 @@ cloudinary.config({
 });
 
 
-function validate(name, existingNames) {
+function validateProductName(productName, existingNames) {
+    const regexPattern = /^[a-zA-Z\s]+$/; 
+    const trimmedName = productName.trim(); 
 
-    // Check if the name is not empty
-    if (!name.trim()) {
-        return false;
-    }
-    
-    // Check if the name meets the pattern criteria
-    const regexPattern = /^[A-Za-z][a-z]{3,}$/;
-    if (!regexPattern.test(name)) {
+    // Check if the name meets the length requirement
+    if (trimmedName.length < 3 || trimmedName.length > 50) {
         return false;
     }
 
-    // Check if the name is unique
-    const lowerCaseName = name.toLowerCase();
-    const lowerCaseExistingNames = existingNames.map(existingName => existingName.toLowerCase());
-    if (lowerCaseExistingNames.includes(lowerCaseName)) {
-        return false; // Duplicate found, return false
+    // Check if the name already exists
+    if (existingNames.includes(trimmedName) && trimmedName !== "") {
+        return false;
     }
 
-    return true; // Name is valid and unique
+    // Check if the name matches the regex pattern
+    return regexPattern.test(trimmedName);
 }
 
 
+//////////////////////admin login logout\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const loadAdminLogin = async (req, res) => {
     try {
@@ -90,7 +86,8 @@ const adminLogout = async (req, res) => {
     }
 
 }
-//Dashboard
+
+////////////////////////////admin pages\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const loadDashboard = async (req, res) => {
     try {
         //console.log('inside load dashboard page')
@@ -103,9 +100,9 @@ const loadDashboard = async (req, res) => {
 }
 const loadUserProfile = async (req, res) => {
     try {
-        const userData = await adminModel.find({ is_admin: 0 })
-        //   const userData=await adminModel.findById({_id:req.session.user_id});
-        userData.forEach(user => { console.log(user.name) })
+        
+        const userData = await User.find({ is_admin: 0 }).populate('address')
+   
         if (userData.length > 0) {
 
             res.render('customerProfile', { userData });
@@ -115,10 +112,9 @@ const loadUserProfile = async (req, res) => {
         }
     } catch (error) {
 
-        console.log(error.message)
+        console.log('error while loading loadUserProfile',error)
     }
 }
-
 
 const userBlockUnblock = async (req, res) => {
     try {
@@ -139,6 +135,8 @@ const userBlockUnblock = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+////////////////////////////categories\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 const loadCategory = async (req, res) => {
     try {
@@ -171,7 +169,8 @@ const addCategory = async (req, res) => {
 
         const existingCategories = await Category.find({}, 'name');
         const existingNames = existingCategories.map(category => category.name);
-        if (!validate(name, existingNames)) {
+        
+        if (!validateProductName(name, existingNames)) {
             return res.status(500).redirect('/admin/category?errorMessage=InvalidCategoryName');
         }
         console.log(name, description, '=========input values 137')
@@ -192,7 +191,6 @@ const addCategory = async (req, res) => {
         // Handle errors appropriately
     }
 }
-
 
 
 const loadEditCategory = async (req, res) => {
@@ -242,6 +240,9 @@ const softDeleteCategory = async (req, res) => {
         console.log('Error while deleting the category', error.message)
     }
 }
+
+////////////////////////////products\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 const cropImage = async (imagePath, width, height) => {
     try {
         // Construct the output path for the cropped image
@@ -270,8 +271,6 @@ const loadAddProducts = async (req, res) => {
     }
 }
 
-
-// 
 const addProducts = async (req, res) => {
 
     try {
@@ -308,45 +307,46 @@ const addProducts = async (req, res) => {
             recipies
 
         } = req.body;
+
         console.log(' ================================311')
 
+         // Validate productName
         const existingProducts = await Product.find({}, 'productName');
         const existingNames = existingProducts.map(product => product.productName);
-        console.log(' ================================315')
-
-        if (!validate(productName,existingNames)) {
+        if (!validateProductName(productName, existingNames)) {
             return res.render('addProducts', { errorMessage: 'Please add a valid product name!' });
         }
+
+        console.log(' ================================315')
+
         if (totalQuantity < 0) {
             return res.render('addProducts', { errorMessage: 'Quantity must be greater than 0!' });
 
         }
+        console.log(' ================================328')
+
         if (pricePer100g < 0) {
             return res.render('addProducts', { errorMessage: 'Price must be greater than 0!' });
         }
+        console.log(' ================================323')
+
         if (offerPercentage < 0) {
             return res.render('addProducts', { errorMessage: 'Offer percentage must be greater than 0!' });
         }
+        console.log(' ================================338')
+
         if (offerPercentage > 80) {
             return res.render('addProducts', { errorMessage: "Offer percentage can't be be greater than 80%!" });
         }
+        console.log(' ================================343')
+
         if (offerPrice > totalPrice) {
             return res.render('addProducts', { errorMessage: "Offer price allways lesser than total price!" });
 
         }
 
-        console.log('================================270 B addProducts')
-        //100g= 5 
-        // let price1g = pricePer100g / 100;;
-        // let price250 =( price1g * 250).toFixed(2);
-        // let price500 = (price1g * 500).toFixed(2)
-        // let price1Kg = (price1g * 1000).toFixed(2);
-
-        // let offerprice100 = (pricePer100g - (pricePer100g * offerPercentage / 100)).toFixed(2)
-        // let offerprice250 = (price250 - (price250 * offerPercentage / 100)).toFixed(2)
-        // let offerprice500 = (price500 - (price500 * offerPercentage / 100)).toFixed(2)
-        // let offerprice1kg = (price1Kg - (price1Kg * offerPercentage / 100)).toFixed(2)
-
+        console.log('================================350 B addProducts')
+       
         let price1g = (pricePer100g / 100).toFixed(2);
         let price250 = (price1g * 250).toFixed(2);
         let price500 = (price1g * 500).toFixed(2);
@@ -416,7 +416,7 @@ const addProducts = async (req, res) => {
         console.log('Error, in the catch addProducts=====302 :', error);
         res.status(500).json({ errorMessage: 'Error adding product' })
     }
-};
+}
 
 const loadViewProducts = async (req, res) => {
     try {
@@ -436,7 +436,7 @@ const loadViewProducts = async (req, res) => {
         console.log('Error while loading view product page:', error.message);
         res.status(500).send('Error while loading view product page');
     }
-};
+}
 
 const loadEditProduct = async (req, res) => {
     try {
@@ -455,7 +455,6 @@ const loadEditProduct = async (req, res) => {
         console.log('Error while loading the edit product page', error)
     }
 }
-
 
 const updateProduct = async (req, res) => {
     try {
@@ -560,6 +559,7 @@ const updateProduct = async (req, res) => {
         console.log('Error while updating the product', error)
     }
 }
+
 const deleteProduct = async (req, res) => {
     try {
         const product_id = req.params.id;
@@ -576,14 +576,27 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-const loadOrderDetails = async (req, res) => {
+const loadViewSingleProducts= async(req,res)=>{
     try {
-       
-        const orderDetails = await Order.find({}).populate('user_id')
+        const id = req.query._id;
+        console.log(id, '===============id 611 loadViewSingleProducts')
+        
+        const products = await Product.findById({ _id: id }).populate('category');
+        console.log(products.productName, '===============products  loadViewSingleProducts')
 
-        res.render('OrderDetailsAdmin', { orderDetails})
+        const categories = await Category.find({})
+      
+        if (!products) {
+            console.log('Error while loading edit-category page with data')
+            redirect('/admin/viewProducts')
+        } else {
+            console.log('=================622')
+            res.render('singleProduct', { products: products, categories: categories })
+        }
+       
+        
     } catch (error) {
-        console.log('Error while loading order deatls page')
+        console.log('Error occure while viewing single product in loadViewSingleProducts', error)
     }
 }
 
@@ -620,12 +633,27 @@ const deleteImages = async (req, res) => {
         res.status(500).send('Error while deleting the image');
     }
 }
+
+////////////////////////////order\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+const loadOrderDetails = async (req, res) => {
+    try {
+       
+        const orderDetails = await Order.find({}).populate('user_id')
+
+        res.render('OrderDetailsAdmin', { orderDetails})
+    } catch (error) {
+        console.log('Error while loading order deatls page')
+    }
+}
+
+
 const cancelOrder = async (req, res) => {
     try {
         const orderId = req.params.orderId;
-        console.log(orderId,'is the orderid')
-        const order = await Order.findById(orderId);
-        console.log(order,'is the order=======cancelOrder')
+        // console.log(orderId,'is the orderid')
+        const order = await Order.findById(orderId).populate('user_id');
+        // console.log(order,'is the order=======cancelOrder')
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
@@ -637,29 +665,7 @@ const cancelOrder = async (req, res) => {
     }
 }
 
-const loadViewSingleProducts= async(req,res)=>{
-    try {
-        const id = req.query._id;
-        console.log(id, '===============id 611 loadViewSingleProducts')
-        
-        const products = await Product.findById({ _id: id }).populate('category');
-        console.log(products.productName, '===============products  loadViewSingleProducts')
 
-        const categories = await Category.find({})
-      
-        if (!products) {
-            console.log('Error while loading edit-category page with data')
-            redirect('/admin/viewProducts')
-        } else {
-            console.log('=================622')
-            res.render('singleProduct', { products: products, categories: categories })
-        }
-       
-        
-    } catch (error) {
-        console.log('Error occure while viewing single product in loadViewSingleProducts', error)
-    }
-}
 const loadSingleOrderDetails= async(req,res)=>{
     try {
         const orderId= req.query._id;
@@ -674,6 +680,10 @@ const loadSingleOrderDetails= async(req,res)=>{
         console.log('Error occure while loading loadSingleOrderDetails', error)
     }
 }
+
+
+////////////////////////////exports\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 module.exports = {
     loadAdminLogin,
     verifyAdminLogin,

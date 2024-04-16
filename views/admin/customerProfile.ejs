@@ -1,109 +1,108 @@
 <%- include('../layout/adminHeader.ejs') %>
 
-      <div class="content">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card">
-              <div class="card-header">
-                <h4 class="card-title">Customer Details </h4>
-              </div>
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table">
-                    <thead class=" text-primary">
-                      <th>Name</th>
-                        <th>Email</th>  
-                        <th>Total Orders</th>
-                        <th>Total Amount</th>
-                        <th>Joining Date</th>
-                        <th>Status</th>
-                        
-                    </thead>
-                    <tbody>
-                      <% userData.forEach(function(user) { %>
-                        <tr>
-                          <td><%= user.name %></td>
-                          <td><%= user.email %></td>
-                          <td></td>
-                          <td></td>
-                          <td> <%= user.createdAt .toDateString()%></td>
-                          <td>
-                            <form id="blockForm_<%= user._id %>" class="block-form" data-user-id="<%= user._id %>" action="/admin/customerProfile/<%= user._id %>/status/<%= user.is_blocked ? 'unblock' : 'block' %>" method="POST">
-                              <% if (user.is_blocked) { %>
-                                <button class="btn btn-danger" type="button" onclick="confirmAction('<%= user._id %>', 'unblock')">Unblock</button>
-                              <% } else { %>
-                                <button class="btn btn-success" type="button" onclick="confirmAction('<%= user._id %>', 'block')">Block</button>
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Customer Details </h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead class=" text-primary">
+                  <th>Name</th>
+                  <th>Joining Date</th>
+                  <th>Email</th>
+                  <th>Contact Number</th>
+                 
+                  <th>Status</th>
+                </thead>
+                <tbody>
+                  <% userData.forEach(function(user) { %>
+                    <tr>
+                      <td>
+                        <%= user.name %>
+                      </td>
+                      <td>
+                        <%= user.createdAt.toDateString()%>
+                      </td>
+                      <td>
+                        <%= user.email %>
+                      </td>
+                      <td>
+                        <% if (user.address && user.address.length > 0) { %>
+                          <%= user.address[0].mobile_num %>
+                        <% } else { %>
+                          Not added
+                        <% } %>
+                      </td>
+                      <!-- <td>
+                        <%if(!userData.is_blocked){%> Active
+                          <%} else{%> Not Active <%}%>
+                      </td> -->
+                      <td>
+                        <form id="blockForm_<%= user._id %>" class="block-form" data-user-id="<%= user._id %>"
+                          action="/admin/customerProfile/<%= user._id %>/status/<%= user.is_blocked ? 'unblock' : 'block' %>"
+                          method="POST">
+                          <% if (user.is_blocked) { %>
+                             <p class="ml-2">Not Active</p>
+                            <button class="btn btn-danger" type="button"
+                              onclick="confirmAction('<%= user._id %>', 'unblock')">Unblock</button>
+                            <% } else { %>
+                              <p>Active </p>
+                              <button class="btn btn-success" type="button"
+                                onclick="confirmAction('<%= user._id %>', 'block')">Block</button>
                               <% } %>
-                            </form>
-                          </td>
-                        </tr>
-                      <% }); %>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                        </form>
+                      </td>
+                    </tr>
+
+                    <% }); %>
+                </tbody>
+              </table>
             </div>
           </div>
-         
         </div>
       </div>
-      <footer class="footer">
-        <div class=" container-fluid ">
-          <nav>
-            <ul>
-              <li>
-                <a href="https://www.creative-tim.com">
-                  GoEasy-Admin
-                </a>
-              </li>
-              <li>
-                <a href="http://presentation.creative-tim.com">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="http://blog.creative-tim.com">
-                  Blog
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <div class="copyright" id="copyright">
-            &copy; <script>
-              document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
-            </script>, Designed by <a href="https://www.invisionapp.com" target="_blank">Invision</a>. Coded by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
-          </div>
-        </div>
-      </footer>
+
     </div>
   </div>
 
+  </div>
+  </div>
+
   <style>
-    .userTable{
-        width: 100%;
-        height:200px;
-        padding: 15px;
+    .userTable {
+      width: 100%;
+      height: 200px;
+      padding: 15px;
     }
-    table, th, td {
-  border: 1px solid rgb(0, 48, 18);
-  border-collapse: collapse;
-}
+
+    table,
+    th,
+    td {
+      border: 1px solid rgb(0, 48, 18);
+      border-collapse: collapse;
+    }
   </style>
 
-<!-- block/unblock -->
-<script>
-  function confirmAction(userId, action) {
-    if (confirm(`Are you sure you want to ${action} this user?`)) {
-      submitBlockUnblockForm(userId, action);
+  <!-- block/unblock -->
+  <script>
+    function confirmAction(userId, action) {
+      if (confirm(`Are you sure you want to ${action} this user?`)) {
+        submitBlockUnblockForm(userId, action);
+      }
     }
-  }
 
-  function submitBlockUnblockForm(userId, action) {
-    const form = document.getElementById(`blockForm_${userId}`);
-    form.action = `/admin/customerProfile/${userId}/status/${action}`;
-    form.submit();
-  }
-</script>
+    function submitBlockUnblockForm(userId, action) {
+      const form = document.getElementById(`blockForm_${userId}`);
+      form.action = `/admin/customerProfile/${userId}/status/${action}`;
+      form.submit();
+    }
+
+  </script>
+
 
   <!--   Core JS Files   -->
   <script src="../adinAssets/js/core/jquery.min.js"></script>
@@ -117,8 +116,9 @@
   <!--  Notifications Plugin    -->
   <script src="../adinAssets/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="../adinAssets/js/now-ui-dashboard.min.js?v=1.5.0" type="text/javascript"></script><!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
+  <script src="../adinAssets/js/now-ui-dashboard.min.js?v=1.5.0" type="text/javascript"></script>
+  <!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
   <script src="../adinAssets/demo/demo.js"></script>
-</body>
+  </body>
 
-</html>
+  </html>
