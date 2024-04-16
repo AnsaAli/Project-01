@@ -308,8 +308,12 @@ const addProducts = async (req, res) => {
             recipies
 
         } = req.body;
+        console.log(' ================================311')
+
         const existingProducts = await Product.find({}, 'productName');
         const existingNames = existingProducts.map(product => product.productName);
+        console.log(' ================================315')
+
         if (!validate(productName,existingNames)) {
             return res.render('addProducts', { errorMessage: 'Please add a valid product name!' });
         }

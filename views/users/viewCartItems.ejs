@@ -105,7 +105,7 @@
 
 
                                                     <td class="text-right" data-title="Subtotal ">
-                                                        <span class="subtotal-val" >₹ <%= cartItem.subtotal  %> </span>
+                                                        <span class="subtotal-val" >₹ <%= cartItem.subtotal %> </span>
                                                     </td>
 
                                                     <td class="action" data-title="Remove"><a
@@ -113,20 +113,23 @@
                                                             class="text-muted"><i class="fi-rs-trash"></i></a></td>
                                                 </tr>
 
-                                                <tr>
+                                                <!-- <tr>
                                                     <td colspan="6" class="text-end">
                                                         <a href="#" class="text-muted"> <i
                                                                 class="fi-rs-cross-small"></i> Clear Cart</a>
                                                     </td>
-                                                </tr>
+                                                </tr> -->
+                                                
+                                                <% }); %>
                                                 <tr>
-                                                    <td colspan="6" class="text-right">
-                                                        <p>Total Price: ₹<%= cartData.totalPrice %>
-                                                        </p>
+                                                    <td colspan="6" class="text-right cart-total-price" data-title="totalPrice ">
+                                                        <div class="total">
+                                                            <p ><span class="total-val">Total Price: ₹<%= cartData.totalPrice %></span>
+                                                            </p>
+                                                        </div>
+                                                      
                                                     </td>
                                                 </tr>
-                                               
-                                                <% }); %>
                                                     <% } else { %>
                                                         <tr>
                                                             <td colspan="6">
@@ -179,7 +182,8 @@
                     var quantityElement = $(this).closest('.detail-qty').find('.qty-val');
                     var weightEement = $(this).closest('tr').find('.weight-val');
                     var subtotalElement = $(this).closest('tr').find('.subtotal-val');
-                    //    console.log('weightEement:',weightEement)
+                    var totalPriceElement = $(this).closest('tr').find('.total-val');
+
                     //    console.log('quantityElement:',quantityElement)
                     $.ajax({
                         url: '/updateQuantity',
@@ -192,6 +196,8 @@
                             weightEement.text(response.weight);
                             //    console.log('  weightEement.text(response.weight): ',  weightEement.text(response.weight))
                             subtotalElement.text('₹' + response.subtotal.toFixed(2));
+                            $('.cart-total-price').text('Total Price: ₹' + response.totalPrice.toFixed(2));
+
                         },
                         error: function (xhr, status, error) {
                             // Handle error

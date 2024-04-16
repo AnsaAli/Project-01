@@ -18,12 +18,12 @@ const addToCart = async (req, res) => {
         // console.log('Weight:', weight); //250
         // console.log('price:', price);//32.5
         // console.log('productName:', productName);
-        // console.log('priceAfterDiscount:', priceAfterDiscount);
+        console.log('priceAfterDiscount:', priceAfterDiscount);
         // console.log('pricePer100g:', pricePer100g); // 100g=12.61 => 1g=12.61/100
         // console.log('type of pricePer100g:', typeof(pricePer100g));
         // console.log('totalQuantity:', totalQuantity);
 
-        let priceper1g = (pricePer100g / 100).toFixed(2)
+        let priceper1g = (pricePer100g / 100);
         //  console.log('priceper1g:',priceper1g);
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
         // Check if the product already exists in the cart
@@ -35,7 +35,7 @@ const addToCart = async (req, res) => {
             cartItem.quantity += 1;
             cartItem.weight += weight;
             cartItem.price = priceAfterDiscount;
-            cartItem.subtotal =  (priceper1g * cartItem.weight).toFixed(2);
+            cartItem.subtotal = (priceper1g * cartItem.weight).toFixed(2);
             // console.log('  cartItem.subtotal, if cartItemcartItem is true  : ', cartItem.subtotal)
             await cartItem.save();
         } else {
@@ -61,25 +61,23 @@ const addToCart = async (req, res) => {
 
             } else {
                 cart.cartItems.push(cartItem._id);
-            }
+            };
 
             await cartItem.save();
-
             await cart.save();
-
-            // Calculate total price
-            const updatedCart = await Cart.findById(cart._id).populate('cartItems');
-            let totalPrice = 0;
-            updatedCart.cartItems.forEach(item => {
-                totalPrice += item.subtotal;
-                console.log('totalPrice of item: ', totalPrice);
-            });
-            
-            updatedCart.totalPrice = totalPrice;
-            console.log('updatedCart:=========78', updatedCart)
-            await updatedCart.save();
-
         }
+
+        // Calculate total price
+        const updatedCart = await Cart.findById(cart._id).populate('cartItems');
+        let totalPrice = 0;
+        updatedCart.cartItems.forEach(item => {
+            totalPrice += item.subtotal;
+            console.log('totalPrice of item: ', totalPrice);
+        });
+
+        updatedCart.totalPrice = totalPrice;
+        console.log('updatedCart:=========78', updatedCart)
+        await updatedCart.save();
 
         res.status(200).json({ message: 'Product added to cart successfully' });
 
@@ -95,13 +93,15 @@ const updateQuantity = async (req, res) => {
     try {
         const { productId, action } = req.body;
         const userId = req.session.user_id;
-        const product_id=productId.trim();
+        const product_id = productId.trim();
         // console.log('productId:', productId)
         let productData = await Product.findById(product_id)
-        let priceper1g = (productData.pricePer100g) / 100;
+        //ANASconsole.log('priceAfterDiscount:', priceAfterDiscount);
+        //ANASlet priceper1g = (productData.pricePer100g) / 100;
 
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
         let cartItem = await CartItem.findOne({ productId: product_id }).populate('productId');
+        let priceper1g = (cartItem.price) / 100; //ANAS
 
         if (!cartItem) {
             return res.status(404).json({ error: 'Cart item not found' });
@@ -113,15 +113,15 @@ const updateQuantity = async (req, res) => {
                 cartItem.quantity += 1;
                 cartItem.weight += cartItem.userAddedWeight[cartItem.userAddedWeight.length - 1];
                 cartItem.userAddedWeight.push(cartItem.userAddedWeight[length - 1]); //user added weight need to push
-                cartItem.subtotal = priceper1g* cartItem.weight ;
+                cartItem.subtotal = (priceper1g * cartItem.weight).toFixed(2);
             }
         } else if (action === 'decrement') {
             if (cartItem.quantity > 1) {
                 cartItem.quantity -= 1;
                 cartItem.weight -= cartItem.userAddedWeight[length - 1];
-                cartItem.subtotal = priceper1g* cartItem.weight;
+                cartItem.subtotal = (priceper1g * cartItem.weight).toFixed(2);
                 cartItem.userAddedWeight.pop();
-                console.log(' cartItem.weight: decrement', cartItem.weight);
+                // console.log(' cartItem.weight: decrement', cartItem.weight);
             }
         }
         // Save the updated cart to the database
@@ -134,13 +134,26 @@ const updateQuantity = async (req, res) => {
             if (item._id.toString() === cartItem._id.toString()) {
                 item.quantity = cartItem.quantity;
                 item.weight = cartItem.weight;
+
             }
         });
-        //to calculate total price in the cart for all the products
-        cart.totalPrice += cartItem.price;
+
         await cart.save();
-        console.log('=========== cartItem.quantity:', cartItem.quantity, 'cartItem.weight:', cartItem.weight)
-        res.status(200).json({ message: 'Quantity updated successfully', quantity: cartItem.quantity, weight: cartItem.weight, subtotal: cartItem.subtotal });
+        // console.log('=========== cartItem.quantity:', cartItem.quantity, 'cartItem.weight:', cartItem.weight)
+
+        // Calculate total price
+        const updatedCart = await Cart.findById(cart._id).populate('cartItems');
+        let totalPrice = 0;
+        updatedCart.cartItems.forEach(item => {
+            totalPrice += item.subtotal;
+            // console.log('totalPrice of item: ', totalPrice);
+        });
+
+        updatedCart.totalPrice = totalPrice;
+        // console.log('updatedCart:=========78', updatedCart)
+        await updatedCart.save();
+        // console.log('updatedCart.totalPrice:', updatedCart.totalPrice)
+        res.status(200).json({ message: 'Quantity updated successfully', quantity: cartItem.quantity, weight: cartItem.weight, subtotal: cartItem.subtotal, totalPrice: updatedCart.totalPrice });
     } catch (error) {
         console.log('Error while updating quantity:', error);
         res.status(500).json({ error: 'Internal server error' });
