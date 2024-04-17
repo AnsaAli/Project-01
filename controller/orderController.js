@@ -14,7 +14,7 @@ const Order = require('../models/orderModel')
 
 const loadUserOrder = async (req, res) => {
     try {
-        const orderPlaced = await Order.find({})
+        const orderPlaced = await Order.find({}).populate('shippingAddress')
         res.render('userOrder', { orderPlaced })
     } catch (error) {
         console.log('Error while loading user order page', error.message)
@@ -37,23 +37,26 @@ const cancelOrder = async (req, res) => {
 }
 const loadConfirmOrder = async (req, res) => {
     try {
-        const orderedProducts = await Order.find({}).populate({
-            path: 'product',
-            model: 'Product'
+        const orderedProducts = await Order.find({});
+        // .populate({
+        //     path: 'product',
+        //     model: 'Product'
 
-        });
+        // });
         res.render('confirmOrder', { orderedProducts })
     } catch (error) {
-        console.log('Error while loading the place order page', error.message)
+        console.log('Error while loading loadConfirmOrder', error.message)
     }
 }
 const placeOrder = async (req, res) => {
     try {
         //console.log(req.body)
         const userId = req.session.user_id;
-        console.log(userId, 'is the userId')
+        // console.log(userId, 'is the userId')
+        const productId= (req.body.productId).trim();
+        console.log('productId: ',productId)
         const { items, weight, totalAmount, shippingAddress } = req.body;
-        console.log(items, totalAmount, shippingAddress, 'is the datas')
+        // console.log(items, totalAmount, shippingAddress, 'is the datas')
 
         const order_id = shortid.generate();
 
@@ -62,7 +65,7 @@ const placeOrder = async (req, res) => {
             // If items is an array, map it to orderedWeight
             orderedWeight = items.map((itemName, index) => ({
                 name: itemName,
-                weight: weight[index] 
+                weight: weight[index]
             }));
         } else {
             // If only one product is ordered, create an array with a single object
@@ -77,6 +80,7 @@ const placeOrder = async (req, res) => {
         const order = new Order({
             order_id: order_id,
             user_id: userId,
+            product_id: ObjectId.createFromHexString(productId),
             items: items,
             totalPrice: totalAmount,
             orderedWeight: orderedWeight,
@@ -86,20 +90,11 @@ const placeOrder = async (req, res) => {
             orderStatus: 'clientSideProcessing'
         })
         await order.save();
-
-        // await Cart.updateOne(
-        //     {
-        //         _id: ObjectId.createFromHexString(userId)
-        //     },
-        //     { $pull: { cartItems: {} } }
-        // );
-        await Cart.updateOne(
-            { userId: userId }, 
-            { $set: { cartItems: [], totalPrice: 0 } } 
-        );
-
-
-        //console.log(userCart.items,'after removing the items from the cart')
+       
+        await Cart.deleteOne({ userId: userId });
+        console.log('Cart deleted================================91')
+        await CartItem.deleteOne({ userId: userId })
+        console.log('CartItem deleted================================91')
 
         console.log('Order placed successfully')
         res.redirect('/successOrder')
@@ -107,8 +102,6 @@ const placeOrder = async (req, res) => {
         console.log('Error, while placing the order ', error.message)
     }
 }
-
-
 
 const loadTrackOrder = async (req, res) => {
     try {

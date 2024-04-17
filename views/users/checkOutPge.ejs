@@ -57,7 +57,6 @@
                         <div class="col-md-6">
                             <div class="mb-25">
                                 <h4>Billing Details</h4>
-
                                 <form method="post" action="/placeOrder">
                                     <% existingAddress.forEach(address=> { %>
                                         <div class="address mt-5">
@@ -88,9 +87,7 @@
                                             <div>
                                                 <p>Add another address? <a href="/addData">click here</a></p>
                                             </div>
-
                             </div>
-
                         </div>
                         <div class="col-md-6">
                             <div class="order_review">
@@ -132,7 +129,10 @@
                                                     %>
                                                     <input type="hidden" value="<%= totalWeightLeft %>"
                                                         name="weightLeft">-->
-                                             <% }); %>
+                                                          <!--To send the product id to backend-->
+                                                    <input type="hidden" name="productId"
+                                                    value=" <%= item.productId._id %>">
+                                                <% }); %>
 
                                                     <!-- Subtotal -->
                                                     <tr>
@@ -147,7 +147,7 @@
                                                         <th>Shipping</th>
                                                         <td colspan="2"><em>Free Shipping</em></td>
                                                     </tr>
-
+                                                  
                                                     <!-- Total -->
                                                     <tr>
                                                         <th>Total</th>

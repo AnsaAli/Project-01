@@ -11,7 +11,7 @@ const orderSchema = new Schema({
         ref: 'UserAuth',
         require: true
     },
-    product: {
+    product_id: {
         type: Schema.Types.ObjectId,
         ref: 'Product',
         require: true

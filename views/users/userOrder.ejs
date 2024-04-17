@@ -82,6 +82,7 @@
                                                                 <th>Status</th>
                                                                 <th>Total</th>
                                                                 <th>Payment Method</th>
+                                                                <th>Order Address</th>
                                                                 <th>Actions</th>
                                                             </tr>
                                                         </thead>
@@ -105,8 +106,14 @@
                                                                     <td>₹<%= order.totalPrice%>
                                                                     <td>COD
                                                                     </td>
-                                                                   
-                                                                    </td>
+                                                                   <td>  
+                                                                    <%=order.shippingAddress.address_customer_name %> <br>
+                                                                    <%=order.shippingAddress. mobile_num%> <br>
+                                                                    house num: <%=order.shippingAddress. house_num%> <br> 
+                                                                      <%=order.shippingAddress. apartment_name%> <br>
+                                                                      <%=order.shippingAddress. district%> <br>
+
+                                                                </td>
 
                                                                     <!-- <td><a href='/cancelOrder/<%= order.order_id %>' class="btn-small d-block">cancel order</a></td>  -->
                                                                     <td class="form-group"><button
@@ -134,7 +141,7 @@
   
     <script>
         function confirmCancel() {
-            if (confirm("Are you sure you want to delete this product?")) {
+            if (confirm("Are you sure you want cancel this order?")) {
                 document.getElementById('deleteForm').submit();
             }
         }

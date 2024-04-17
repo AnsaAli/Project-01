@@ -43,6 +43,7 @@ const addToCart = async (req, res) => {
             let cartUser = await Cart.findOne({ userId: userId });
             cartItem = new CartItem({
                 productId: productId,
+                userId:userId,
                 weight: weight,
                 price: priceAfterDiscount,
                 subtotal: priceAfterDiscount,
