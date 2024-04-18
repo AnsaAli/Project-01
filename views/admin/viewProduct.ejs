@@ -79,17 +79,17 @@
                 <!-- sorting -->
                 <div class="row ">
 
-                  <div class="col-md-5">
+                  <!-- <div class="col-md-5">
                     <label for="sortBy"></label>
                     <select id="sortBy" name="sortby" class="form-control sort">
                       <option>Sort by:</option>
                       <option value="totalQuantity">Quantity</option>
                       <option value="offerPercentage">Offer Percentage</option>
                     </select>
-                  </div>
-                  <div class="col-md-1">
+                  </div> -->
+                  <!-- <div class="col-md-1">
                     <button type="submit" class="btn btn-primary mt-2 btn-block">Sort</button>
-                  </div>
+                  </div> -->
                 </div>
               </form>
 
@@ -129,9 +129,9 @@
                           </td>
                           <td>
                             <% if (product.totalQuantity <=0) { %>
-                              <p>Not in stock. Quantity: <%= product.totalQuantity %>
+                              <p>Not in stock. 
                               </p>
-
+                              <!-- Quantity: <%= product.totalQuantity %> -->
                               <% } else { %>
                                 <p>In Stock</p>
                                 <% } %>

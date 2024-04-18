@@ -57,6 +57,7 @@ const placeOrder = async (req, res) => {
         const { items, weight, price, totalAmount, shippingAddress } = req.body;
         console.log('items: ', items, 'weight: ', weight, 'price : ', price, 'totalAmount: ', totalAmount, 'shippingAddress: ', shippingAddress)
         // console.log(items, totalAmount, shippingAddress, 'is the datas')
+        console.log('typeof items : ', typeof items, 'items.length: ', items.length);
 
 
         let orderId = shortid.generate();
@@ -73,42 +74,58 @@ const placeOrder = async (req, res) => {
             orderStatus: 'clientSideProcessing'
         });
         console.log('=================================78')
-        // Save new order
+
         await order.save();
 
         const productIds = req.body.productId.map(productId => productId.trim());
+        console.log('=================================80')
 
-        for (let i = 0; i < items.length; i++) {
-            let orderItem = await OrderItem.findOne({ product_id: productIds[i] });
+        if (items && weight && price) {
+            console.log('=================================84')
 
-            if (!orderItem) {
-                orderItem = new OrderItem({
+            if (typeof items === 'string' && items.trim().length > 0) {
+                console.log('single item order=================================101')
+                // If only one item is being ordered
+                const orderItem = new OrderItem({
                     user_id: userId,
-                    product_id: productIds[i],
+                    product_id: productIds[0],
                     orderedWeight: [{
-                        name: items[i],
-                        weight: parseInt(weight[i]),
-                        price: parseInt(price[i])
+                        name: items,
+                        weight: parseInt(weight),
+                        price: parseFloat(price)
                     }],
                     totalPrice: totalAmount
                 });
+                console.log('orderItem:', orderItem)
+                await orderItem.save();
+                console.log(orderItem._id, 'orderItem._id=================================115');
+
+                order.orderItems.push(orderItem._id);
             } else {
-                orderItem.orderedWeight.push({
-                    name: items[i],
-                    weight: parseInt(weight[i]),
-                    price: parseInt(price[i])
-                });
+                console.log('multiple=================================80')
+                for (let i = 0; i < items.length; i++) {
+                    const orderItem = new OrderItem({
+                        user_id: userId,
+                        product_id: productIds[i],
+                        orderedWeight: [{
+                            name: items[i],
+                            weight: parseInt(weight[i]),
+                            price: parseFloat(price[i])
+                        }],
+                        totalPrice: totalAmount
+                    });
+
+                    await orderItem.save();
+                    console.log(orderItem._id, 'orderItem._id=================================105');
+
+                    order.orderItems.push(orderItem._id);
+                }
             }
-
-            await orderItem.save();
-            console.log(orderItem._id, 'orderItem._id=================================105');
-
-            order.orderItems.push(orderItem._id);
         }
 
         await order.save();
 
-        // console.log('=================================91')
+        console.log('=================================91')
 
         //update quantity in product collection.
         for (const productId of productIds) {
