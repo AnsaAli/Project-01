@@ -73,59 +73,65 @@ const placeOrder = async (req, res) => {
             orderStatus: 'clientSideProcessing'
         });
         console.log('=================================78')
-         // Save new order
-         await order.save();
+        // Save new order
+        await order.save();
 
         const productIds = req.body.productId.map(productId => productId.trim());
 
-        for (const productId of productIds) {
-            let orderItem = await OrderItem.findOne({ product_id: productId });
+        for (let i = 0; i < items.length; i++) {
+            let orderItem = await OrderItem.findOne({ product_id: productIds[i] });
 
             if (!orderItem) {
                 orderItem = new OrderItem({
                     user_id: userId,
-                    product_id: productId,
+                    product_id: productIds[i],
                     orderedWeight: [{
-                        name: items[productIds.indexOf(productId)],
-                        weight: weight[productIds.indexOf(productId)],
-                        price: price[productIds.indexOf(productId)]
+                        name: items[i],
+                        weight: parseInt(weight[i]),
+                        price: parseInt(price[i])
                     }],
                     totalPrice: totalAmount
                 });
             } else {
-                
+                orderItem.orderedWeight.push({
+                    name: items[i],
+                    weight: parseInt(weight[i]),
+                    price: parseInt(price[i])
+                });
             }
 
             await orderItem.save();
-            console.log(orderItem._id, 'orderItem._id=================================105')
+            console.log(orderItem._id, 'orderItem._id=================================105');
 
             order.orderItems.push(orderItem._id);
         }
-        console.log('=================================109')
 
         await order.save();
 
-
         // console.log('=================================91')
 
-        // //update quantity in product collection.
-        // for (const item of orderedWeight) {
-        //     for (const productId of productIds) {
-        //         if (orderItem) {
-        //             const orderWeight = item.weight;
-        //             const ProductWeight = await Product.findById(productId)
-        //             console.log('ProductWeight.totalQuantity: ', ProductWeight.totalQuantity)
-        //             if (ProductWeight.totalQuantity > 0) {
-        //                 let weightInGrams = ProductWeight.totalQuantity * 1000;
-        //                 let updatedQuantity = (weightInGrams - orderWeight) / 1000;
-        //                 console.log('updatedQuantity: ', updatedQuantity)
-        //                 await Product.updateMany({ _id: productId }, { totalQuantity: updatedQuantity });
-        //             } else {
-        //                 console.log('No stock.')
-        //             }
-        //         }
-        //     }
-        // }
+        //update quantity in product collection.
+        for (const productId of productIds) {
+            let orderItem = await OrderItem.findOne({ product_id: productId });
+            let orderedWeight = orderItem.orderedWeight;
+            console.log('orderedWeight: ', orderedWeight)
+            for (const item of orderedWeight) {
+                const orderWeight = item.weight;
+                console.log('orderWeight: ', orderWeight)
+                const ProductWeight = await Product.findById(productId)
+                console.log('ProductWeight.totalQuantity: ', ProductWeight.totalQuantity)
+                if (ProductWeight.totalQuantity > 0) {
+                    let weightInGrams = ProductWeight.totalQuantity * 1000;
+                    let updatedQuantity = (weightInGrams - orderWeight) / 1000;
+                    console.log('updatedQuantity: ', updatedQuantity)
+                    await Product.updateMany({ _id: productId }, { totalQuantity: updatedQuantity });
+                } else {
+                    console.log('No stock.')
+                }
+            }
+
+        }
+
         // console.log('=================================111')
         await CartItem.deleteMany({ userId: userId })
         console.log('CartItem deleted================================91')
