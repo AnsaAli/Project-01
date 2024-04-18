@@ -79,7 +79,6 @@ admin_route.use(express.urlencoded({extended:true}))
 
 admin_route.use(sessionSecret())
 
-
 //loginpage\\
 admin_route.get('/',authMiddleware.is_logout, adminController.loadAdminLogin)
 admin_route.post('/', adminController.verifyAdminLogin)

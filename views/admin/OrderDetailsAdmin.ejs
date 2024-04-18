@@ -1,5 +1,13 @@
 <%- include('../layout/adminHeader.ejs') %>
 
+<!-- Add these links to your head section -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+
+
+
   <div class="content">
     <div class="row">
       <div class="col-md-12">
@@ -9,9 +17,10 @@
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table">
+              <table class="table" id="orderTable">
                 <thead class=" text-primary">
                   <th>Date</th>
+                  <th>Order Id</th>
                   <th>Products</th>
                   <th>Customer email</th>
                   <th>Payment method</th>
@@ -21,18 +30,36 @@
 
                 </thead>
                 <tbody>
-                  <% orderDetails.forEach(order=> { %>
+                  <% orderPlaced.forEach(order=> { %>
                     <tr>
                       <td>
                         <%= order.orderDate.toDateString() %>
                       </td>
                       <td>
-                        <%order.orderedWeight.forEach(pdt=>{ %> <%=pdt.name %> <br>
-                            <%}) %>
+                        <%= order.order_id %>
+                      </td>
+                      <td>
+                        <% order.orderItems.forEach(orderItem=> { %>
+                          <% if (orderItem.orderedWeight) { %>
+                            <% orderItem.orderedWeight.forEach(pdt=> { %>
+                              <%= pdt.name %>:
+                                <% if (pdt.weight>= 1000) { %>
+                                  <%= Math.floor(pdt.weight / 1000) %>kg
+                                    <% let remainingGrams=pdt.weight % 1000; %>
+                                      <% if (remainingGrams> 0) { %>
+                                        <%= remainingGrams %>g
+                                          <% } %><br>
+                                            <% } else { %>
+                                              <%= pdt.weight %>g <br>
+                                                <% } %>
+
+                                                  <% }); %>
+                                                    <% } %>
+                                                      <% }); %>
 
                       </td>
                       <td>
-                        <%= order.user_id.email %> 
+                        <%= order.user_id.email %>
                       </td>
                       <td>
                         <%= order.paymentMethod %>
@@ -45,11 +72,11 @@
                         <button class="cancelOrderBtn btn-small d-block btn btn-danger btn-fill-out btn-block hover-up"
                           data-order-id="<%= order._id %>" type="submit" onclick="confirmCancel()">Cancel
                           Order</button>
-
-                        <form action="/admin/viewOrderDetails" method="GET" class="mb-3">
+                          <form action="/admin/viewOrderDetails" method="GET" class="mb-3">
                           <input type="hidden" name="_id" value="<%= order._id %>">
                           <button type="submit" class="btn btn-primary">View Details</button>
                         </form>
+                    
                       </td>
                     </tr>
                     <% }); %>
@@ -108,6 +135,12 @@
   </style>
 
   <script>
+   $(document).ready(function () {
+        $('#orderTable').DataTable({
+          "bInfo": false  
+        });
+      });
+
     function confirmCancel() {
       if (confirm("Are you sure you want to cancel this order?")) {
         document.getElementById('deleteForm').submit();
@@ -121,7 +154,7 @@
         console.log(orderId, 'orderId===========in OrderDetails')
         // Send a DELETE request to cancel the order
         try {
-          const response = await fetch(`/admin/cancelOrder/${orderId}` ,
+          const response = await fetch(`/admin/cancelOrder/${orderId}`,
             {
               method: 'DELETE',
             });

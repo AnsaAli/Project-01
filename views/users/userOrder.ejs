@@ -87,7 +87,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <% orderPlaced.forEach(order=> { %>
+                                                            <% orderPlaced.forEach(order => { %>
                                                                 <tr id="orderRow_<%= order._id %>">
                                                                     <td>
                                                                         <%= order.order_id %>
@@ -96,34 +96,47 @@
                                                                         <%= order.orderDate.toDateString() %>
                                                                     </td>
                                                                     <td>
-                                                                        <%order.orderedWeight.forEach((pdt)=>{%> 
-                                                                            <%=pdt.name%> : <%=pdt.weight%>g <br>
-                                                                            <%}) %>
+                                                                        <% order.orderItems.forEach(orderItem => { %>
+                                                                            <% if (orderItem.orderedWeight) { %>
+                                                                                <% orderItem.orderedWeight.forEach(pdt => { %>
+                                                                                    <%= pdt.name %>: 
+                                                                                    <% if (pdt.weight >= 1000) { %>
+                                                                                        <%= Math.floor(pdt.weight / 1000) %>kg 
+                                                                                        <% let remainingGrams = pdt.weight % 1000; %>
+                                                                                        <% if (remainingGrams > 0) { %>
+                                                                                            <%= remainingGrams %>g
+                                                                                        <% } %><br>
+                                                                                    <% } else { %>
+                                                                                        <%= pdt.weight %>g <br>
+                                                                                    <% } %>  
+                                                                                    
+                                                                                <% }); %>
+                                                                            <% } %>
+                                                                        <% }); %>
+                                                                        
                                                                     </td>
                                                                     <td id="orderStatus_<%= order._id %>">
                                                                         <%= order.orderStatus %>
                                                                     </td>
-                                                                    <td>₹<%= order.totalPrice%>
-                                                                    <td>COD
+                                                                    <td>₹<%= order.finalPrice %></td>
+                                                                    <td>COD</td>
+                                                                    <td>  
+                                                                        <%= order.shippingAddress.address_customer_name %> <br>
+                                                                        <%= order.shippingAddress.mobile_num %> <br>
+                                                                        house num: <%= order.shippingAddress.house_num %> <br> 
+                                                                        <%= order.shippingAddress.apartment_name %> <br>
+                                                                        <%= order.shippingAddress.district %> <br>
                                                                     </td>
-                                                                   <td>  
-                                                                    <%=order.shippingAddress.address_customer_name %> <br>
-                                                                    <%=order.shippingAddress. mobile_num%> <br>
-                                                                    house num: <%=order.shippingAddress. house_num%> <br> 
-                                                                      <%=order.shippingAddress. apartment_name%> <br>
-                                                                      <%=order.shippingAddress. district%> <br>
-
-                                                                </td>
-
-                                                                    <!-- <td><a href='/cancelOrder/<%= order.order_id %>' class="btn-small d-block">cancel order</a></td>  -->
-                                                                    <td class="form-group"><button
-                                                                            class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
-                                                                            data-order-id="<%= order._id %>" type="submit"
-                                                                            onclick="confirmCancel()">Cancel
-                                                                            Order</button></td>
+                                                                    <td class="form-group">
+                                                                        <button class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
+                                                                                data-order-id="<%= order._id %>" type="submit" onclick="confirmCancel()">
+                                                                            Cancel Order
+                                                                        </button>
+                                                                    </td>
                                                                 </tr>
-                                                                <% }); %>
+                                                            <% }); %>
                                                         </tbody>
+                                                        
                                                     </table>
                                                 </div>
                                             </div>

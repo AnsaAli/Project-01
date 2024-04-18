@@ -11,6 +11,7 @@ const Order = require('../models/orderModel')
 const User = require('../models/userAuthenticationModel');
 const nodemon = require('nodemon');
 const cloudinary = require('cloudinary').v2;
+
 cloudinary.config({
     cloud_name: 'dn6d0gspr',
     api_key: '841139655134895',
@@ -192,7 +193,6 @@ const addCategory = async (req, res) => {
     }
 }
 
-
 const loadEditCategory = async (req, res) => {
     try {
         const id = req.query._id;
@@ -213,7 +213,6 @@ const loadEditCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
     try {
         const { id, name, image, description } = req.body;
-
 
         //update
         await Category.findByIdAndUpdate({ _id: req.body.id }, { $set: { name: req.body.name, image: req.body.image, description: req.body.description } })
@@ -638,10 +637,9 @@ const deleteImages = async (req, res) => {
 
 const loadOrderDetails = async (req, res) => {
     try {
-       
-        const orderDetails = await Order.find({}).populate('user_id')
+        const orderPlaced = await Order.find({}).populate('shippingAddress').populate('orderItems').populate('user_id');
 
-        res.render('OrderDetailsAdmin', { orderDetails})
+        res.render('OrderDetailsAdmin', { orderPlaced})
     } catch (error) {
         console.log('Error while loading order deatls page')
     }
@@ -672,9 +670,9 @@ const loadSingleOrderDetails= async(req,res)=>{
         
         console.log(orderId,'==========orderId loadSingleOrderDetails')
         
-        const orderDetails = await Order.findById({_id: orderId})
-        .populate('user_id shippingAddress')
-        .exec();
+        const orderDetails = await Order.findById({_id: orderId}).populate('shippingAddress').populate('orderItems').populate('user_id');
+        // .populate('user_id shippingAddress')
+        // .exec();
         res.render('singleOrderDetails',{ orderDetails})
     } catch (error) {
         console.log('Error occure while loading loadSingleOrderDetails', error)

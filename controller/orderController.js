@@ -14,7 +14,7 @@ const OrderItem = require('../models/orderItemModel')
 
 const loadUserOrder = async (req, res) => {
     try {
-        const orderPlaced = await Order.find({}).populate('shippingAddress')
+        const orderPlaced = await Order.find({}).populate('shippingAddress').populate('orderItems');
         res.render('userOrder', { orderPlaced })
     } catch (error) {
         console.log('Error while loading user order page', error.message)

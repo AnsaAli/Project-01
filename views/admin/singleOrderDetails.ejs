@@ -1,134 +1,146 @@
 <%- include('../layout/adminHeader.ejs') %>
-<body>
 
- 
+    <body>
 
-  <div class="containerProduct">
-    <div class="product-details">
-        <div class="">
-            <div  class="m-5">
-                <h3>  <strong>Product Details:</strong></h3>
-                
-                <%orderDetails.orderedWeight.forEach((pdt)=>{ %>
-               <%=pdt.name%>: <%=pdt.weight%>g <br>
-                <%})%>
+
+
+        <div class="containerProduct">
+            <div class="product-details">
+                <div class="m-5">
+                    <h3><strong>Product Details:</strong></h3>
+                    <% orderDetails.orderItems.forEach(orderItem=> { %>
+                        <p>Order Id: <strong> <%= orderDetails.order_id %></strong>
+                        </p>
+                        <% if (orderItem.orderedWeight) { %>
+                            <% orderItem.orderedWeight.forEach(pdt=> { %>
+                                <%= pdt.name %>:
+                                    <% if (pdt.weight>= 1000) { %>
+                                        <%= Math.floor(pdt.weight / 1000) %>kg
+                                            <% let remainingGrams=pdt.weight % 1000; %>
+                                                <% if (remainingGrams> 0) { %>
+                                                    <%= remainingGrams %>g
+                                                        <% } %><br>
+                                                            <% } else { %>
+                                                                <%= pdt.weight %>g <br>
+                                                                    <% } %>
+                                                                        <% }); %>
+                                                                            <% } %>
+                                                                                <% }); %>
+                </div>
+
+                <div class="m-5">
+                    <h5><strong>Account Holder Details:</strong></h5>
+                    <p>Name: <%= orderDetails.user_id.name %>
+                    </p>
+                    <p>Email: <%= orderDetails.user_id.email %>
+                    </p>
+                </div>
+
+                <div class="m-5">
+                    <h5><strong>Shipping Details:</strong></h5>
+                    <p>Name of delivery address: <%= orderDetails.shippingAddress.address_customer_name %>
+                    </p>
+                    <p>Contact number: <%= orderDetails.shippingAddress.mobile_num %>
+                    </p>
+
+                    <h5><strong>Payment :</strong></h5>
+                    <p>Total: &#8377; <%= orderDetails.finalPrice %>
+                    </p>
+                    <p>Payment method: <%= orderDetails.paymentMethod %>
+                    </p>
+                    <p>Payment Status: <%= orderDetails.paymentStatus %>
+                    </p>
+                    <p>Order Status: <%= orderDetails.orderStatus %>
+                    </p>
+
+                    <h5><strong>Shipping Address</strong></h5>
+                    <p>House Num: <%= orderDetails.shippingAddress.house_num %>
+                    </p>
+                    <p>Apartment Name: <%= orderDetails.shippingAddress.apartment_name %>
+                    </p>
+                    <p>Landmark: <%= orderDetails.shippingAddress.landmark %>
+                    </p>
+                    <p>City: <%= orderDetails.shippingAddress.city %>
+                    </p>
+                    <p>District: <%= orderDetails.shippingAddress.district %>
+                    </p>
+                    <p>Ordered Date: <%= orderDetails.orderDate.toDateString() %>
+                    </p>
+                </div>
             </div>
-        <div class="m-5">
-            <h5><strong>Account Holder Details:</strong></h5>
-            <p> Name: <%= orderDetails.user_id.name%></p>
-            <p> Email: <%= orderDetails.user_id.email%></p>
         </div>
-        <div  class="m-5">
-            <h5><strong>Shipping Details:</strong></h5>
-            <p>Name of delevery address: <%= orderDetails.shippingAddress.address_customer_name%></p>
-            <p> Contact number: <%= orderDetails.shippingAddress.mobile_num%></p>
-
-            <h5><strong>Payment :</strong></h5>
-            <p> Total: &#8377; <%= orderDetails.totalPrice%></p>
-            <p>Payment method : <%= orderDetails.paymentMethod%></p>
-            <p>Payment Status : <%= orderDetails.paymentStatus%></p>
-            <p>Order Status : <%= orderDetails.orderStatus%></p>
-
-            
-            <h5><strong>Shipping Address</strong></h5>
-        
-              <p>House Num: <%= orderDetails.shippingAddress.house_num%></p>  
-               <p>Apartment Name:<%= orderDetails.shippingAddress.apartment_name%></p> 
-                <p>Landmark: <%= orderDetails.shippingAddress.landmark%></p>
-               <p>City:  <%= orderDetails.shippingAddress.city%></p>
-               <p>District: <%= orderDetails.shippingAddress.district%></p> 
-               <p>Ordered Date: <%= orderDetails.shippingAddress.createdAt.toDateString()%></p> 
-        
-        </div>
-              
-               
-                
-                
-               
-               
 
 
 
-
-
-
-
-                
-            
-        </div>
-    </div>
-</div>
-
-
-    <style>
-        .containerProduct {
-            max-width: 900px;
-            margin: 30px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .cartAndWish .button-form {
-            display: inline-block;
-            margin-right: 10px;
-        }
-
-        .product-images img {
-            max-width: 250px;
-            transition: transform 0.3s ease;
-
-        }
-
-        .product-images img:hover {
-            transform: scale(1.4);
-        }
-
-
-        .product-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .product-description {
-            margin-bottom: 20px;
-        }
-
-
-        .quantity-selector {
-            margin-bottom: 20px;
-        }
-
-      
-
-        /* Responsive CSS */
-        @media screen and (max-width: 768px) {
-            .container {
-                padding: 10px;
+        <style>
+            .containerProduct {
+                max-width: 900px;
+                margin: 30px auto;
+                background-color: #fff;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
 
-            .product-image img {
-                width: 100%;
+            .cartAndWish .button-form {
+                display: inline-block;
+                margin-right: 10px;
             }
-        }
 
-        @media screen and (max-width: 480px) {
+            .product-images img {
+                max-width: 250px;
+                transition: transform 0.3s ease;
+
+            }
+
+            .product-images img:hover {
+                transform: scale(1.4);
+            }
+
+
             .product-name {
-                font-size: 20px;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 10px;
             }
 
-          
-        }
-    </style>
-
-    <script>
-        function confirmDelete() {
-            if (confirm("Are you sure you want to delete this product?")) {
-                document.getElementById('deleteForm').submit();
+            .product-description {
+                margin-bottom: 20px;
             }
-        }
-    </script>
 
-</body>
+
+            .quantity-selector {
+                margin-bottom: 20px;
+            }
+
+
+
+            /* Responsive CSS */
+            @media screen and (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                }
+
+                .product-image img {
+                    width: 100%;
+                }
+            }
+
+            @media screen and (max-width: 480px) {
+                .product-name {
+                    font-size: 20px;
+                }
+
+
+            }
+        </style>
+
+        <script>
+            function confirmDelete() {
+                if (confirm("Are you sure you want to delete this product?")) {
+                    document.getElementById('deleteForm').submit();
+                }
+            }
+        </script>
+
+    </body>
