@@ -9,11 +9,8 @@ const Order = require('../models/orderModel')
 const addToCart = async (req, res) => {
     try {
         const { productId, weight, price, priceAfterDiscount, productName, pricePer100g, totalQuantity } = req.body;
-
-
         const userId = req.session.user_id;
         // console.log(userId, 'is the userId addToCart');
-
         // console.log('productId=========:', productId);
         // console.log('Weight:', weight); //250
         // console.log('price:', price);//32.5
@@ -54,12 +51,10 @@ const addToCart = async (req, res) => {
             // console.log('  cartItem.subtotal, if cartItem is false  : ', cartItem.subtotal)
 
             if (!cartUser) {
-
                 cart = new Cart({
                     userId: userId,
                     cartItems: [cartItem._id]
                 })
-
             } else {
                 cart.cartItems.push(cartItem._id);
             };
@@ -180,9 +175,9 @@ const updateQuantity = async (req, res) => {
 
 const removeCartItem = async (req, res) => {
     try {
-        console.log('inside  removeCartItem')
+        // console.log('inside  removeCartItem')
         const cartItemId = req.params.id;
-        console.log(cartItemId, 'is the cartItemId removeCartItem')
+        // console.log(cartItemId, 'is the cartItemId removeCartItem')
 
         //find the cart item from the db
         const removedCartItem = await CartItem.findById(cartItemId);

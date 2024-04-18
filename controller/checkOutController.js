@@ -4,6 +4,7 @@ const Cart= require('../models/cartModel')
 const CartItem = require('../models/cartItemModel')
 const {ObjectId}= require('mongodb')
 const Order=require('../models/orderModel')
+const OrderItem=require('../models/orderItemModel')
 const {Product}= require('../models/categoryModel')
 const User= require('../models/userAuthenticationModel')
 const { isValidObjectId } = require('mongoose')
@@ -18,7 +19,7 @@ const loadcheckOut= async(req,res)=>{
         // mongodb.createFromHexString(user_id)
         // _id: ObjectId.createFromHexString(user_id)
         const existingAddress= await Address.find({})
-        console.log(existingAddress,'is the existingAddress')
+        // console.log(existingAddress,'is the existingAddress')
 
         const cart = await Cart.findOne({ userId: ObjectId.createFromHexString(user_id) }).populate({
             path: 'cartItems',
@@ -32,14 +33,11 @@ const loadcheckOut= async(req,res)=>{
         //  console.log(cart.cartItems[0].productId,'is the items in the cart')
         
         if (!cart) {
-           
             console.log('No cart found for user:', user_id);
             res.status(404).send('No cart found for user');
             return;
         }
          res.render('checkOutPge',{user_id,existingAddress,cart})
-      
-     
         
     } catch (error) {
         console.log('Error while loading checkout page.',error.message);

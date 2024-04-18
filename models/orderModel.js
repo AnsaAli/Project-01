@@ -10,38 +10,18 @@ const orderSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'UserAuth',
         require: true
-    },
-    product_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Product',
-        require: true
-    },
-    orderedWeight: [{
-        name: {
-            type: String,
-        },
-        weight: {
-            type: Number
-        }
-    }],
-    cartItems:{
-        type: Schema.Types.ObjectId,
-        ref: 'CartItem',
-    }
-    ,
-    totalPrice: {
-        type: Number,
-        require: true
-    },
+    } ,
+    orderItems: [{
+            type: Schema.Types.ObjectId,
+            ref: 'OrderItem',
+        }],
     discountAmount: {
         type: Number,
         default: 0
     },
-    stockLeft: {
+    finalPrice: {
         type: Number,
-      
-    }
-    ,
+    },
     shippingAddress: {
         type: Schema.Types.ObjectId,
         ref: 'UserAddress',
@@ -50,7 +30,6 @@ const orderSchema = new Schema({
     paymentMethod: {
         type: String,
         require: true
-
     },
     orderDate: {
         type: Date,
@@ -59,7 +38,6 @@ const orderSchema = new Schema({
     paymentStatus: {
         type: String,
         require: true
-
     },
     orderStatus: {
         type: String,

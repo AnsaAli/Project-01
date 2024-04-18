@@ -120,20 +120,14 @@
                                                         <input type="hidden" value=" <%= item.weight %>" name="weight">
                                                     </td>
                                                     <td>
-                                                        <%= item.price %>
+                                                        <%= item.subtotal %>
+                                                        <input type="hidden" name="price"
+                                                        value="  <%= item.subtotal %>">
                                                     </td>
                                                 </tr>
-                                                <!-- <% let totalWeightLeft=0; cart.cartItems.forEach(item=> {
-                                                    totalWeightLeft += (item.productId.totalQuantity - item.weight);
-                                                    });
-                                                    %>
-                                                    <input type="hidden" value="<%= totalWeightLeft %>"
-                                                        name="weightLeft">-->
-                                                          <!--To send the product id to backend-->
-                                                    <input type="hidden" name="productId"
-                                                    value=" <%= item.productId._id %>">
+                                            <!-- send product id to controller -->
+                                                <input type="hidden" name="productId[]" value="<%= item.productId._id %>">
                                                 <% }); %>
-
                                                     <!-- Subtotal -->
                                                     <tr>
                                                         <th>SubTotal</th>

@@ -8,8 +8,8 @@ const User = require('../models/userAuthenticationModel')
 const shortid = require('shortid');
 const { ObjectId } = require('mongodb')
 
-
 const Order = require('../models/orderModel')
+const OrderItem = require('../models/orderItemModel')
 
 
 const loadUserOrder = async (req, res) => {
@@ -52,54 +52,90 @@ const placeOrder = async (req, res) => {
     try {
         //console.log(req.body)
         const userId = req.session.user_id;
-        // console.log(userId, 'is the userId')
-        const productId= (req.body.productId).trim();
-        console.log('productId: ',productId)
-        const { items, weight, totalAmount, shippingAddress } = req.body;
+        console.log(userId, 'is the userId')
+
+        const { items, weight, price, totalAmount, shippingAddress } = req.body;
+        console.log('items: ', items, 'weight: ', weight, 'price : ', price, 'totalAmount: ', totalAmount, 'shippingAddress: ', shippingAddress)
         // console.log(items, totalAmount, shippingAddress, 'is the datas')
 
-        const order_id = shortid.generate();
 
-        let orderedWeight;
-        if (Array.isArray(items)) {
-            // If items is an array, map it to orderedWeight
-            orderedWeight = items.map((itemName, index) => ({
-                name: itemName,
-                weight: weight[index]
-            }));
-        } else {
-            // If only one product is ordered, create an array with a single object
-            orderedWeight = [{
-                name: items,
-                weight: weight
-            }];
-        }
-
-        // const cartItem= await CartItem.findById({userId})
-        // Create a new order document
+        let orderId = shortid.generate();
+        console.log('orderId: ', orderId)
         const order = new Order({
-            order_id: order_id,
+            order_id: orderId,
             user_id: userId,
-            product_id: ObjectId.createFromHexString(productId),
-            items: items,
-            totalPrice: totalAmount,
-            orderedWeight: orderedWeight,
+            orderItems: [],
+            discountAmount: 0,
+            finalPrice: totalAmount,
             shippingAddress: shippingAddress,
-            paymentMethod: 'Cash on delevery',
-            paymentStatus: 'Cash on delevery',
+            paymentMethod: 'Cash on delivery',
+            paymentStatus: 'Cash on delivery',
             orderStatus: 'clientSideProcessing'
-        })
+        });
+        console.log('=================================78')
+         // Save new order
+         await order.save();
+
+        const productIds = req.body.productId.map(productId => productId.trim());
+
+        for (const productId of productIds) {
+            let orderItem = await OrderItem.findOne({ product_id: productId });
+
+            if (!orderItem) {
+                orderItem = new OrderItem({
+                    user_id: userId,
+                    product_id: productId,
+                    orderedWeight: [{
+                        name: items[productIds.indexOf(productId)],
+                        weight: weight[productIds.indexOf(productId)],
+                        price: price[productIds.indexOf(productId)]
+                    }],
+                    totalPrice: totalAmount
+                });
+            } else {
+                
+            }
+
+            await orderItem.save();
+            console.log(orderItem._id, 'orderItem._id=================================105')
+
+            order.orderItems.push(orderItem._id);
+        }
+        console.log('=================================109')
+
         await order.save();
-       
+
+
+        // console.log('=================================91')
+
+        // //update quantity in product collection.
+        // for (const item of orderedWeight) {
+        //     for (const productId of productIds) {
+        //         if (orderItem) {
+        //             const orderWeight = item.weight;
+        //             const ProductWeight = await Product.findById(productId)
+        //             console.log('ProductWeight.totalQuantity: ', ProductWeight.totalQuantity)
+        //             if (ProductWeight.totalQuantity > 0) {
+        //                 let weightInGrams = ProductWeight.totalQuantity * 1000;
+        //                 let updatedQuantity = (weightInGrams - orderWeight) / 1000;
+        //                 console.log('updatedQuantity: ', updatedQuantity)
+        //                 await Product.updateMany({ _id: productId }, { totalQuantity: updatedQuantity });
+        //             } else {
+        //                 console.log('No stock.')
+        //             }
+        //         }
+        //     }
+        // }
+        // console.log('=================================111')
+        await CartItem.deleteMany({ userId: userId })
+        console.log('CartItem deleted================================91')
         await Cart.deleteOne({ userId: userId });
         console.log('Cart deleted================================91')
-        await CartItem.deleteOne({ userId: userId })
-        console.log('CartItem deleted================================91')
-
         console.log('Order placed successfully')
-        res.redirect('/successOrder')
+        res.redirect('/successOrder');
+
     } catch (error) {
-        console.log('Error, while placing the order ', error.message)
+        console.log('Error, while placing the order ', error)
     }
 }
 
