@@ -175,30 +175,25 @@ const updateQuantity = async (req, res) => {
 
 const removeCartItem = async (req, res) => {
     try {
-        // console.log('inside  removeCartItem')
+       
         const cartItemId = req.params.id;
-        // console.log(cartItemId, 'is the cartItemId removeCartItem')
-
-        //find the cart item from the db
-        const removedCartItem = await CartItem.findById(cartItemId);
-        if (!removedCartItem) {
-            return res.status(404).json({ error: 'Cart item not found' });
-        }
-        // Find the user's cart
         const userId = req.session.user_id;
+        // console.log(cartItemId, 'is the cartItemId removeCartItem')
+       
         const cart = await Cart.findOne({ userId });
-
-        // Remove the cart item ID from the cart's cartItems array
+        if (!cart) {
+            return res.status(404).json({ error: 'Cart not found' });
+        }
+        
+        // Remove the cart item ID from the cart's cartItems 
         cart.cartItems.pull(cartItemId);
-
-        // Subtract the removed item's price from the total price
-        cart.totalPrice -= removedCartItem.price;
-
-        // Save the updated cart to the database
         await cart.save();
 
         // Remove the cart item from the database
         await CartItem.findByIdAndDelete(cartItemId);
+        if (cart.cartItems.length === 0) {
+            await Cart.deleteOne({ userId });
+        }
 
         res.redirect('/viewCartItems')
     } catch (error) {

@@ -97,12 +97,14 @@
                             <h2><a href="shop-product-right.html">
                                 <%= product.productName %>
                               </a></h2>
-                            <div class="rating-result" title="90%">
-                              <span>
+                              <!-- rating -->
+                            <div  title="90%"> 
+                              <!-- <span>
                                 <span>90%</span>
-                              </span>
+                              </span> -->
                             </div>
                             <div class="product-price">
+                              <% if(product.totalQuantity <=0 ) {%> <p style="color: red;">Out Of Stock </p> <% }%>
                               <select name="selectedProduct">
                                 <% product.weightOptions.forEach(option=> { %>
                                   <option

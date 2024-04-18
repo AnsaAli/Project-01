@@ -24,9 +24,9 @@
                             <h4>
                                 <%= productData.productName%>
                             </h4>
+                            <% if(productData.totalQuantity <=0 ) {%> <p style="color: red;">Out Of Stock </p> <% }%>
+
                         </div>
-
-
                         <div class="quantity-selector  m-4">
                             <label for="quantity">Available Quantities</label>
                             <div class="">
@@ -43,7 +43,7 @@
                                                     <div class=""
                                                         style="border: 1px solid #333; padding: 5px; border-radius: 8px;  margin-bottom: 5px; ">
 
-                                                        <a <% if (productData.totalQuantity === 0) { %> disabled <% } %>
+                                                        <a <% if (productData.totalQuantity === 0) { %> style="pointer-events: none; opacity: 0.5;" <% } %>
                                                             href="#"
                                                             class="p-2 d-flex justify-content-between align-items-center"
                                                             style="font-size: 20px;"
@@ -63,7 +63,7 @@
                                                     <% }else { %>
                                                         <div class=""
                                                             style="border: 1px solid #333; padding: 5px; border-radius: 8px; margin-bottom: 5px; ">
-                                                            <a <% if (productData.totalQuantity === 0) { %> disabled <% } %>
+                                                            <a <% if (productData.totalQuantity === 0) { %> style="pointer-events: none; opacity: 0.5;" <% } %>
                                                                 href="#"
                                                                 class="p-2 d-flex justify-content-between align-items-center"
                                                                 style="font-size: 20px;"

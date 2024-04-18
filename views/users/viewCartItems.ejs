@@ -70,7 +70,7 @@
                                                     <td class="text-right " data-title="Weight" id="cartItemWeight">
 
                                                         <span class="weight-val">
-                                                            <%= cartItem.weight %>g
+                                                            <%= cartItem.weight %> g
                                                         </span>
                                                     </td>
                                                     <td class="price" data-title="Price"><span> ₹<%=cartItem.productId.weightOptions[0].priceAfterDiscount %>
@@ -105,12 +105,13 @@
 
 
                                                     <td class="text-right" data-title="Subtotal ">
-                                                        <span class="subtotal-val" >₹ <%= cartItem.subtotal %> </span>
+                                                        <span class="subtotal-val" >₹ <%= cartItem.subtotal%> </span>
                                                     </td>
 
                                                     <td class="action" data-title="Remove"><a
                                                             href="/removeCartItem/<%= cartItem._id %>"
-                                                            class="text-muted"><i class="fi-rs-trash"></i></a></td>
+                                                            class="text-muted"><i class="fi-rs-trash"></i></a>
+                                                    </td>
                                                 </tr>
 
                                                 <!-- <tr>
@@ -119,7 +120,6 @@
                                                                 class="fi-rs-cross-small"></i> Clear Cart</a>
                                                     </td>
                                                 </tr> -->
-                                                
                                                 <% }); %>
                                                 <tr>
                                                     <td colspan="6" class="text-right cart-total-price" data-title="totalPrice ">
@@ -137,9 +137,7 @@
                                                             </td>
                                                         </tr>
                                                         <% } %>
-
                                     </tbody>
-                                    
                                 </table>
                             </div>
                             <div class="cart-action text-end">
@@ -147,7 +145,6 @@
                                     Shopping</a>
                                 <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i
                                         class="fi-rs-shuffle mr-10"></i>Checkout</a>
-
                             </div>
                             <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
 
