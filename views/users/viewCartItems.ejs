@@ -27,6 +27,11 @@
         <main class="main">
             <div class="page-header breadcrumb-wrap">
                 <div class="container">
+                    <% if (typeof error !='undefined') { %>
+                        <div class="alert alert-danger" role="alert">
+                            <%= error %>
+                        </div>
+                    <% } %>
                     <div class="breadcrumb">
                         <a href="/home" rel="nofollow">Home</a>
                         <span></span> Shop
@@ -143,7 +148,7 @@
                                 <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue
                                     Shopping</a>
                                 <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i
-                                        class="fi-rs-shuffle mr-10"></i>Checkout</a>
+                                        class="fi-rs-shuffle mr-10" ></i>Checkout</a>
                             </div>
                             <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
 
