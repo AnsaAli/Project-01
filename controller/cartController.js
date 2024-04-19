@@ -5,7 +5,6 @@ const Cart = require('../models/cartModel')
 const CartItem = require('../models/cartItemModel')
 const Order = require('../models/orderModel')
 
-
 const addToCart = async (req, res) => {
     try {
         const { productId, weight, price, priceAfterDiscount, productName, pricePer100g, totalQuantity } = req.body;
@@ -67,11 +66,11 @@ const addToCart = async (req, res) => {
         const updatedCart = await Cart.findById(cart._id).populate('cartItems');
         let totalPrice = 0;
         updatedCart.cartItems.forEach(item => {
-            totalPrice += item.subtotal;
+            totalPrice += item.subtotal
             console.log('totalPrice of item: ', totalPrice);
         });
 
-        updatedCart.totalPrice = totalPrice;
+        updatedCart.totalPrice = totalPrice.toFixed();
         console.log('updatedCart:=========78', updatedCart)
         await updatedCart.save();
 
@@ -85,6 +84,7 @@ const addToCart = async (req, res) => {
             .json({ error: 'Internal server error' });
     }
 };
+
 const updateQuantity = async (req, res) => {
     try {
         const { productId, action } = req.body;
@@ -92,12 +92,14 @@ const updateQuantity = async (req, res) => {
         const product_id = productId.trim();
         // console.log('productId:', productId)
         let productData = await Product.findById(product_id)
-        //ANASconsole.log('priceAfterDiscount:', priceAfterDiscount);
-        //ANASlet priceper1g = (productData.pricePer100g) / 100;
+        let priceper1g = (productData.weightOptions[0].priceAfterDiscount/100);
 
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
         let cartItem = await CartItem.findOne({ productId: product_id }).populate('productId');
-        let priceper1g = (cartItem.price) / 100; //ANAS
+        //let priceper1g = (cartItem.price/cartItem.weight)*(cartItem.quantity); 
+        console.log('cartItem.price: ',cartItem.price)
+        console.log('cartItem.weight: ',cartItem.weight)
+        console.log('priceper1g: ',priceper1g)
 
         if (!cartItem) {
             return res.status(404).json({ error: 'Cart item not found' });
@@ -107,15 +109,22 @@ const updateQuantity = async (req, res) => {
         if (action === 'increment') {
             if (cartItem) {
                 cartItem.quantity += 1;
+                console.log('increment  cartItem.quantity: ',  cartItem.quantity)
                 cartItem.weight += cartItem.userAddedWeight[cartItem.userAddedWeight.length - 1];
+                console.log('increment cartItem.weight: ',  cartItem.weight)
                 cartItem.userAddedWeight.push(cartItem.userAddedWeight[length - 1]); //user added weight need to push
-                cartItem.subtotal = (priceper1g * cartItem.weight).toFixed(2);
+                cartItem.subtotal = ((priceper1g * cartItem.weight)).toFixed(2);
+                console.log('increment cartItem.subtotal: ',    cartItem.subtotal)
+
             }
         } else if (action === 'decrement') {
             if (cartItem.quantity > 1) {
                 cartItem.quantity -= 1;
+                console.log('  cartItem.quantity: decrement ',  cartItem.quantity)
                 cartItem.weight -= cartItem.userAddedWeight[length - 1];
+                console.log('decrement cartItem.weight: ',  cartItem.weight)
                 cartItem.subtotal = (priceper1g * cartItem.weight).toFixed(2);
+                console.log('decrement cartItem.subtotal: ',    cartItem.subtotal)
                 cartItem.userAddedWeight.pop();
                 // console.log(' cartItem.weight: decrement', cartItem.weight);
             }
@@ -141,12 +150,13 @@ const updateQuantity = async (req, res) => {
         const updatedCart = await Cart.findById(cart._id).populate('cartItems');
         let totalPrice = 0;
         updatedCart.cartItems.forEach(item => {
-            totalPrice += item.subtotal;
-            // console.log('totalPrice of item: ', totalPrice);
+            console.log('item.subtotal: ', item.subtotal);
+            totalPrice += item.subtotal
+            console.log('totalPrice of item: ', totalPrice);
         });
 
-        updatedCart.totalPrice = totalPrice;
-        // console.log('updatedCart:=========78', updatedCart)
+        updatedCart.totalPrice = totalPrice.toFixed(2);
+         console.log('updatedCart.totalPrice:==================158', updatedCart.totalPrice)
         await updatedCart.save();
         // console.log('updatedCart.totalPrice:', updatedCart.totalPrice)
         res.status(200).json({ message: 'Quantity updated successfully', quantity: cartItem.quantity, weight: cartItem.weight, subtotal: cartItem.subtotal, totalPrice: updatedCart.totalPrice });
@@ -156,46 +166,39 @@ const updateQuantity = async (req, res) => {
     }
 };
 
-// const listCartItems = async (req, res) => {
-//     try {
-//         console.log('in listCartItems function')
-//         const user_id = req.session.user_id
-//         console.log(user_id, '===========is user_id listCartItems')
-
-//         const user = await User.find({ user_id })
-//         console.log(user, '===========is user listCartItems')
-
-
-//         res.status(200).json({ cartItems });
-//     } catch (error) {
-//         console.log('Error while listing the cart items', error)
-//         res.status(500).json({ error: 'Internal server error' });
-//     }
-// }
-
 const removeCartItem = async (req, res) => {
     try {
-       
         const cartItemId = req.params.id;
         const userId = req.session.user_id;
-        // console.log(cartItemId, 'is the cartItemId removeCartItem')
        
-        const cart = await Cart.findOne({ userId });
+        const cart = await Cart.findOne({ userId }).populate('cartItems');
         if (!cart) {
             return res.status(404).json({ error: 'Cart not found' });
         }
         
-        // Remove the cart item ID from the cart's cartItems 
+        // Find the cart item to be removed
+        const cartItemToRemove = cart.cartItems.find(item => item._id.toString() === cartItemId);
+        if (!cartItemToRemove) {
+            return res.status(404).json({ error: 'Cart item not found' });
+        }
+        
+        // subtract  price from the total price
+        cart.totalPrice -= cartItemToRemove.price;
+
+        // Remove cart item from cart's cartItems
         cart.cartItems.pull(cartItemId);
+
         await cart.save();
 
         // Remove the cart item from the database
         await CartItem.findByIdAndDelete(cartItemId);
+
+        // If cart is empty, delete the cart
         if (cart.cartItems.length === 0) {
             await Cart.deleteOne({ userId });
         }
 
-        res.redirect('/viewCartItems')
+        res.redirect('/viewCartItems');
     } catch (error) {
         console.log('Error while removing the items from the cart', error.message);
         res.status(500).json({ error: 'Internal server error' });
@@ -222,6 +225,7 @@ const viewCartItems = async (req, res) => {
         console.log('Error while loading the view cart items')
     }
 }
+
 module.exports = {
     addToCart,
     // listCartItems,

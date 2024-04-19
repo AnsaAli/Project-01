@@ -346,15 +346,25 @@ const addProducts = async (req, res) => {
 
         console.log('================================350 B addProducts')
        
-        let price1g = (pricePer100g / 100).toFixed(2);
-        let price250 = (price1g * 250).toFixed(2);
-        let price500 = (price1g * 500).toFixed(2);
-        let price1Kg =(price1g * 1000).toFixed(2);
+        let price1g = (pricePer100g / 100);
+        console.log('price1g : ',price1g)
+        let price100g=(price1g * 100);
+        console.log('price100g : ',price100g)
+        let price250 = (price1g * 250);
+        console.log('price250 : ',price250)
+        let price500 = (price1g * 500);
+        console.log('price500 : ',price500)
+        let price1Kg =(price1g * 1000);
+        console.log('price1Kg : ',price1Kg)
 
-        let offerprice100 = (pricePer100g - (pricePer100g * offerPercentage / 100)).toFixed(2);
-        let offerprice250 = (price250 - (price250 * offerPercentage / 100)).toFixed(2);
-        let offerprice500 =(price500 - (price500 * offerPercentage / 100)).toFixed(2);
-        let offerprice1kg = (price1Kg - (price1Kg * offerPercentage / 100)).toFixed(2);
+        let offerprice100 = price100g - (price100g * offerPercentage / 100);
+        console.log('offerprice100 : ',offerprice100)
+        let offerprice250 =  price250 - (price250 * offerPercentage / 100);
+        console.log('offerprice250 : ',offerprice250)
+        let offerprice500 = price500 - (price500 * offerPercentage / 100);
+        console.log('offerprice500 : ',offerprice500)
+        let offerprice1kg = price1Kg - (price1Kg * offerPercentage / 100);
+        console.log('offerprice1kg : ',offerprice1kg)
 
 
         console.log('================================890 C addProducts')

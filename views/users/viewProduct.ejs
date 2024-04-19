@@ -47,12 +47,12 @@
                                                             href="#"
                                                             class="p-2 d-flex justify-content-between align-items-center"
                                                             style="font-size: 20px;"
-                                                            onclick="addToCart('<%= productData._id %>', <%= option.weight %>, <%= option.weightPrice.toFixed(2) %>, <%= option.priceAfterDiscount.toFixed(2) %>, '<%= productData.productName %>', <%= productData.weightOptions[0].priceAfterDiscount.toFixed(2) %>, <%= productData.totalQuantity %> )">
+                                                            onclick="addToCart('<%= productData._id %>', <%= option.weight %>, <%= option.weightPrice %>, <%= option.priceAfterDiscount %>, '<%= productData.productName %>', <%= productData.weightOptions[0].priceAfterDiscount %>, <%= productData.totalQuantity %> )">
                                                                                     <span>
                                                                                         weight:  <%= option.weight %>g 
                                                                                     </span>
                                                                                     <span>Price: ₹<%=
-                                                                                            option.priceAfterDiscount.toFixed(2)%>
+                                                                                            option.priceAfterDiscount %>
                                                                                     </span>
                                                                                     <span>
                                                                                         <i
@@ -67,7 +67,7 @@
                                                                 href="#"
                                                                 class="p-2 d-flex justify-content-between align-items-center"
                                                                 style="font-size: 20px;"
-                                                                onclick="addToCart('<%= productData._id %>', <%= option.weight %>, <%= option.weightPrice.toFixed(2) %>, <%= option.priceAfterDiscount.toFixed(2) %>, '<%= productData.productName %>', <%= productData.weightOptions[0].priceAfterDiscount.toFixed(2) %>, <%= productData.totalQuantity %> )">
+                                                                onclick="addToCart('<%= productData._id %>', <%= option.weight %>, <%= option.weightPrice %>, <%= option.priceAfterDiscount%>, '<%= productData.productName %>', <%= productData.weightOptions[0].priceAfterDiscount %>, <%= productData.totalQuantity %> )">
 
                                                                                         <span>
                                                                                             weight:
@@ -75,7 +75,7 @@
                                                                                                 g
                                                                                         </span>
                                                                                         <span>Price: ₹<%=
-                                                                                                option.weightPrice.toFixed(2)
+                                                                                                option.priceAfterDiscount
                                                                                                 %>
                                                                                         </span>
                                                                                         <span>

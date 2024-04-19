@@ -44,8 +44,8 @@
                                         <tr class="main-heading">
                                             <th scope="col">Image</th>
                                             <th scope="col">Name</th>
-                                            <th scope="col">Weight</th>
-                                            <th scope="col">Unit Price</th>
+                                            <th scope="col">Weight (in g)</th>
+                                            <th scope="col">Unit Price (per 1kg)</th>
                                             <th scope="col">Quantity</th>
                                             <th scope="col">Subtotal</th>
                                             <th scope="col">Remove</th>
@@ -73,7 +73,7 @@
                                                             <%= cartItem.weight %> g
                                                         </span>
                                                     </td>
-                                                    <td class="price" data-title="Price"><span> ₹<%=cartItem.productId.weightOptions[0].priceAfterDiscount %>
+                                                    <td class="price" data-title="Price"><span> ₹<%=cartItem.productId.weightOptions[3].priceAfterDiscount %>
                                                                 </span></td>
                                                                 
                                                     <!-- <td class="text-center" data-title="Quantity">
@@ -102,7 +102,6 @@
                                                             </span>
                                                         </div>
                                                     </td>
-
 
                                                     <td class="text-right" data-title="Subtotal ">
                                                         <span class="subtotal-val" >₹ <%= cartItem.subtotal%> </span>
@@ -192,8 +191,8 @@
                             //    console.log(' quantityElement.text(response.quantity):', quantityElement.text(response.quantity))
                             weightEement.text(response.weight);
                             //    console.log('  weightEement.text(response.weight): ',  weightEement.text(response.weight))
-                            subtotalElement.text('₹' + response.subtotal.toFixed(2));
-                            $('.cart-total-price').text('Total Price: ₹' + response.totalPrice.toFixed(2));
+                            subtotalElement.text('₹' + response.subtotal);
+                            $('.cart-total-price').text('Total Price: ₹' + response.totalPrice);
 
                         },
                         error: function (xhr, status, error) {
