@@ -183,7 +183,7 @@ const removeCartItem = async (req, res) => {
         }
         
         // subtract  price from the total price
-        cart.totalPrice -= cartItemToRemove.price;
+        cart.totalPrice = (cart.totalPrice- cartItemToRemove.subtotal).toFixed(2);
 
         // Remove cart item from cart's cartItems
         cart.cartItems.pull(cartItemId);

@@ -9,47 +9,12 @@ const {Product}= require('../models/categoryModel')
 const User= require('../models/userAuthenticationModel')
 const { isValidObjectId } = require('mongoose')
 
-// const loadcheckOut= async(req,res)=>{
-//     try {
-//         const user_id = req.session.user_id
-//         console.log(user_id ,'========user_id ')
-//         // const user_id = req.session.user_id;
-//         // const user_id_ObjectId = mongoose.Types.ObjectId(user_id)
-//         console.log(isValidObjectId(user_id) ,'is the valid')
-//         // mongodb.createFromHexString(user_id)
-//         // _id: ObjectId.createFromHexString(user_id)
-//         const existingAddress= await Address.find({})
-//         // console.log(existingAddress,'is the existingAddress')
-
-//         const cart = await Cart.findOne({ userId: ObjectId.createFromHexString(user_id) }).populate({
-//             path: 'cartItems',
-//             populate: {
-//                 path: 'productId',
-//                 model: 'Product'
-//             }
-//         })
-//         //console.log(typeof cart, 'is the type of cart')
-//         // console.log(Array.isArray(cart), 'checking if the cart is array or not')
-//         //  console.log(cart.cartItems[0].productId,'is the items in the cart')
-        
-//         if (!cart) {
-//             console.log('No cart found for user:', user_id);
-//             res.status(404).send('No cart found for user');
-//             return;
-//         }
-//          res.render('checkOutPge',{user_id,existingAddress,cart})
-        
-//     } catch (error) {
-//         console.log('Error while loading checkout page.',error.message);
-//         res.status(500).send('Internal Server Error')
-//     }
-// }
 
 const loadcheckOut = async (req, res) => {
     try {
         const user_id = req.session.user_id;
         console.log(user_id, '========user_id ');
-
+       
         // Fetch existing address
         const existingAddress = await Address.find({});
 
@@ -61,7 +26,7 @@ const loadcheckOut = async (req, res) => {
                 model: 'Product'
             }
         });
-
+       
         // If no cart found, return 404
         if (!cart) {
             console.log('No cart found for user:', user_id);
@@ -77,6 +42,21 @@ const loadcheckOut = async (req, res) => {
               return res.render('viewCartItems', { error: 'Max allowed weight is 5kg/product, please reduce the weight to within limit. Cannot proceed with checkout.', cartData: cart });
              }
         });
+
+        //to show user available quantity left.
+        await Promise.all( cart.cartItems.map(async (element) => {
+            try {
+                console.log('ProductId: ', element.productId);
+                let product = await Product.findById(element.productId);  
+                console.log('product.totalQuantity: ',product.totalQuantity,'element.weight: ',element.weight)  
+                if((product.totalQuantity)*1000 < element.weight ){
+                    return res.render('viewCartItems', { error: `${product.productName} has only ${product.totalQuantity}kg available in stock.`, cartData: cart });
+                }
+           
+            } catch (error) {
+                console.error('Error updating product quantity:', error);
+            }
+        }));
 
         // Render the checkout page with user details, existing address, and cart
         res.render('checkOutPge', { user_id, existingAddress, cart });
