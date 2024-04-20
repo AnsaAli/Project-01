@@ -52,7 +52,6 @@ const loadcheckOut = async (req, res) => {
                 if((product.totalQuantity)*1000 < element.weight ){
                     return res.render('viewCartItems', { error: `${product.productName} has only ${product.totalQuantity}kg available in stock.`, cartData: cart });
                 }
-           
             } catch (error) {
                 console.error('Error updating product quantity:', error);
             }

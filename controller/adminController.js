@@ -99,6 +99,7 @@ const loadDashboard = async (req, res) => {
         console.log('inside load dashboard error page', error.message)
     }
 }
+
 const loadUserProfile = async (req, res) => {
     try {
         
@@ -660,13 +661,26 @@ const cancelOrder = async (req, res) => {
     try {
         const orderId = req.params.orderId;
         // console.log(orderId,'is the orderid')
-        const order = await Order.findById(orderId).populate('user_id');
+        const order = await Order.findById(orderId).populate('user_id').populate('orderItems');
         // console.log(order,'is the order=======cancelOrder')
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
         order.orderStatus = 'cancelled';
         await order.save();
+
+        await Promise.all(order.orderItems.map(async (element) => {
+            try {
+                console.log('ProductId: ', element.product_id);
+                let product = await Product.findById(element.product_id);
+                product.totalQuantity += (element.orderedWeight[0].weight)/1000;
+                await product.save();
+            } catch (error) {
+                console.error('Error updating product quantity:', error);
+            }
+        }));
+
+
         res.status(200).json({ message: 'Order cancelled successfully', orderId: order._id });
     } catch (error) {
         console.log('Error occure while canceling the order', error.message)
