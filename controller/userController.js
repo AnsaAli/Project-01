@@ -1,22 +1,22 @@
 const Cart = require('../models/cartModel')
 const CartItem = require('../models/cartItemModel')
-const  User = require('../models/userAuthenticationModel')
-const{ Category,Product} = require('../models/categoryModel')
-const UserAddress= require('../models/addressModel')
+const User = require('../models/userAuthenticationModel')
+const { Category, Product } = require('../models/categoryModel')
+const UserAddress = require('../models/addressModel')
 const bcrypt = require("bcrypt")
-const nodemailer=require('nodemailer')
+const nodemailer = require('nodemailer')
 const session = require('express-session')
 
-const seccurePassword= async(password)=>{
+const seccurePassword = async (password) => {
     try {
         // console.log(password +'Is the passwrd')
         const salt = await bcrypt.genSalt(10); // Use asynchronous version
         const passwordHash = await bcrypt.hash(password, salt);
         //console.log(passwordHash +'Is the passwrd')
         return passwordHash;
-        
+
     } catch (error) {
-       console.log(error.message) 
+        console.log(error.message)
     }
 }
 
@@ -35,120 +35,120 @@ const saveOtp = async (email, otp, expiresAt) => {
         }
         user.otp = otp;
         // Save expiration timestamp along with OTP
-        user.otp_expires_at = expiresAt; 
+        user.otp_expires_at = expiresAt;
         await user.save();
     } catch (error) {
         throw new Error("Error saving OTP to database" + error.message);
     }
 }
 
-const sendOtp= async (email,otp)=>{
+const sendOtp = async (email, otp) => {
     try {
         const otpTimestamp = Date.now();
-        const transporter= nodemailer.createTransport({
-            host:'smtp.gmail.com',
-            port:587,
-            secure:false,
-            requireTLS:true,
-            auth:{
-                user:'chinjuinbelfast@gmail.com',
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            requireTLS: true,
+            auth: {
+                user: 'chinjuinbelfast@gmail.com',
                 pass: 'pkprjnrryzjzfijw'
             }
         });
-        const mailoptions={
-            from:'chinjuinbelfast@gmail.com',
+        const mailoptions = {
+            from: 'chinjuinbelfast@gmail.com',
             to: email,
             subject: 'OTP for Email Verification',
             text: `Your OTP is: ${otp}, OTP is valid only for 5 minutes`
         }
-        
+
         await transporter.sendMail(mailoptions)
         return otpTimestamp
-        
+
     } catch (error) {
-        throw new Error("Error sending OTP to database" +error.message)
+        throw new Error("Error sending OTP to database" + error.message)
 
     }
 }
 
 ////////////////////signup\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-const loadRegister=async(req,res)=>{
+const loadRegister = async (req, res) => {
     try {
-        
+
         res.render('register')
     } catch (error) {
-        console.log("Error occure while loading register page"+error.message)
+        console.log("Error occure while loading register page" + error.message)
     }
 }
 
-const registerUser= async(req,res)=>{
+const registerUser = async (req, res) => {
     try {
-         //regular expression for to check the inputs
+        //regular expression for to check the inputs
         const nameRegex = /^[A-Za-z]+(?: [A-Za-z]+)?$/;
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-        if(!req.body.name ||!req.body.password || !req.body.email){
-            return res.render('register',{errorMessage:'All fields are mandatory!'})
+        if (!req.body.name || !req.body.password || !req.body.email) {
+            return res.render('register', { errorMessage: 'All fields are mandatory!' })
         }
-        
-        if((req.body.password).length <6){
-            return res.render('register',{errorMessage:'Password must be minimum of 6 charactors.'})
+
+        if ((req.body.password).length < 6) {
+            return res.render('register', { errorMessage: 'Password must be minimum of 6 charactors.' })
         }
-         if (!passwordRegex.test(req.body.password)) {
-            return res.render('register', { errorMessage: 'Password must be minimum of 8 characters,one capital letter and atleast one special charactor.'});
-         }
+        if (!passwordRegex.test(req.body.password)) {
+            return res.render('register', { errorMessage: 'Password must be minimum of 8 characters,one capital letter and atleast one special charactor.' });
+        }
         if (!nameRegex.test(req.body.name)) {
             return res.render('register', { errorMessage: 'Name may not include numbers or special characters.' });
         }
         if (!emailRegex.test(req.body.email)) {
             return res.render('register', { errorMessage: 'Please add a valid email ID' });
         }
-        const spassword=await seccurePassword(req.body.password)
-        const sconfirmpassword= await seccurePassword(req.body.confirmpassword)
-        if(req.body.password !== req.body.confirmpassword){
-            return res.render('register',{errorMessage:'Password is not matching'})
+        const spassword = await seccurePassword(req.body.password)
+        const sconfirmpassword = await seccurePassword(req.body.confirmpassword)
+        if (req.body.password !== req.body.confirmpassword) {
+            return res.render('register', { errorMessage: 'Password is not matching' })
         }
 
-         const existingUser = await User.findOne({email: req.body.email})
-        if(existingUser){
-            return res.render('register',{errorMessage:'Email already registered,Please verify your email by clicking resend OTP'})
+        const existingUser = await User.findOne({ email: req.body.email })
+        if (existingUser) {
+            return res.render('register', { errorMessage: 'Email already registered,Please verify your email by clicking resend OTP' })
         }
-         
-        const user= new User({
-            name:req.body.name,
+
+        const user = new User({
+            name: req.body.name,
             email: req.body.email,
-            password:spassword,
-            is_admin:0
-         })
-       const userData=await user.save();
-   
-            if(userData){
-                const otp= generateOTP();
-                const otpTimestamp = new Date();
-                otpTimestamp.setMinutes(otpTimestamp.getMinutes() +5)
-                await saveOtp(req.body.email,otp,otpTimestamp);
+            password: spassword,
+            is_admin: 0
+        })
+        const userData = await user.save();
 
-                //to make otp null after 5 minutes
-                setTimeout(async()=>{
-                    await  expireOtp(req.body.email)
-                }, 5*60*1000)
+        if (userData) {
+            const otp = generateOTP();
+            const otpTimestamp = new Date();
+            otpTimestamp.setMinutes(otpTimestamp.getMinutes() + 5)
+            await saveOtp(req.body.email, otp, otpTimestamp);
 
-                return res.render('veryfyOtp',{
-                    userData,
-                    successMessage:"Please verify your Email to complete the registration within 5 minutes",
-                    otpTimestamp
-                })
-            }else{
-                throw new Error('Error occurred while saving the user data');
-            }
+            //to make otp null after 5 minutes
+            setTimeout(async () => {
+                await expireOtp(req.body.email)
+            }, 5 * 60 * 1000)
 
-         } catch (error) {
-        console.log('Error occure while inserting the user data'+error)
+            return res.render('veryfyOtp', {
+                userData,
+                successMessage: "Please verify your Email to complete the registration within 5 minutes",
+                otpTimestamp
+            })
+        } else {
+            throw new Error('Error occurred while saving the user data');
+        }
+
+    } catch (error) {
+        console.log('Error occure while inserting the user data' + error)
         return res.render('register', { errorMessage: 'An error occurred. Please try again later.' });
     }
-} 
+}
 
 // Function to expire OTP after 5 minutes\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const expireOtp = async (email) => {
@@ -162,28 +162,28 @@ const expireOtp = async (email) => {
 
 // Function email\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-const loadExistingEmailVerification=async (req,res)=>{
+const loadExistingEmailVerification = async (req, res) => {
     try {
         res.render('verifyEmail')
     } catch (error) {
         console.log('Error while loading exixsting email verify', error.message)
     }
- 
+
 }
 
 const existingEmailVerification = async (req, res) => {
     try {
-        const {email}=req.body;
-        
-        const otp= generateOTP();
-        const otpTimestamp = await sendOtp(email,otp);
+        const { email } = req.body;
+
+        const otp = generateOTP();
+        const otpTimestamp = await sendOtp(email, otp);
         req.session.userData = { email, otp, otpTimestamp };
         // Calculate remaining time for OTP validity.............
-        const otpValidityPeriod = 5 * 60; 
+        const otpValidityPeriod = 5 * 60;
         const expiresAt = new Date();
-        expiresAt.setMinutes(expiresAt.getMinutes() + otpValidityPeriod); 
+        expiresAt.setMinutes(expiresAt.getMinutes() + otpValidityPeriod);
 
-        const userData=await saveOtp(email,otp,expiresAt);
+        const userData = await saveOtp(email, otp, expiresAt);
         // res.render('veryfyOtp',{successMessage: "OTP resent successfully!", otpTimestamp, otpValidityPeriod })
         // res.redirect('/veryfyOtp' + email);
         res.redirect('/existingEmailVerifyOTP');
@@ -193,8 +193,8 @@ const existingEmailVerification = async (req, res) => {
     }
 }
 
-const loadexistingEmailVerifyOTP= async(req,res)=>{
-     try {
+const loadexistingEmailVerifyOTP = async (req, res) => {
+    try {
         const userData = req.session.userData
         //console.log(userData._id,'is the id while loading existing email')
         if (userData) {
@@ -202,37 +202,37 @@ const loadexistingEmailVerifyOTP= async(req,res)=>{
         } else {
             res.render('verifyEmail', { errorMessage: 'User data not found. Please try again.' });
         }
-        
-     } catch (error) {
+
+    } catch (error) {
         console.log('Error while loading the existing email otp verify page', error.message)
         res.render('verifyEmail', { errorMessage: 'An error occurred. Please try again later.' });
-     }
+    }
 }
 
-const existingEmailVerifyOTP= async(req,res)=>{
+const existingEmailVerifyOTP = async (req, res) => {
     try {
         const { email, otp } = req.body;
         //console.log(req.body.otp, 'is the otp')
-        const userData = await User.findOne({ email }); 
+        const userData = await User.findOne({ email });
         //console.log(userData.otp,'is the otp userdata')
-        
+
         if (!userData || userData.otp !== otp) {
             return res.render('verifyEmail', { errorMessage: 'Invalid OTP or email address.' });
         }
         userData.is_verified = true;
         userData.otp = null;
         await userData.save();
-             // OTP verification successful
-             res.render('login', { successMessage: 'OTP matched, user verified' })
-         
+        // OTP verification successful
+        res.render('login', { successMessage: 'OTP matched, user verified' })
+
     } catch (error) {
-        console.log('Error while verify otp existing email page',error.message)
+        console.log('Error while verify otp existing email page', error.message)
         res.render('verifyEmail', { errorMessage: 'An error occurred. Please try again later.' })
     }
 
 }
 
-const loadresendOTP= async(req,res)=>{
+const loadresendOTP = async (req, res) => {
     try {
         res.render('resendOtp')
     } catch (error) {
@@ -240,50 +240,50 @@ const loadresendOTP= async(req,res)=>{
     }
 }
 
-const resendOTP = async (req,res)=>{
+const resendOTP = async (req, res) => {
     try {
-        const {email}=req.body;
-        
-        const otp= generateOTP();
-        const otpTimestamp = await sendOtp(email,otp);
-        // Calculate remaining time for OTP validity.............
-        const otpValidityPeriod = 5 * 60; 
-        const expiresAt = new Date();
-        expiresAt.setMinutes(expiresAt.getMinutes() + otpValidityPeriod); 
+        const { email } = req.body;
 
-        const userData=await saveOtp(email,otp,expiresAt);
+        const otp = generateOTP();
+        const otpTimestamp = await sendOtp(email, otp);
+        // Calculate remaining time for OTP validity.............
+        const otpValidityPeriod = 5 * 60;
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + otpValidityPeriod);
+
+        const userData = await saveOtp(email, otp, expiresAt);
         // res.render('veryfyOtp',{successMessage: "OTP resent successfully!", otpTimestamp, otpValidityPeriod })
         // res.redirect('/veryfyOtp' + email);
-        return res.render('veryfyOtp',{
+        return res.render('veryfyOtp', {
             userData,
-            successMessage:"Please verify your Email to complete the registration within 5 minutes",
+            successMessage: "Please verify your Email to complete the registration within 5 minutes",
             otpTimestamp
         })
-        
+
     } catch (error) {
-        console.log('Error occurred while resending the OTP, ' +error.message)
+        console.log('Error occurred while resending the OTP, ' + error.message)
     }
 }
 
-const loadVerifyOtp= async(req,res)=>{
+const loadVerifyOtp = async (req, res) => {
     try {
         const { email } = req.query
-       
-        const userData= await User.findOne({email:email})
-        if(userData){
-            console.log(userData,'is the data')
+
+        const userData = await User.findOne({ email: email })
+        if (userData) {
+            console.log(userData, 'is the data')
             res.render('verifyOtp', { userData: userData })
-        }else{
+        } else {
             console.log('not found')
             res.render('verifyOtp', { userData: null })
         }
         // res.render('veryfyOtp')
     } catch (error) {
-        console.log('Error while loading verifyOtp page' +error.message)
+        console.log('Error while loading verifyOtp page' + error.message)
     }
 }
 
-const veryfyOtp= async (req,res)=>{
+const veryfyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
         if (!email || !otp) {
@@ -292,49 +292,49 @@ const veryfyOtp= async (req,res)=>{
         const user = await User.findOne({ email: email, otp: otp });
         //console.log(email +'is the email')
         //console.log(otp +'is the otp')
-        
-        if(user){
+
+        if (user) {
             user.is_verified = true;
-            user.otp=null
+            user.otp = null
             await user.save()
-           //console.log('checking otp verified')
-            res.render('login',{successMessage:'OTP matched, user verified'})
-        }else{
+            //console.log('checking otp verified')
+            res.render('login', { successMessage: 'OTP matched, user verified' })
+        } else {
             // console.log('checking  resendotp page')
-            res.render('resendOtp',{errorMessage:'Invalid OTP, please resend the OTP again.'})
+            res.render('resendOtp', { errorMessage: 'Invalid OTP, please resend the OTP again.' })
         }
     } catch (error) {
-        console.log('Error occured while verifying the otp;'+error.message)
+        console.log('Error occured while verifying the otp;' + error.message)
         return res.status(500).json({ errorMessage: 'An error occurred while verifying the OTP.' });
     }
 }
 
 ////////////////////// user login\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-const loadLogin=async (req,res)=>{
+const loadLogin = async (req, res) => {
     try {
-        const user_id= req.session.user_id
-        if(user_id){
+        const user_id = req.session.user_id
+        if (user_id) {
             return res.redirect('/home')
         }
-        
-         res.render('login')
+
+        res.render('login')
     } catch (error) {
-        
-        console.log('Error while loading login page' +error.message);
+
+        console.log('Error while loading login page' + error.message);
         res.status(500).send('Internal Server Error');
     }
 }
 
-const verifyLogin=async (req,res)=>{
+const verifyLogin = async (req, res) => {
     try {
-        const email= req.body.email
-        const password= req.body.password
+        const email = req.body.email
+        const password = req.body.password
         //console.log('email and password'+email +password)
-        const userdata= await User.findOne({email})
-       
+        const userdata = await User.findOne({ email })
+
         //console.log(userdata._id,userdata.email,userdata.password +'is the id')
         if (userdata) {
-            
+
             if (!userdata.is_blocked) {
                 const passwrdCheck = await bcrypt.compare(password, userdata.password);
                 if (passwrdCheck) {
@@ -358,7 +358,41 @@ const verifyLogin=async (req,res)=>{
     }
 }
 
-const userLogout=async (req,res)=>{
+const loadverifyGoogleSignin = async (req, res) => {
+    try {
+        let profile = req.session.passport.user._json;
+        console.log(profile, 'req.user==========')
+        
+        const email = profile.email;
+        if (profile.email_verified) {
+            //req.session.user_id=profile.sub;
+            const userData = await User.findOne({ email });
+            if (!userData) {
+                const user = new User({
+                    name: profile.name,
+                    email: profile.email,
+                    password: 'dummyPassword',
+                    is_admin: 0,
+                    is_blocked: false,
+                    is_verified: profile.email_verified,
+                    is_deleted: false
+                })
+                await user.save();
+                req.session.user_id = user._id
+            } else {
+                req.session.user_id = userData.id;
+            }
+            res.redirect('/home');
+        } else {
+            res.render('login', { errorMessage: 'Gmail is not verified.' });
+        }
+
+    } catch (error) {
+        console.log('Error while verify google sign in', error)
+    }
+}
+
+const userLogout = async (req, res) => {
     try {
         req.session.destroy();
         res.redirect('/login')
@@ -370,87 +404,87 @@ const userLogout=async (req,res)=>{
 }
 
 ////////////////////// user forgot login\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-const loadForget=async (req,res)=>{
+const loadForget = async (req, res) => {
     try {
         res.render('forgotPass')
     } catch (error) {
-        console.log('Error occure while loading the forgot page' +error.message)
+        console.log('Error occure while loading the forgot page' + error.message)
     }
 }
 
-const verifyForgetLogin=async (req,res)=>{
+const verifyForgetLogin = async (req, res) => {
     try {
-        const {email,password,confirmpassword}= req.body
-        const existingEmail= await User.findOne({email})
-        if(!existingEmail){
-            return res.render('forgotPass',{errorMessage:'Email not found. Please enter a valid email.'})
+        const { email, password, confirmpassword } = req.body
+        const existingEmail = await User.findOne({ email })
+        if (!existingEmail) {
+            return res.render('forgotPass', { errorMessage: 'Email not found. Please enter a valid email.' })
         }
 
-        if(password !== confirmpassword){
-            return res.render('forgotPass',{errorMessage:'Password do not match.'})
+        if (password !== confirmpassword) {
+            return res.render('forgotPass', { errorMessage: 'Password do not match.' })
         }
 
-        existingEmail.password= await seccurePassword(password)
+        existingEmail.password = await seccurePassword(password)
         await existingEmail.save()
 
         return res.redirect('/login')
     } catch (error) {
         console.log('Error occured while resetting the passowrd')
-        return res.render('forgotPass',{errorMessage:'An error occurred while resetting the passwors. Pls,try'})
+        return res.render('forgotPass', { errorMessage: 'An error occurred while resetting the passwors. Pls,try' })
     }
 }
 
 ////////////////////// user profile\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-const loadUserProfile= async(req,res)=>{
+const loadUserProfile = async (req, res) => {
     try {
         const userData = await User.findById(req.session.user_id).populate('address')
-        if(!userData){
-            return res.render('home',{errorMessage:'Userprofile not found.'})
+        if (!userData) {
+            return res.render('home', { errorMessage: 'Userprofile not found.' })
         }
-       
-        res.render('userProfile',{userData: userData})
+
+        res.render('userProfile', { userData: userData })
     } catch (error) {
         console.log("Error while loading user profile", error.message)
-        res.render('home',{errorMessage:'Error while loading user profile.'})
-        
+        res.render('home', { errorMessage: 'Error while loading user profile.' })
+
     }
 }
 
-const loadUserEditAddress= async(req,res)=>{
+const loadUserEditAddress = async (req, res) => {
     try {
         // console.log( '========')
         const index = req.params.index;
         const userData = await User.findById(req.session.user_id).populate('address');
-       
-         if (!userData || !userData.address[index]) {
+
+        if (!userData || !userData.address[index]) {
             return res.render('editUserProfile', { errorMessage: 'Address not found' });
         }
 
-         const addressData = userData.address[index];
+        const addressData = userData.address[index];
         //  console.log(addressData,'is the addressData')
-       
-        res.render('editUserProfile', { userData: userData, addressData: addressData,index: index });
+
+        res.render('editUserProfile', { userData: userData, addressData: addressData, index: index });
     } catch (error) {
         console.log('Error while loading the edit user profile page.', error.message)
-      
+
     }
 }
 
-const updateUserAddress= async(req,res)=>{
+const updateUserAddress = async (req, res) => {
     try {
         console.log('============460')
-        const { index } = req.params; 
+        const { index } = req.params;
         console.log(index, 'is the index')
-        const { 
+        const {
             house_num,
             address_customer_name,
-            mobile_num, 
-            apartment_name, 
+            mobile_num,
+            apartment_name,
             city,
             landmark,
-            address_type, 
-            district, 
+            address_type,
+            district,
             pincode } = req.body;
 
         //  console.log( house_num,
@@ -462,41 +496,41 @@ const updateUserAddress= async(req,res)=>{
         //     address_type, 
         //     district, 
         //     pincode, 'are the inputs')
-     
+
         const userId = req.session.user_id;
 
-        console.log(userId,'s the id')
+        console.log(userId, 's the id')
 
         const user = await User.findById(userId).populate('address');
         if (!user || !user.address[index]) {
             return res.status(404).json({ error: 'Address not found' });
         }
 
-         // Update the address fields
-         const addressToUpdate = user.address[index];
-         addressToUpdate.house_num = house_num;
-         addressToUpdate.address_customer_name = address_customer_name;
-         addressToUpdate.apartment_name = apartment_name;
-         addressToUpdate.city = city;
-         addressToUpdate.mobile_num = mobile_num;
-         addressToUpdate.landmark = landmark;
-         addressToUpdate.address_type = address_type;
-         addressToUpdate.district = district;
-         addressToUpdate.pincode = pincode;
+        // Update the address fields
+        const addressToUpdate = user.address[index];
+        addressToUpdate.house_num = house_num;
+        addressToUpdate.address_customer_name = address_customer_name;
+        addressToUpdate.apartment_name = apartment_name;
+        addressToUpdate.city = city;
+        addressToUpdate.mobile_num = mobile_num;
+        addressToUpdate.landmark = landmark;
+        addressToUpdate.address_type = address_type;
+        addressToUpdate.district = district;
+        addressToUpdate.pincode = pincode;
 
-         const userData= await addressToUpdate.save();
+        const userData = await addressToUpdate.save();
         //  req.session.user=user;
         //  console.log(userData.address, '===============505')
-         return res.redirect('/userProfile');
+        return res.redirect('/userProfile');
 
-       
+
     } catch (error) {
-        console.log('Error while updating user address',error)
+        console.log('Error while updating user address', error)
         res.status(500).json({ error: 'Internal server error' });
     }
 }
 
-const loadAddProfile= async(req,res)=>{
+const loadAddProfile = async (req, res) => {
     try {
         //console.log('Inside the add profile page')
         res.render('addData')
@@ -504,34 +538,34 @@ const loadAddProfile= async(req,res)=>{
         console.log('Error while loadinf user add profile', error.message)
     }
 }
-const addProfile= async(req,res)=>{
+const addProfile = async (req, res) => {
     try {
         const { house_num,
             address_customer_name,
-            mobile_num, 
-            apartment_name, 
-            city,landmark,address_type, 
-            district, 
+            mobile_num,
+            apartment_name,
+            city, landmark, address_type,
+            district,
             pincode } = req.body;
 
-        const user_id= req.session.user_id
+        const user_id = req.session.user_id
 
-        console.log(user_id,'is the user id==========1')
-        
+        console.log(user_id, 'is the user id==========1')
+
         const user_image = req.file ? req.file.path : '';
 
         const existingUser = await User.findById({ _id: user_id }).populate('address');
         // console.log(existingUser.address,'is the user id=======2')
 
-        if(!existingUser){
-            return res.status(404).json({errorMessage:'User not found, Please complete your registration.'})
+        if (!existingUser) {
+            return res.status(404).json({ errorMessage: 'User not found, Please complete your registration.' })
         }
 
         console.log('==========3')
         const existingAddress = existingUser.address.find(addr => (
             addr.address_customer_name === address_customer_name &&
             addr.house_num === house_num &&
-            addr. address_type ===  address_type &&
+            addr.address_type === address_type &&
             addr.apartment_name === apartment_name &&
             addr.city === city &&
             addr.landmark === landmark &&
@@ -540,35 +574,35 @@ const addProfile= async(req,res)=>{
             addr.mobile_num === mobile_num
         ));
         console.log('==========4')
-       
+
         if (existingAddress) {
             return res.status(400).json({ error: 'Address already exists' });
         }
         console.log('==========5')
         //creating new address
         const newAddress = new UserAddress({
-            user_id:existingUser._id,
+            user_id: existingUser._id,
             address_customer_name: address_customer_name,
-            address_type:address_type,
-            house_num:house_num,
-            apartment_name:apartment_name,
-            city:city,
-            landmark:landmark,
-            district:district,
-            pincode:pincode,
-            mobile_num:mobile_num
+            address_type: address_type,
+            house_num: house_num,
+            apartment_name: apartment_name,
+            city: city,
+            landmark: landmark,
+            district: district,
+            pincode: pincode,
+            mobile_num: mobile_num
         })
         // existingUser.address.push(newAddress);
-       await newAddress.save();
-       console.log('==========5')
-       // Update UserAuth  with the new address reference
-       existingUser.address.push(newAddress._id);
-       await existingUser.save();
-        
-       console.log('==========6')
-        
+        await newAddress.save();
+        console.log('==========5')
+        // Update UserAuth  with the new address reference
+        existingUser.address.push(newAddress._id);
+        await existingUser.save();
+
+        console.log('==========6')
+
         res.render('userProfile', {
-            userData:existingUser,
+            userData: existingUser,
             successMessage: 'User data added successfully'
         })
 
@@ -578,9 +612,9 @@ const addProfile= async(req,res)=>{
     }
 }
 
-const deleteAddress=async(req,res)=>{
+const deleteAddress = async (req, res) => {
     try {
-        const { index } = req.params; 
+        const { index } = req.params;
         // console.log(index,'==========is the index')
         const userId = req.session.user_id;
 
@@ -594,76 +628,78 @@ const deleteAddress=async(req,res)=>{
         await user.save();
         console.log('Address deleted successfully');
         return res.redirect('/userProfile');
-        
+
     } catch (error) {
-        console.log('Error While deleting user address',error)
+        console.log('Error While deleting user address', error)
         res.status(500).json({ error: 'Internal server error' });
     }
 }
-const loadChngePassword= async(req,res)=>{
+const loadChngePassword = async (req, res) => {
     try {
-        
-        const userId= req.session.user_id;
+
+        const userId = req.session.user_id;
         // console.log(userId, 'is the userId')
         const userData = await User.findById(userId)
         // console.log(userData, 'is the userData===========632')
-        res.render('changePassword',{userData})
+        res.render('changePassword', { userData })
     } catch (error) {
-        console.log('Error while loading change password page',error.message)
+        console.log('Error while loading change password page', error.message)
     }
 }
-const chngePassword= async(req,res)=>{
+const chngePassword = async (req, res) => {
     try {
         // console.log('============21')
-        const {epassword,password,confirmpassword}= req.body;
-        userId= req.session.user_id
+        const { epassword, password, confirmpassword } = req.body;
+        userId = req.session.user_id
         // console.log(userId, 'is the userId============1')
-        const user= await User.findById(userId);
-        
-    //    console.log(user,'is the user============646')
+        const user = await User.findById(userId);
+
+        //    console.log(user,'is the user============646')
         // console.log(spassword,'existing passowrd from the body')
-        if(user){
+        if (user) {
             // console.log(userId, 'is the userId============22222')
-            const passwordCheck= await bcrypt.compare(epassword,user.password);
-            if(passwordCheck){
+            const passwordCheck = await bcrypt.compare(epassword, user.password);
+            if (passwordCheck) {
                 // console.log(passwordCheck, 'is the ============3333')
-                if(password !== confirmpassword){
-                    return res.render('changePassword',{errorMessage:'Password is not matching.'})
-        
-                }else{
-                    user.password= await seccurePassword(password)
+                if (password !== confirmpassword) {
+                    return res.render('changePassword', { errorMessage: 'Password is not matching.' })
+
+                } else {
+                    user.password = await seccurePassword(password)
                     await user.save();
                     // console.log(userId, 'is the userId============77777')
                     // return res.render('myProfile',{successMessageMessage:'Password successfully changed.'})
                     res.redirect('/userProfile')
                 }
 
-            }else{
+            } else {
                 console.log(userId, 'is the userId============88888')
-                return res.render('changePassword',{errorMessage:'Please enter your existing password'})
+                return res.render('changePassword', { errorMessage: 'Please enter your existing password' })
             }
-        }else{
+        } else {
             console.log(userId, 'is the userId============99999')
-            return res.render('changePassword',{errorMessage:'Email not found,please register'})
+            return res.render('changePassword', { errorMessage: 'Email not found,please register' })
         }
-       
-        
+
+
     } catch (error) {
         console.log('Error while changing the password', error)
         return res.render('changePassword', { errorMessage: 'An error occurred while changing the password' });
     }
 
 }
-const loadMyProfile= async(req,res)=>{
+const loadMyProfile = async (req, res) => {
     try {
-        const userData= await User.findById(req.session.user_id).populate('address')
-        res.render('myProfile',{userData:userData})
+        const userData = await User.findById(req.session.user_id).populate('address')
+        res.render('myProfile', { userData: userData })
     } catch (error) {
         console.log('Error while loading my profile page')
     }
 }
 
-module.exports={    
+
+
+module.exports = {
     loadRegister,
     registerUser,
     veryfyOtp,
@@ -676,6 +712,7 @@ module.exports={
     loadresendOTP,
     loadLogin,
     verifyLogin,
+    loadverifyGoogleSignin,
     loadForget,
     verifyForgetLogin,
     loadUserProfile,
@@ -688,5 +725,6 @@ module.exports={
     loadChngePassword,
     chngePassword,
     loadMyProfile,
-    
+
+
 }

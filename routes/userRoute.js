@@ -1,7 +1,8 @@
 const express=require('express')
 const user_route= express()
 const session= require('express-session')
-const { sessionSecret, passport } = require('../secret/secret')
+const { sessionSecret } = require('../secret/secret')
+const logPassport= require('../secret/passportGoogle')
 const authMiddleware= require('../middleware/authMiddleware')
 const fetchDataMiddleware= require('../middleware/fetchCateProData')
 
@@ -11,7 +12,7 @@ const cartContrller= require('../controller/cartController')
 const orderController= require('../controller/orderController')
 const checkOutController= require('../controller/checkOutController')
 
-
+const passport= require('passport')
 
 // user_route.use(secret())
 user_route.use(sessionSecret())
@@ -33,6 +34,14 @@ const preventCache = (req, res, next) => {
 };
 user_route.use(preventCache);
 
+//auth
+user_route.get('/auth/google',passport.authenticate('google',{scope: ['email','profile']}))
+//auth call back
+user_route.get('/auth/google/callback', passport.authenticate('google',{
+    successRedirect:'/verifyGoogle'
+}))
+
+user_route.get('/verifyGoogle',userAuthenticationController.loadverifyGoogleSignin)
 user_route.get('/register',authMiddleware.is_logout,userAuthenticationController.loadRegister)
 user_route.post('/register',userAuthenticationController.registerUser)
 user_route.get('/existingEmailVerification',userAuthenticationController.loadExistingEmailVerification)
