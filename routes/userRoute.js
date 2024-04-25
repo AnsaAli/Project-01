@@ -11,7 +11,7 @@ const productController= require('../controller/productCOntroller')
 const cartContrller= require('../controller/cartController')
 const orderController= require('../controller/orderController')
 const checkOutController= require('../controller/checkOutController')
-
+const wishlistController= require('../controller/wishListController')
 const passport= require('passport')
 
 // user_route.use(secret())
@@ -80,13 +80,18 @@ user_route.get('/delete/:index', userAuthenticationController.deleteAddress)
 
 user_route.get('/home',authMiddleware.is_login, productController.loadHome)
 user_route.get('/viewProduct',authMiddleware.is_login, productController.loadViewProduct)
-user_route.post('/product/:id/rate',productController.rating) 
 user_route.get('/allProducts',authMiddleware.is_login, productController.loadAllProducts)
 
 user_route.post('/addToCart',authMiddleware.is_login,cartContrller.addToCart)
 user_route.post('/updateQuantity',authMiddleware.is_login,cartContrller.updateQuantity)
 user_route.get('/viewCartItems',authMiddleware.is_login,cartContrller.viewCartItems)
 user_route.get('/removeCartItem/:id',authMiddleware.is_login,cartContrller.removeCartItem)
+
+user_route.post('/wishlist',authMiddleware.is_login,wishlistController.addToWishlist)
+user_route.get('/wishlistProducts',authMiddleware.is_login,wishlistController.viewWishList)
+user_route.post('/wishToCart',authMiddleware.is_login,wishlistController.addWishToCart)
+user_route.get('/removeWishItem/:id',authMiddleware.is_login,wishlistController.removeWishItem)
+
 
 user_route.get('/order',authMiddleware.is_login, orderController.loadUserOrder)
 user_route.get('/successOrder',authMiddleware.is_login,orderController.loadConfirmOrder)

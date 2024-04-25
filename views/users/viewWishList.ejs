@@ -1,0 +1,285 @@
+<!-- <h3>Wishlist</h3>
+<% wishListData.forEach(wishlist=> { %>
+    <h4>User: <%= wishlist.userId %>
+    </h4>
+    <ul>
+        <% wishlist.products.forEach(product=> { %>
+            <li>
+                <%= product.productName %>
+            </li>
+            <% }) %>
+    </ul>
+    <% }) %> -->
+
+<body>
+
+
+
+    <%- include('../layout/header.ejs') %>
+
+        <section class="mt-50 mb-50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table shopping-summery text-center clean">
+                                <thead>
+                                    <tr class="main-heading">
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Price/1kg</th>
+                                        <th scope="col">Available Weights & Price</th>
+                                        <th scope="col">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (wishListData) { %>
+                                        <% wishListData.forEach(wishlist=> { %>
+                                            <% wishlist.products.forEach(product=> { %>
+                                                <tr>
+                                                    <td class="image product-thumbnail">
+                                                        <img src="<%= product.images[0].url %>" alt="Product Image"
+                                                            class="img-fluid mx-auto d-block" alt="Product Image"
+                                                            style="width:100%">
+                                                    </td>
+                                                    <td class="product-des product-name">
+                                                        <h5 class="product-name"><a href="shop-product-right.html"
+                                                                style="font-size: 16px;">
+                                                                <%= product.productName %>
+                                                            </a></h5>
+                                                    </td>
+                                                    <td class="price" data-title="Price" style="font-size: 16px;">
+                                                        <span> ₹<%= product.weightOptions[3].priceAfterDiscount %>
+                                                        </span>
+                                                    </td>
+                                                    <!-- <td class="text-right" data-title="Weight" id="cartItemWeight">
+                                                        <% product.weightOptions.forEach(option=> { %>
+                                                            <a
+                                                                style="border: 1px solid #ff0000; padding: 5px; border-radius: 8px; ">
+                                                                <span style="color: black; font-size: 16px; ">
+                                                                    <%= option.weight %>g :
+                                                                </span>
+                                                                <span style="color: rgb(0, 98, 18); font-size: 16px;">
+                                                                    ₹ <%=option.priceAfterDiscount %>
+                                                                </span>
+
+                                                            </a>
+                                                            <% }) %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="#" class="btn"
+                                                            onclick="wishToCart('<%= product._id %>')">Add To Cart</a>
+                                                    </td> -->
+                                                    <td>
+                                                        <% let offerDisplayed=false; %>
+                                                            <% product.weightOptions.forEach(option=> { %>
+                                                                <div>
+                                                                    <% if (product.totalPrice> product.offerPrice &&
+                                                                        !offerDisplayed ) {
+                                                                        %>
+                                                                        <% offerDisplayed=true; %>
+                                                                            <p>on offer of : <strong>
+                                                                                    <%= product.offerPercentage %> %</p>
+                                                                            </strong>
+
+                                                                            <div class=""
+                                                                                style="border: 1px solid #038f85; padding: 5px; border-radius: 8px;  margin-bottom: 5px; ">
+
+                                                                                <a <% if (product.totalQuantity===0) {
+                                                                                    %>
+                                                                                    style="pointer-events: none;
+                                                                                    opacity:
+                                                                                    0.5;" <% } %>
+                                                                                        href="#"
+                                                                                        class="p-2 d-flex
+                                                                                        justify-content-between
+                                                                                        align-items-center"
+                                                                                        style="font-size: 20px;"
+                                                                                        onclick=" wishToCart('<%=
+                                                                                            product._id %>', <%=
+                                                                                                option.weight %>, <%=
+                                                                                                    option.weightPrice
+                                                                                                    %>,
+                                                                                                    <%= option.priceAfterDiscount
+                                                                                                        %>, '<%=
+                                                                                                            product.productName
+                                                                                                            %>', <%=
+                                                                                                                product.weightOptions[0].priceAfterDiscount
+                                                                                                                %>, <%=
+                                                                                                                    product.totalQuantity
+                                                                                                                    %>
+                                                                                                                    )">
+                                                                                                                    <span>
+
+                                                                                                                        <%= option.weight
+                                                                                                                            %>
+                                                                                                                            g
+                                                                                                                    </span>
+                                                                                                                    <span>
+                                                                                                                        ₹
+                                                                                                                        <%= option.priceAfterDiscount
+                                                                                                                            %>
+                                                                                                                    </span>
+                                                                                                                    <span>
+                                                                                                                        <strong>
+                                                                                                                            Add</strong>
+                                                                                                                    </span>
+                                                                                </a>
+
+                                                                            </div>
+                                                                            <% }else { %>
+                                                                                <div class=""
+                                                                                    style="border: 1px solid #038f85; padding: 5px; border-radius: 8px; margin-bottom: 5px; ">
+                                                                                    <a <% if (product.totalQuantity===0)
+                                                                                        { %>
+                                                                                        style="pointer-events: none;
+                                                                                        opacity: 0.5;" <% } %>
+                                                                                            href="#"
+                                                                                            class="p-2 d-flex
+                                                                                            justify-content-between
+                                                                                            align-items-center"
+                                                                                            style="font-size: 20px;"
+                                                                                            onclick=" wishToCart('<%=
+                                                                                                product._id %>', <%=
+                                                                                                    option.weight %>,
+                                                                                                    <%= option.weightPrice
+                                                                                                        %>,
+                                                                                                        <%=
+                                                                                                            option.priceAfterDiscount%>
+                                                                                                            , '<%=
+                                                                                                                product.productName
+                                                                                                                %>', <%=
+                                                                                                                    product.weightOptions[0].priceAfterDiscount
+                                                                                                                    %>,
+                                                                                                                    <%= product.totalQuantity
+                                                                                                                        %>
+                                                                                                                        )">
+
+                                                                                                                        <span>
+
+                                                                                                                            <%= option.weight
+                                                                                                                                %>
+                                                                                                                                g
+                                                                                                                        </span>
+                                                                                                                        <span>
+                                                                                                                            ₹
+                                                                                                                            <%= option.priceAfterDiscount
+                                                                                                                                %>
+                                                                                                                        </span>
+                                                                                                                        <span>
+                                                                                                                            <strong>
+                                                                                                                                Add</strong>
+                                                                                                                        </span>
+                                                                                    </a>
+
+                                                                                    <% } %>
+                                                                                </div>
+                                                                </div>
+                                                                <% }) %>
+
+                                                    </td>
+
+                                                    <td class="action" data-title="Remove"><a
+                                                        href="/removeCartItem/<%= wishListData._id %>" class="text-muted"
+                                                            style="color: #ff0000;"><i class="fi-rs-trash"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                                    <% }); %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="6">
+                                                                    <p>No items saved!</p>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            /* CSS for column lines */
+            .table.shopping-summery th,
+            .table.shopping-summery td {
+                border: 1px solid #dddddd;
+                padding: 8px;
+            }
+
+            .table.shopping-summery th {
+                background-color: #039a98;
+                color: rgb(255, 255, 255);
+            }
+        </style>
+
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script>
+            function wishToCart(productId, productWeight, weightPrice, priceAfterDiscount, productName, priceAfterDiscount100g, totalQuantity) {
+                const data = {
+                    productId: productId,
+                    productWeight: productWeight,
+                    weightPrice: weightPrice,
+                    priceAfterDiscount: priceAfterDiscount,
+                    productName: productName,
+                    priceAfterDiscount100g: priceAfterDiscount100g,
+                    totalQuantity: totalQuantity
+                };
+
+                console.log('in wishToCart');
+                console.log('productId: ', productId);
+
+                fetch('/wishToCart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Handle successful response
+                            console.log('Product added to cart successfully');
+                            showWishListIndication('Product added to cart successfully', false);
+                            setTimeout(() => {
+                                location.href = "/viewCartItems"; // Redirect to cart page
+                            }, 2000);
+                        } else {
+                            // Handle error response
+                            console.error('Failed to add product to cart');
+                            showWishListIndication('Failed to add product to cart', true);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding product to wishlist:', error);
+                        showWishListIndication('Error adding product to wishlist', true);
+                    });
+            }
+
+            function showWishListIndication(message, isError = false) {
+                if (!isError) {
+                    swal({
+                        title: "Success",
+                        text: message,
+                        icon: "success",
+                        timer: 2000,
+                        buttons: false
+                    });
+                } else {
+                    swal({
+                        title: "Error",
+                        text: message,
+                        icon: "error",
+                        timer: 2000,
+                        buttons: false
+                    });
+                }
+            }
+
+
+        </script>
+
+</body>

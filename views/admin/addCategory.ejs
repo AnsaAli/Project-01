@@ -31,9 +31,10 @@
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">
-                    <button type="submit" class="btn btn-fill-out btn-block hover-up">Add Category</button>
-                    <button type="submit" class="btn btn-fill-out btn-block hover-up"><a href="/admin/category"
-                        class="viewCate">View Categories</a></button>
+                    <button type="submit" class="btn btn-fill-out btn-block hover-up btn-success">Add Category</button>
+                    <!-- <button type="submit" class="btn btn-fill-out btn-block hover-up"></button> -->
+                    <a href="/admin/category" style="color: red;"
+                        class="viewCate">Cancel</a>
                   </div>
                 </div>
               </div>
@@ -51,6 +52,14 @@
 
 
   <style>
+    .card {
+      margin-top: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+
     .viewCate {
       text-decoration: none;
       color: beige;
@@ -58,30 +67,30 @@
   </style>
 
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
       // Retrieve URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const successMessage = urlParams.get('success');
       const errorMessage = urlParams.get('error');
-      
+
       // Get references to message elements
       const successDiv = document.getElementById('successMessage');
       const errorDiv = document.getElementById('errorMessage');
-      
+
       // Display success message if present
       if (successMessage) {
-          successDiv.textContent = successMessage;
-          successDiv.style.display = 'block';
+        successDiv.textContent = successMessage;
+        successDiv.style.display = 'block';
       }
-      
+
       // Display error message if present
       if (errorMessage) {
-          errorDiv.textContent = errorMessage;
-          errorDiv.style.display = 'block';
+        errorDiv.textContent = errorMessage;
+        errorDiv.style.display = 'block';
       }
-  });
-</script>
+    });
+  </script>
 
 
 

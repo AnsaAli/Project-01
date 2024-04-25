@@ -30,6 +30,7 @@
     "passport-google-oauth20": "^2.0.0",
     "sharp": "^0.33.2",
     "shortid": "^2.2.16",
+    "sweetalert2": "^11.10.8",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

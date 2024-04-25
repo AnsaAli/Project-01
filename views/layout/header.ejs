@@ -3,6 +3,7 @@
 
 
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/page-login-register.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:26:06 GMT -->
+
 <head>
     <meta charset="utf-8">
     <title>GoEasy-Grocery-Website</title>
@@ -24,70 +25,127 @@
 </head>
 
 <body>
-   
-    
     <header class="header-area header-style-5" style="background-color: #ffffff4f; margin-bottom: 30px; ">
         <div class="header-bottom sticky-bar sticky-white-bg">
             <div class="container">
-                <div class="header-wrap header-space-between position-relative">
-                    <div class="logo logo-width-1">
-                        <a href='/home'><img src="/assets/imgs/theme/Easy.svg" alt="logo"></a>
-                    </div>
-                    <div class="main-menu main-menu-grow main-menu-padding-1 main-menu-lh-1 main-menu-mrg-1 hm3-menu-padding d-none d-lg-block hover-boder">
-                        <nav>
-                            <ul>
-                                <li><a class="active" href="/home">Home <i class="fi-rs-angle-down"></i></a>
-                                   
-                                </li>
-                                <li><a class="active" href="/allProducts">All Products <i class="fi-rs-angle-down"></i></a>
-                                  
-                                </li>
-                                <li class="position-static"><a href="">Category <i class="fi-rs-angle-down"></i></a>
-                                    <ul class="mega-menu">
-                                        <% categories.forEach(category => { %>
-                                            <li><a href="/categories/<%= category._id %>"><%= category.name %></a></li><br>
-                                        <% }); %>
-                                    </ul>
-                                </li>
-                                <li class="position-static"><a href="">Products <i class="fi-rs-angle-down"></i></a>
-                                    <ul class="mega-menu">
-                                        <% products.forEach(product => { %>
-                                            <li><a href="/products/<%= product._id %>"><%= product.productName %></a></li><br>
-                                        <% }); %>
-                                    </ul>
-                                </li>
-                                <li><a href="#">About <i class="fi-rs-angle-down"></i></a>
-                                    <ul class="sub-menu">
-                                        <li><a href="page-about.html">About Us</a></li>
-                                        <li><a href="page-contact.html">Contact</a></li>
-                                        <li><a href="page-account.html">My Account</a></li>
-                                        <li><a href="page-login-register.html">login/register</a></li>
-                                        <li><a href="page-purchase-guide.html">Purchase Guide</a></li>
-                                        <li><a href="page-privacy-policy.html">Privacy Policy</a></li>
-                                        <li><a href="page-terms.html">Terms of Service</a></li>
-                                        <li><a href="page-404.html">404 Page</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="page-contact.html">Contact</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    <div class="header-action-right">
-                        <% if (user_id) { %>
-                            <div class="pr-5">Welcome, <a href="/myProfile"><%= user_name %>!</a> </div>
-                            <form action="/logout" method="POST">
-                                <button type="submit" class="pl-2" style="background-color: #ffffff; color: #000000; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 16px;">Logout</button>
-                            </form>
-                        <% } else { %>
-                            <a href="/login">Sign In</a> / <a href="/register">Register</a>
-                        <% } %>
-                        <div class="header-action-2">
-                            <!-- Your action icons here (wishlist, cart, etc.) -->
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="header-wrap header-space-between position-relative">
+                                <div class="logo logo-width-1">
+                                    <a href='/home'><img src="/assets/imgs/theme/Easy.svg" alt="logo"></a>
+                                </div>
+                                <div
+                                    class="main-menu main-menu-grow main-menu-padding-1 main-menu-lh-1 main-menu-mrg-1 hm3-menu-padding d-none d-lg-block hover-boder">
+                                    <nav>
+                                        <ul>
+                                            <li><a class="active" href="/home" style="font-size: large;">Home <i class="fi-rs-angle-down"></i></a>
+
+                                            </li>
+                                            <li><a class="active" href="/allProducts" style="font-size: large;">All Products <i
+                                                        class="fi-rs-angle-down"></i></a>
+
+                                            </li>
+                                            <li class="position-static"><a href="" style="font-size: large;">Category <i
+                                                        class="fi-rs-angle-down"></i></a>
+                                                <ul class="mega-menu">
+                                                    <% categories.forEach(category=> { %>
+                                                        <li><a href="/categories/<%= category._id %>" style="font-size: large;">
+                                                                <%= category.name %>
+                                                            </a></li><br>
+                                                        <% }); %>
+                                                </ul>
+                                            </li>
+                                            <li class="position-static"><a href="" style="font-size: large;">Products <i
+                                                        class="fi-rs-angle-down"></i></a>
+                                                <ul class="mega-menu">
+                                                    <% products.forEach(product=> { %>
+                                                        <li><a href="/products/<%= product._id %>" style="font-size: large;">
+                                                                <%= product.productName %>
+                                                            </a></li><br>
+                                                        <% }); %>
+                                                </ul>
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+                                </div>
+                                <div class="header-action-right">
+
+                                    <div class="header-action-2">
+                                        <div class="header-action-icon-2">
+                                            <a href="/wishlistProducts">
+                                                <img class="svgInject" alt="GoEAsy"
+                                                    src="/assets/imgs/theme/icons/icon-heart.svg">
+                                                <!-- <span class="pro-count blue"></span> -->
+                                            </a>
+                                        </div>
+                                        <div class="header-action-icon-2">
+                                            <a class="mini-cart-icon" href="/viewCartItems"> <span
+                                                    id="cartCount"></span>
+                                                <p class="pro-count "><img alt="GoEAsy"
+                                                        src="/assets/imgs/theme/icons/icon-cart.svg">
+                                                    </p>
+                                            </a>
+                                            <!-- <a class="mini-cart-icon" href="">
+                                         <img alt="GoEAsy" src="/assets/imgs/theme/icons/icon-cart.svg"> 
+                                        <p class="pro-count ">basket</p>
+                                         <span class="pro-count "></span> 
+                                    </a>-->
+                                            <!-- <div class="cart-dropdown-wrap cart-dropdown-hm2">
+                                            <ul id="cart-items-list">
+                                              Cart items will be dynamically generated here
+                                            </ul>
+                                            <div class="shopping-cart-footer">
+                                                <div class="shopping-cart-total">
+                                                    <h4>Total <span id="total-price">$0.00</span></h4>
+                                                </div>
+                                                <div class="shopping-cart-button">
+                                                    <a href="">View cart</a>
+                                                    <a href="/checkOut">Checkout</a>
+                                                </div>
+                                            </div>
+                                        </div> -->
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="header-action-right">
+                                <% if (user_id) { %>
+                                    <div class="welcome-logout-container">
+                                        <div class="pr-5" style="font-size: 18px;">Welcome, <a href="/myProfile">
+                                                <%= user_name %>!
+                                            </a></div>
+                                        <form action="/logout" method="POST">
+                                            <button type="submit" class="pl-2"
+                                                style="background-color: #ffffff; color: #000000; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 18px;">Logout</button>
+                                        </form>
+                                    </div>
+                                    <% } else { %>
+                                        
+                                        <% } %>
+
+                            </div>
                         </div>
                     </div>
+
+
                 </div>
+
+
             </div>
         </div>
+
     </header>
+    <style>
+        .welcome-logout-container {
+            display: flex;
+            align-items: center;
+            margin-top: 50px;
+        }
+    </style>
+</body>

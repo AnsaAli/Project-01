@@ -2,76 +2,82 @@
     <%- include('../layout/cartAndwishlist.ejs') %>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-      
+
         <body>
-            
-            
+
+
             <div class="containerProduct">
-                <%= productData.category.name%>
-                <div id="cart-indication" class="" style="color: #4CAF50; border: 1px solid #ffffff; padding: 10px; font-size: x-large;text-align: center;">
+                <strong>
+                    <%= productData.category.name%>
+                </strong>
+                <div id="cart-indication" class=""
+                    style="color: #4CAF50; border: 1px solid #ffffff; padding: 10px; font-size: x-large;text-align: center;">
                     <div>
-                       
+
                     </div>
                 </div>
-                
-                    <div class="product-images">
-                        <% productData.images.forEach((image)=>{%>
-                            <img src="<%= image.url %>" alt="Product Image">
-                            <% }) %>
+                <div id="wishlist-indication" class=""
+                    style="color: #4CAF50; border: 1px solid #ffffff; padding: 10px; font-size: x-large;text-align: center;">
+                    <div>
+
                     </div>
-                    <div class="product-details">
-                        <div class="product-name m-4">
-                            <h4>
-                                <%= productData.productName%>
-                            </h4>
-                            <% if(productData.totalQuantity <=0 ) {%> <p style="color: red;">Out Of Stock </p> <% }%>
+                </div>
+
+                <div class="product-images">
+                    <% productData.images.forEach((image)=>{%>
+                        <img src="<%= image.url %>" alt="Product Image">
+                        <% }) %>
+                </div>
+                <div class="product-details">
+                    <div class="product-name m-4">
+                        <h4>
+                            <%= productData.productName%>
+                        </h4>
+                        <% if(productData.totalQuantity <=0 ) {%>
+                            <p style="color: red;">Out Of Stock </p>
+                            <% }%>
+
+                    </div>
+
+
+                    <div class="quantity-selector  m-4">
+                        <div class="mb-4">
+                            <a href="#" style="color: #005a27; font-size: larger; font-weight: bold;"
+                                onclick="addToWishlist('<%= productData._id %>')">Save For Later <img class="svgInject"
+                                    style="height: 15px; width: auto; padding-top: 2px;" alt="Evara"
+                                    src="/assets/imgs/theme/icons/icon-heart.svg"></a>
 
                         </div>
-                        <div class="quantity-selector  m-4">
-                            <label for="quantity">Available Quantities</label>
-                            <div class="">
-                                <% let offerDisplayed=false; %>
-                                    <% productData.weightOptions.forEach(option=> { %>
-                                        <div>
-                                            <% if (productData.totalPrice> productData.offerPrice && !offerDisplayed ) {
-                                                %>
+                        <label for="quantity">Available Quantities</label>
+                        <div class="">
 
-                                                <% offerDisplayed=true; %>
-                                                    <p>on offer of : <strong>
-                                                            <%= productData.offerPercentage %> %</p></strong>
+                            <% let offerDisplayed=false; %>
+                                <% productData.weightOptions.forEach(option=> { %>
+                                    <div>
+                                        <% if (productData.totalPrice> productData.offerPrice && !offerDisplayed ) {
+                                            %>
+                                            <% offerDisplayed=true; %>
+                                                <p>on offer of : <strong>
+                                                        <%= productData.offerPercentage %> %</p></strong>
 
-                                                    <div class=""
-                                                        style="border: 1px solid #333; padding: 5px; border-radius: 8px;  margin-bottom: 5px; ">
+                                                <div class=""
+                                                    style="border: 1px solid #333; padding: 5px; border-radius: 8px;  margin-bottom: 5px; ">
 
-                                                        <a <% if (productData.totalQuantity === 0) { %> style="pointer-events: none; opacity: 0.5;" <% } %>
+                                                    <a <% if (productData.totalQuantity===0) { %>
+                                                        style="pointer-events: none; opacity: 0.5;" <% } %>
                                                             href="#"
-                                                            class="p-2 d-flex justify-content-between align-items-center"
+                                                            class="p-2 d-flex justify-content-between
+                                                            align-items-center"
                                                             style="font-size: 20px;"
-                                                            onclick="addToCart('<%= productData._id %>', <%= option.weight %>, <%= option.weightPrice %>, <%= option.priceAfterDiscount %>, '<%= productData.productName %>', <%= productData.weightOptions[0].priceAfterDiscount %>, <%= productData.totalQuantity %> )">
-                                                                                    <span>
-                                                                                        weight:  <%= option.weight %>g 
-                                                                                    </span>
-                                                                                    <span>Price: ₹<%=
-                                                                                            option.priceAfterDiscount %>
-                                                                                    </span>
-                                                                                    <span>
-                                                                                        <i
-                                                                                            class="fas fa-shopping-cart"></i>
-                                                                                    </span>
-                                                        </a>
-                                                    </div>
-                                                    <% }else { %>
-                                                        <div class=""
-                                                            style="border: 1px solid #333; padding: 5px; border-radius: 8px; margin-bottom: 5px; ">
-                                                            <a <% if (productData.totalQuantity === 0) { %> style="pointer-events: none; opacity: 0.5;" <% } %>
-                                                                href="#"
-                                                                class="p-2 d-flex justify-content-between align-items-center"
-                                                                style="font-size: 20px;"
-                                                                onclick="addToCart('<%= productData._id %>', <%= option.weight %>, <%= option.weightPrice %>, <%= option.priceAfterDiscount%>, '<%= productData.productName %>', <%= productData.weightOptions[0].priceAfterDiscount %>, <%= productData.totalQuantity %> )">
-
+                                                            onclick="addToCart('<%= productData._id %>', <%=
+                                                                    option.weight %>, <%= option.weightPrice %>, <%=
+                                                                            option.priceAfterDiscount %>, '<%=
+                                                                                productData.productName %>', <%=
+                                                                                    productData.weightOptions[0].priceAfterDiscount
+                                                                                    %>, <%= productData.totalQuantity %>
+                                                                                        )">
                                                                                         <span>
-                                                                                            weight:
-                                                                                            <%= option.weight %>
+                                                                                            weight: <%= option.weight %>
                                                                                                 g
                                                                                         </span>
                                                                                         <span>Price: ₹<%=
@@ -82,37 +88,74 @@
                                                                                             <i
                                                                                                 class="fas fa-shopping-cart"></i>
                                                                                         </span>
-                                                            </a>
-                                                            <% } %>
-                                                        </div>
-                                        </div>
-                                        <% }) %>
-                            </div>
+                                                    </a>
+
+                                                </div>
+                                                <% }else { %>
+                                                    <div class=""
+                                                        style="border: 1px solid #333; padding: 5px; border-radius: 8px; margin-bottom: 5px; ">
+                                                        <a <% if (productData.totalQuantity===0) { %>
+                                                            style="pointer-events: none; opacity: 0.5;" <% } %>
+                                                                href="#"
+                                                                class="p-2 d-flex justify-content-between
+                                                                align-items-center"
+                                                                style="font-size: 20px;"
+                                                                onclick="addToCart('<%= productData._id %>', <%=
+                                                                        option.weight %>, <%= option.weightPrice %>,
+                                                                            <%= option.priceAfterDiscount%>, '<%=
+                                                                                    productData.productName %>', <%=
+                                                                                        productData.weightOptions[0].priceAfterDiscount
+                                                                                        %>, <%=
+                                                                                            productData.totalQuantity %>
+                                                                                            )">
+
+                                                                                            <span>
+                                                                                                weight:
+                                                                                                <%= option.weight %>
+                                                                                                    g
+                                                                                            </span>
+                                                                                            <span>Price: ₹<%=
+                                                                                                    option.priceAfterDiscount
+                                                                                                    %>
+                                                                                            </span>
+                                                                                            <span>
+                                                                                                <i
+                                                                                                    class="fas fa-shopping-cart"></i>
+                                                                                            </span>
+                                                        </a>
+
+                                                        <% } %>
+                                                    </div>
+                                    </div>
+                                    <% }) %>
                         </div>
-                       
-                        <div class="product-description m-5 p-2">
-                            <hr>
-                            <h4 class="m-4">About <%= productData.productName%>
-                            </h4>
-                            <p>
-                                <%= productData.description %>
-                            </p>
-                            <hr>
-                            <h4 class="m-4">Health Benefits</h4>
-                            <p>
-                                <%= productData.nutritionalInfo %>
-                            </p>
-                            <hr>
-                            <h4 class="m-4">Try this amazing recipes.</h4>
-                            <p>
-                                <%= productData.recipies %>
-                            </p>
-                        </div>
+
+
                     </div>
-                    
+
+                    <div class="product-description m-4 p-2">
+                        <hr>
+                        <h4 class="m-4">About <%= productData.productName%>
+                        </h4>
+                        <p>
+                            <%= productData.description %>
+                        </p>
+                        <hr>
+                        <h4 class="m-4">Health Benefits</h4>
+                        <p>
+                            <%= productData.nutritionalInfo %>
+                        </p>
+                        <hr>
+                        <h4 class="m-4">Try this amazing recipes.</h4>
+                        <p>
+                            <%= productData.recipies %>
+                        </p>
+                    </div>
+                </div>
+
             </div>
 
-            <p>Related Products: here</p>
+            <!-- <p>Related Products: here</p> -->
             <style>
                 .containerProduct {
                     max-width: 900px;
@@ -198,21 +241,23 @@
             </style>
 
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
             <script>
 
-                                                                        
-                function addToCart(productId, weight, price,priceAfterDiscount, productName,pricePer100g,totalQuantity) {
+
+                function addToCart(productId, weight, price, priceAfterDiscount, productName, pricePer100g, totalQuantity) {
                     // Prepare data to send to the server
                     const data = {
                         productId: productId,
                         weight: weight,
                         price: price,
-                        priceAfterDiscount:priceAfterDiscount,
+                        priceAfterDiscount: priceAfterDiscount,
                         productName: productName,
-                        pricePer100g:pricePer100g,
-                        totalQuantity:totalQuantity
+                        pricePer100g: pricePer100g,
+                        totalQuantity: totalQuantity
                     };
- console.log('priceAfterDiscount:',priceAfterDiscount,'pricePer100g:', pricePer100g,'totalQuantity:',totalQuantity)
+                    console.log('priceAfterDiscount:', priceAfterDiscount, 'pricePer100g:', pricePer100g, 'totalQuantity:', totalQuantity)
                     // Send AJAX request to the server
                     fetch('/addToCart', {
                         method: 'POST',
@@ -238,17 +283,73 @@
                         });
                 }
 
-               
-
                 function showCartIndication(message, isError = false) {
-                    const indicationElement = document.getElementById('cart-indication');
-                    indicationElement.textContent = message;
-                    indicationElement.classList.toggle('error', isError);
+                    if (!isError) {
+                        swal({
+                            title: "Success",
+                            text: message,
+                            icon: "success",
+                            timer: 2000,
+                            buttons: false
+                        });
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: message,
+                            icon: "error",
+                            timer: 2000,
+                            buttons: false
+                        });
+                    }
+                }
+                
+                function showWishListIndication(message, isError = false) {
+                    if (!isError) {
+                        swal({
+                            title: "Success",
+                            text: message,
+                            icon: "success",
+                            timer: 2000,
+                            buttons: false
+                        });
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: message,
+                            icon: "error",
+                            timer: 2000,
+                            buttons: false
+                        });
+                    }
+                }
 
-                    // Clear indication after a delay
-                    setTimeout(() => {
-                        indicationElement.textContent = '';
-                    }, 3000); // Change 3000 to adjust the duration of the indication
+                function addToWishlist(productId) {
+                    const data = {productId:productId}
+                    console.log('in addToWishlist')
+                    console.log('productId: ', productId);
+
+                    fetch('/wishlist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Handle successful response
+                                console.log('Product added to wishlist successfully');
+                                showWishListIndication('Product added to wishlist successfully');
+                            } else {
+                                // Handle error response
+                                console.error('Failed to add product to wishlist');
+                                showWishListIndication('Failed to add product to wishlist', true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error adding product to wishlist:', error);
+                            showWishListIndication('Error adding product to wishlist', true);
+                        });
                 }
             </script>
 

@@ -69,9 +69,9 @@ const placeOrder = async (req, res) => {
         const userId = req.session.user_id;
         console.log(userId, 'is the userId')
 
-        const { items, weight, price, totalAmount, shippingAddress } = req.body;
-        console.log('items: ', items, 'weight: ', weight, 'price : ', price, 'totalAmount: ', totalAmount, 'shippingAddress: ', shippingAddress)
-        // console.log(items, totalAmount, shippingAddress, 'is the datas')
+        const { items, weight, price, totalAmount, shippingAddress,payment_option } = req.body;
+        // console.log('items: ', items, 'weight: ', weight, 'price : ', price, 'totalAmount: ', totalAmount, 'shippingAddress: ', shippingAddress)
+         console.log('payment_option: ',payment_option)
         console.log('typeof items : ', typeof items, 'items.length: ', items.length);
 
         let orderId = shortid.generate();
@@ -83,101 +83,101 @@ const placeOrder = async (req, res) => {
             discountAmount: 0,
             finalPrice: totalAmount,
             shippingAddress: shippingAddress,
-            paymentMethod: 'Cash on delivery',
-            paymentStatus: 'Cash on delivery',
+            paymentMethod: payment_option,
+            paymentStatus: payment_option,
             orderStatus: 'clientSideProcessing'
         });
         console.log('=================================78')
         await order.save();
 
-        const productIds = req.body.productId.map(productId => productId.trim());
-        console.log('=================================80')
+        // const productIds = req.body.productId.map(productId => productId.trim());
+        // console.log('=================================80')
 
-        if (items && weight && price) {
-            console.log('=================================84')
-            if (typeof items === 'string' && items.trim().length > 0) {
-                console.log('single item order=================================101')
-                // If only one item is being ordered
-                const orderItem = new OrderItem({
-                    user_id: userId,
-                    product_id: productIds[0],
-                    orderedWeight: [{
-                        name: items,
-                        weight: parseInt(weight),
-                        price: parseFloat(price)
-                    }],
-                    totalPrice: totalAmount
-                });
-                console.log('orderItem:', orderItem)
-                await orderItem.save();
-                console.log(orderItem._id, 'orderItem._id=================================115');
+        // if (items && weight && price) {
+        //     console.log('=================================84')
+        //     if (typeof items === 'string' && items.trim().length > 0) {
+        //         console.log('single item order=================================101')
+        //         // If only one item is being ordered
+        //         const orderItem = new OrderItem({
+        //             user_id: userId,
+        //             product_id: productIds[0],
+        //             orderedWeight: [{
+        //                 name: items,
+        //                 weight: parseInt(weight),
+        //                 price: parseFloat(price)
+        //             }],
+        //             totalPrice: totalAmount
+        //         });
+        //         console.log('orderItem:', orderItem)
+        //         await orderItem.save();
+        //         console.log(orderItem._id, 'orderItem._id=================================115');
 
-                order.orderItems.push(orderItem._id);
-            } else {
-                console.log('multiple=================================80')
-                for (let i = 0; i < items.length; i++) {
-                    const orderItem = new OrderItem({
-                        user_id: userId,
-                        product_id: productIds[i],
-                        orderedWeight: [{
-                            name: items[i],
-                            weight: parseInt(weight[i]),
-                            price: parseFloat(price[i])
-                        }],
-                        totalPrice: totalAmount
-                    });
+        //         order.orderItems.push(orderItem._id);
+        //     } else {
+        //         console.log('multiple=================================80')
+        //         for (let i = 0; i < items.length; i++) {
+        //             const orderItem = new OrderItem({
+        //                 user_id: userId,
+        //                 product_id: productIds[i],
+        //                 orderedWeight: [{
+        //                     name: items[i],
+        //                     weight: parseInt(weight[i]),
+        //                     price: parseFloat(price[i])
+        //                 }],
+        //                 totalPrice: totalAmount
+        //             });
 
-                    await orderItem.save();
-                    console.log(orderItem._id, 'orderItem._id=================================105');
+        //             await orderItem.save();
+        //             console.log(orderItem._id, 'orderItem._id=================================105');
 
-                    order.orderItems.push(orderItem._id);
-                }
-            }
-        }
+        //             order.orderItems.push(orderItem._id);
+        //         }
+        //     }
+        // }
 
-        await order.save();
+        // await order.save();
 
-        console.log('=================================91')
+        // console.log('=================================91')
 
-        //update quantity in product collection.
-        if (typeof items === 'string' && items.trim().length > 0) {
-            let orderedWeight= weight; 
-            const ProductWeight = await Product.findById(productIds[0]);
-            if (ProductWeight.totalQuantity > 0) {
-                let weightInGrams = ProductWeight.totalQuantity * 1000;
-                let updatedQuantity = (weightInGrams - orderedWeight) / 1000;
-                console.log('updatedQuantity: ', updatedQuantity)
-                await Product.updateMany({ _id: productIds[0]}, { totalQuantity: updatedQuantity });
-            } else {
-                console.log('No stock.')
-            }
+        // //update quantity in product collection.
+        // if (typeof items === 'string' && items.trim().length > 0) {
+        //     let orderedWeight= weight; 
+        //     const ProductWeight = await Product.findById(productIds[0]);
+        //     if (ProductWeight.totalQuantity > 0) {
+        //         let weightInGrams = ProductWeight.totalQuantity * 1000;
+        //         let updatedQuantity = (weightInGrams - orderedWeight) / 1000;
+        //         console.log('updatedQuantity: ', updatedQuantity)
+        //         await Product.updateMany({ _id: productIds[0]}, { totalQuantity: updatedQuantity });
+        //     } else {
+        //         console.log('No stock.')
+        //     }
 
-        }else{
-            for (let i =0; i<= items.length-1; i++ ) {
-                const orderWeight = weight[i];
-                console.log('orderWeight: ', orderWeight)
-                const ProductWeight = await Product.findById(productIds[i])
-                console.log('ProductWeight.totalQuantity: ', ProductWeight.totalQuantity)
-                if (ProductWeight.totalQuantity > 0) {
-                    let weightInGrams = ProductWeight.totalQuantity * 1000;
-                    let updatedQuantity = (weightInGrams - orderWeight) / 1000;
-                    console.log('updatedQuantity: ', updatedQuantity)
-                    await Product.updateMany({ _id: productIds[i]}, { totalQuantity: updatedQuantity });
-                } else {
-                    console.log('No stock.')
-                }
+        // }else{
+        //     for (let i =0; i<= items.length-1; i++ ) {
+        //         const orderWeight = weight[i];
+        //         console.log('orderWeight: ', orderWeight)
+        //         const ProductWeight = await Product.findById(productIds[i])
+        //         console.log('ProductWeight.totalQuantity: ', ProductWeight.totalQuantity)
+        //         if (ProductWeight.totalQuantity > 0) {
+        //             let weightInGrams = ProductWeight.totalQuantity * 1000;
+        //             let updatedQuantity = (weightInGrams - orderWeight) / 1000;
+        //             console.log('updatedQuantity: ', updatedQuantity)
+        //             await Product.updateMany({ _id: productIds[i]}, { totalQuantity: updatedQuantity });
+        //         } else {
+        //             console.log('No stock.')
+        //         }
             
-        }
-        }
+        // }
+        // }
        
 
-        // console.log('=================================111')
-        await CartItem.deleteMany({ userId: userId })
-        console.log('CartItem deleted================================91')
-        await Cart.deleteOne({ userId: userId });
-        console.log('Cart deleted================================91')
-        console.log('Order placed successfully')
-        res.redirect('/successOrder');
+        // // console.log('=================================111')
+        // await CartItem.deleteMany({ userId: userId })
+        // console.log('CartItem deleted================================91')
+        // await Cart.deleteOne({ userId: userId });
+        // console.log('Cart deleted================================91')
+        // console.log('Order placed successfully')
+        // res.redirect('/successOrder');
 
     } catch (error) {
         console.log('Error, while placing the order ', error)

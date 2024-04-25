@@ -33,32 +33,34 @@
                     </div>
                     <!-- Product name and Category -->
                     <div class="row">
-                      <div class="col-md-5 pr-1">
-                        <div class="form-group">
-                          <label for="productName">Product Name</label>
-                          <input type="text" class="form-control" id="productName" name="productName" required>
-                          <div id="nameError" class="error-message"></div>
-                        </div>
-                        <div id="successMessage" class="success-message" style="display: none; color: green">
-                          Product added successfully!
-                        </div>
+                      <div  class="col-md-12 pr-1">
+                      
+                          <div class="form-group">
+                            <label for="productName">Product Name</label>
+                            <input type="text" class="form-control" id="productName" name="productName" required>
+                            <div id="nameError" class="error-message"></div>
+                          </div>
+                          <div id="successMessage" class="success-message" style="display: none; color: green">
+                            Product added successfully!
+                          </div>
+                       
+                          <div class="form-group">
+                            <label for="category">Choose Category </label>
+                            <select class="form-control" name="category" id="category">
+                              <% categories.forEach(category=>{%>
+                                <option value="<%= category._id %>">
+                                  <%= category.name%>
+                                </option>
+                                <%} )%>
+                            </select>
+                          </div>
+                      
                       </div>
-                      <div class="col-md-5 pr-1">
-                        <div class="form-group">
-                          <label for="category">Choose Category </label>
-                          <select class="form-control" name="category" id="category">
-                            <% categories.forEach(category=>{%>
-                              <option value="<%= category._id %>">
-                                <%= category.name%>
-                              </option>
-                              <%} )%>
-                          </select>
-                        </div>
-                      </div>
+                      
                     </div>
                     <!-- Product description -->
                     <div class="row">
-                      <div class="col-md-6 pr-1">
+                      <div  class="col-md-12 pr-1">
                         <div class="form-group">
                           <label for="description">Description</label>
                           <textarea name="description" rows="4" cols="80" class="form-control" id="description"
@@ -68,7 +70,7 @@
                     </div>
                     <!-- Nutritional info -->
                     <div class="row">
-                      <div class="col-md-6 pr-1">
+                      <div  class="col-md-12 pr-1">
                         <div class="form-group">
                           <label for="nutritionalInfo">Nutritional Information:</label>
                           <textarea name="nutritionalInfo" rows="4" cols="80" class="form-control" id="nutritionalInfo"
@@ -78,7 +80,7 @@
                     </div>
                     <!-- Recepies -->
                     <div class="row">
-                      <div class="col-md-6 pr-1">
+                      <div  class="col-md-12 pr-1">
                         <div class="form-group">
                           <label for="recipies">Recepies</label>
                           <textarea name="recipies" rows="20" cols="80" class="form-control" id="recipies"
@@ -88,7 +90,7 @@
                     </div>
                     <!-- totalQuantity -->
                     <div class="row">
-                      <div class="col-md-6 pr-1">
+                      <div  class="col-md-12 pr-1">
                         <div class="form-group">
                           <label for="totalQuantity">Total Quantity </label>
                           <input type="number" class="form-control"
@@ -100,7 +102,7 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-6 pr-1">
+                      <div  class="col-md-12 pr-1">
                         <div class="form-group">
                           <label for="pricePer100g">Price per 100g</label>
                           <input type="number" class="form-control" placeholder="Price per 100grams" id="pricePer100g"
@@ -110,19 +112,22 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-6 pr-1">
-                        <div class="form-group">
+                      <div class="col-md-12 pr-1">
+                        <div class="form-group col-md-8 pr-1">
                           <label for="totalPrice">Total Price</label>
                           <input type="number" class="form-control" placeholder="Total price" id="totalPrice"
                             name="totalPrice" readonly>
                         </div>
                       </div>
+                      <div class="form-group col-md-4 pr-1">
+                        <button type="button" class="btn btn-primary" id="calculateButton"  onclick="findTotal()">Find Total
+                          Price</button>
+                      </div>
                     </div>
-                    <button type="button" class="btn btn-primary" id="calculateButton" onclick="findTotal()">Find Total
-                      Price</button>
+                   
                     <div class="row">
-                      <div class="col-md-6 pr-1">
-                        <div class="form-group">
+                      <div  class="col-md-12 pr-1">
+                        <div class="form-group col-md-8 pr-1">
                           <label for="offerPercentage">Offer Percentage (%)</label>
                           <input type="number" class="form-control" name="offerPercentage" value="0" min="0" max="80"
                             id="offerPercentage">
@@ -130,15 +135,18 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-6 pr-1">
-                        <div class="form-group">
+                      <div class="col-md-12 pr-1">
+                        <div class="form-group col-md-8 ">
                           <label for="offerPrice">After Offer</label>
                           <input type="number" class="form-control" name="offerPrice" id="offerPrice" readonly>
                         </div>
                       </div>
+                      <div class="col-md-4 ">
+                        <button type="button" class="btn btn-primary" id="calculateOffer" onclick="findOfferPrice()"> Total
+                          Price(after offer)</button>
+                      </div>
                     </div>
-                    <button type="button" class="btn btn-primary" id="calculateOffer" onclick="findOfferPrice()"> Total
-                      Price(after offer)</button>
+                  
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group">
@@ -156,6 +164,13 @@
 
   </div>
   <style>
+    .card {
+      margin-top: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
     .error-message {
       color: red;
     }

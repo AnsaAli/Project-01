@@ -1,65 +1,52 @@
 <%- include('../layout/header.ejs') %>
-    <%- include('../layout/cartAndwishlist.ejs') %>
-
-        <h3>Checkout</h3>
+    <!-- <%- include('../layout/cartAndwishlist.ejs') %> -->
 
         <!-- <%= cart.cartItems[0].productId.productName%>
   <%= existingAddress[0].address_customer_name %> -->
         <main class="main">
-            <div class="page-header breadcrumb-wrap">
-                <div class="container">
-                    <div class="breadcrumb">
-                        <a href="index.html" rel="nofollow">Home</a>
-                        <span></span> Shop
-                        <span></span> Checkout
-                    </div>
-                </div>
-            </div>
+
 
             <section class="mt-50 mb-50">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-6 mb-sm-15">
+                        <div class="row mb-15">
+                            <div class="col-lg-6 mb-15">
 
-                        </div>
-                        <!-- coupon -->
-                        <div class="col-lg-6">
-                            <div class="toggle_info">
-                                <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a
-                                        href="#coupon" data-bs-toggle="collapse" class="collapsed"
-                                        aria-expanded="false">Click
-                                        here to enter your code</a></span>
                             </div>
-                            <div class="panel-collapse collapse coupon_form " id="coupon">
-                                <div class="panel-body">
-                                    <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
-                                    <form method="post">
-                                        <div class="form-group">
-                                            <input type="text" placeholder="Enter Coupon Code...">
-                                        </div>
-                                        <div class="form-group">
-                                            <button class="btn  btn-md" name="login">Apply Coupon</button>
-                                        </div>
-                                    </form>
+                            <!-- coupon -->
+                            <div class="col-lg-6 mb-15">
+                                <div class="toggle_info">
+                                    <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a
+                                            coupon?</span> <a href="#coupon" data-bs-toggle="collapse" class="collapsed"
+                                            aria-expanded="false">Click
+                                            here to enter your code</a></span>
+                                </div>
+                                <div class="panel-collapse collapse coupon_form " id="coupon">
+                                    <div class="panel-body">
+                                        <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
+                                        <form method="post">
+                                            <div class="form-group">
+                                                <input type="text" placeholder="Enter Coupon Code...">
+                                            </div>
+                                            <div class="form-group">
+                                                <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="divider mt-50 mb-50"></div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-25">
-                                <h4>Billing Details</h4>
-                                <form method="post" action="/placeOrder">
+                            <div>
+                                <h4 class="mb-25 ">Billing Details</h4>
+                                <form method="post" action="/placeOrder" onsubmit="return validateForm()">
                                     <% existingAddress.forEach(address=> { %>
-                                        <div class="address mt-5">
+                                        <div class="address mt-5"
+                                            style="background-color: #d2fcf4ad; color: #000000; font-size: larger;">
                                             <input type="radio" id="address_<%= address._id %>" name="shippingAddress"
                                                 value="<%= address._id %>">
                                             <label for="address_<%= address._id %>">
@@ -90,9 +77,11 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <h4 class="mb-25">Your Orders</h4>
                             <div class="order_review">
+                                
                                 <div class="mb-20">
-                                    <h4>Your Orders</h4>
+                                  
                                 </div>
                                 <div class="table-responsive order_table text-center">
                                     <table class="table">
@@ -121,12 +110,13 @@
                                                     </td>
                                                     <td>
                                                         <%= item.subtotal %>
-                                                        <input type="hidden" name="price"
-                                                        value="  <%= item.subtotal %>">
+                                                            <input type="hidden" name="price"
+                                                                value="  <%= item.subtotal %>">
                                                     </td>
                                                 </tr>
-                                            <!-- send product id to controller -->
-                                                <input type="hidden" name="productId[]" value="<%= item.productId._id %>">
+                                                <!-- send product id to controller -->
+                                                <input type="hidden" name="productId[]"
+                                                    value="<%= item.productId._id %>">
                                                 <% }); %>
                                                     <!-- Subtotal -->
                                                     <tr>
@@ -141,7 +131,7 @@
                                                         <th>Shipping</th>
                                                         <td colspan="2"><em>Free Shipping</em></td>
                                                     </tr>
-                                                  
+
                                                     <!-- Total -->
                                                     <tr>
                                                         <th>Total</th>
@@ -162,20 +152,23 @@
                                     <div class="mb-25">
                                         <h5>Payment</h5>
                                     </div>
+                                    <div class="paymentoption">
+                                        <input type="radio" name="payment_option" id="cashOnDelivery" value="COD"
+                                            class="mr-10 mt-2">
+                                        <label for="cashOnDelivery"><strong>Cash On Delivery</strong> </label> <br>
 
-                                    <input type="radio" name="payment_option" id="cashOnDelivery" value="COD" checked>
-                                    <label for="cashOnDelivery">Cash On Delivery</label>
+                                        <input type="radio" name="payment_option" id="razorpay" value="razorpay"
+                                            class="mr-10 mt-2">
+                                        <label for="razorpay"> <strong> RazorPay</strong></label><br>
+
+                                        <input type="radio" name="payment_option" id="paypal" value="payPal"
+                                            class="mr-10 mt-2">
+                                        <label for="paypal"><strong>PayPal</strong> </label>
+                                    </div>
+                                    <input type="hidden" name="selectedPaymentMethod" id="selectedPaymentMethod">
                                 </div>
-                                <!-- <form method="post" action="/placeOrder">
-                            <button class="btn btn-fill-out btn-block mt-30" >Place Order</button>
-                        </form> -->
-
-
-
                                 <button class="btn btn-fill-out btn-block mt-30 place-order-btn">Place Order</button>
                                 </form>
-
-
                             </div>
                         </div>
                     </div>
@@ -187,6 +180,26 @@
 
 
         <style>
+            .paymentoption input[type="radio"] {
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                width: 16px;
+                height: 16px;
+                border: 2px solid #ccc;
+                border-radius: 50%;
+                outline: none;
+                cursor: pointer;
+                margin-right: 5px;
+
+            }
+
+            .paymentoption input[type="radio"]:checked {
+                background-color: #007bff;
+                border-color: #007bff;
+
+            }
+
             .address {
                 text-align: left;
                 background-color: #f9f9f9;
@@ -223,16 +236,28 @@
         </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+            function validateForm() {
+                var selectedAddress = document.querySelector('input[name="shippingAddress"]:checked');
+                if (!selectedAddress) {
+                    alert("Please select a billing address.");
+                    return false;
+                }
+                return true;
+            }
 
             $(document).ready(function () {
                 // Handle change event of the payment method radio buttons
                 $('input[name="payment_option"]').change(function () {
                     const selectedPaymentMethod = $('input[name="payment_option"]:checked').val();
-                    if (selectedPaymentMethod === 'Cash On Delivery') {
+
+                    //update hidden input value
+                    $('#selectedPaymentMethod').val(selectedPaymentMethod);
+
+                    if (selectedPaymentMethod) {
                         // Enable the "Place Order" button
                         $('.place-order-btn').prop('disabled', false);
                     } else {
-                        // Disable the "Place Order" button
+                        // If no payment method is selected, disable the "Place Order" button
                         $('.place-order-btn').prop('disabled', true);
                     }
                 });
@@ -240,4 +265,4 @@
 
         </script>
 
-        </html>
+<%- include('../layout/footer.ejs') %>
