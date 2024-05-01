@@ -52,24 +52,7 @@
                                                         <span> ₹<%= product.weightOptions[3].priceAfterDiscount %>
                                                         </span>
                                                     </td>
-                                                    <!-- <td class="text-right" data-title="Weight" id="cartItemWeight">
-                                                        <% product.weightOptions.forEach(option=> { %>
-                                                            <a
-                                                                style="border: 1px solid #ff0000; padding: 5px; border-radius: 8px; ">
-                                                                <span style="color: black; font-size: 16px; ">
-                                                                    <%= option.weight %>g :
-                                                                </span>
-                                                                <span style="color: rgb(0, 98, 18); font-size: 16px;">
-                                                                    ₹ <%=option.priceAfterDiscount %>
-                                                                </span>
-
-                                                            </a>
-                                                            <% }) %>
-                                                    </td>
-                                                    <td>
-                                                        <a href="#" class="btn"
-                                                            onclick="wishToCart('<%= product._id %>')">Add To Cart</a>
-                                                    </td> -->
+                                                 
                                                     <td>
                                                         <% let offerDisplayed=false; %>
                                                             <% product.weightOptions.forEach(option=> { %>
@@ -179,10 +162,12 @@
 
                                                     </td>
 
-                                                    <td class="action" data-title="Remove"><a
-                                                        href="/removeCartItem/<%= wishListData._id %>" class="text-muted"
-                                                            style="color: #ff0000;"><i class="fi-rs-trash"></i></a>
+                                                    <td class="action" data-title="Remove">
+                                                        <a href="/removeWishItem/<%= wishlist._id %>?productId=<%= product._id %>" class="text-muted">
+                                                            <i class="fi-rs-trash"></i>
+                                                        </a>
                                                     </td>
+                                                    
                                                 </tr>
                                                 <% }); %>
                                                     <% }); %>

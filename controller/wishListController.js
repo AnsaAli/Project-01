@@ -62,22 +62,21 @@ const viewWishList = async (req, res) => {
 const addWishToCart = async (req, res) => {
     try {
         const userId = req.session.user_id;
-        console.log('userId: ', userId)
-        const { productId, productWeight,weightPrice,priceAfterDiscount,productName,priceAfterDiscount100g,totalQuantity} = req.body;
-        console.log('productId: ', productId);
-        console.log('productWeight: ', productWeight);
-        console.log('weightPrice: ', weightPrice);
-        console.log('priceAfterDiscount: ', priceAfterDiscount);
-        console.log('productName: ', productName);
-        console.log('priceAfterDiscount100g: ', priceAfterDiscount100g);
-        console.log('totalQuantity: ', totalQuantity);
+        // console.log('userId: ', userId)
+        const { productId, productWeight, weightPrice, priceAfterDiscount, productName, priceAfterDiscount100g, totalQuantity } = req.body;
+        // console.log('productId: ', productId);
+        // console.log('productWeight: ', productWeight);
+        // console.log('weightPrice: ', weightPrice);
+        // console.log('priceAfterDiscount: ', priceAfterDiscount);
+        // console.log('productName: ', productName);
+        // console.log('priceAfterDiscount100g: ', priceAfterDiscount100g);
+        // console.log('totalQuantity: ', totalQuantity);
 
         let priceper1g = (priceAfterDiscount100g / 100);
-        console.group('priceper1g: ',priceper1g);
+        console.group('priceper1g: ', priceper1g);
 
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
         let cartItem = await CartItem.findOne({ productId: productId }).populate('productId');
-
 
         if (cartItem) {
             cartItem.userAddedWeight.push(productWeight);
@@ -92,7 +91,7 @@ const addWishToCart = async (req, res) => {
             let cartUser = await Cart.findOne({ userId: userId });
             cartItem = new CartItem({
                 productId: productId,
-                userId:userId,
+                userId: userId,
                 weight: productWeight,
                 price: priceAfterDiscount,
                 subtotal: priceAfterDiscount,
@@ -115,42 +114,52 @@ const addWishToCart = async (req, res) => {
             await cart.save();
         }
 
-          // Calculate total price
-          const updatedCart = await Cart.findById(cart._id).populate('cartItems');
-          let totalPrice = 0;
-          updatedCart.cartItems.forEach(item => {
-              totalPrice += item.subtotal
-              console.log('totalPrice of item: ', totalPrice);
-          });
-  
-          updatedCart.totalPrice = totalPrice.toFixed();
-          console.log('updatedCart:=========78', updatedCart)
-          await updatedCart.save();
-  
-          res.status(200).json({ success: true, message: 'Product added to cart successfully' });
+        // Calculate total price
+        const updatedCart = await Cart.findById(cart._id).populate('cartItems');
+        let totalPrice = 0;
+        updatedCart.cartItems.forEach(item => {
+            totalPrice += item.subtotal
+            console.log('totalPrice of item: ', totalPrice);
+        });
+
+        updatedCart.totalPrice = totalPrice.toFixed();
+        console.log('updatedCart:=========78', updatedCart)
+        await updatedCart.save();
+
+        // Remove the product from the wishlist
+        await Wishlist.findOneAndUpdate(
+            { userId: userId },
+            { $pull: { products: productId } }
+        );
+        res.status(200).json({ success: true, message: 'Product added to cart successfully' });
 
     } catch (error) {
         console.log('Error while adding wish to cart in addWishToCart', error)
     }
 }
 
-const removeWishItem= async(req,res)=>{
+const removeWishItem = async (req, res) => {
     try {
+        console.log('in removeWishItem')
         const wishListId = req.params.id;
-        console.log('wishListId: ',wishListId)
-        const userId = req.session.user_id;
-       
-        const wishlist = await Wishlist.findOne({ userId })
-        if (!wishlist) {
-            return res.status(404).json({ error: 'wish list item not found' });
+        console.log('wishListId: ', wishListId)
+
+        const productIdToRemove = req.query.productId;
+        console.log('productIdToRemove: ', productIdToRemove)
+
+        const updatedWishlist = await Wishlist.findByIdAndUpdate(
+            wishListId,
+            { $pull: { products: productIdToRemove } },
+            { new: true }
+        );
+
+        if (!updatedWishlist) {
+            return res.status(404).json({ error: 'Wishlist item not found' });
         }
-        
-        // Remove the cart item from the database
-        await wishlist.findByIdAndDelete(wishListId);
-       
+
         res.redirect('/wishlistProducts');
     } catch (error) {
-        
+
     }
 }
 
