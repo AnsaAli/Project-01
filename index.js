@@ -2,12 +2,14 @@ const express= require('express');
 const dbConnect = require('./config/dbConnect');
 const app=express();
 // const fileUpload = require('express-fileupload');
+const morgan = require('morgan')
 const dotenv=require('dotenv').config()
 const PORT=process.env.PORT || 3000
 dbConnect();
 
 //  app.use(fileUpload());
 
+app.use(morgan('dev'));
 
 const user_route=require('./routes/userRoute')
 app.use('/',user_route)

@@ -1,0 +1,164 @@
+<%- include('../layout/adminHeader.ejs') %>
+
+    <body>
+        <div class="content">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title"> Coupon List</h4>
+                            <div class="card-header">
+                                <h6 class="card-title"> <a href="/admin/addcoupon">Add Coupon</a></h6>
+                            </div>
+                            <form action="/admin/category" method="GET" class="mb-3">
+                                <div class="row ">
+                                    <div class="col-md-5">
+                                        <label for="searchQuery"></label>
+                                        <input type="text" class="form-control" id="searchQuery" name="searchQuery"
+                                            placeholder="Search ">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="border-radius: 10px; margin-left: 0px;"><i
+                                                class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <% if(typeof successMessage !='undefined' ){ %>
+                                        <p style="color: green;">
+                                            <%= successMessage %>
+                                        </p>
+                                        <% } %>
+                                            <% if(typeof errorMessage !='undefined' ){ %>
+                                                <p style="color: red;">
+                                                    <%= errorMessage %>
+                                                </p>
+                                                <% } %>
+
+                                                    <thead class=" text-primary" style="font-size: small; ">
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            No:
+                                                        </th>
+
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Coupon Code
+                                                        </th>
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Discount
+                                                        </th>
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Max.Discount
+                                                        </th>
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Min.Cart
+                                                        </th>
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Count
+                                                        </th>
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Expiray Date
+                                                        </th>
+                                                        <th style="font-size: small; font-weight: bold;">
+                                                            Action
+                                                        </th>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <% if (message.length> 0) { %>
+                                                            <% for (let i=message.length-1; i>=0; i--) { %>
+                                                                <tr>
+                                                                    <th scope="row">
+                                                                        <%= message.length-i %>
+                                                                    </th>
+                                                                    <td>
+                                                                        <%= message[i].code %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= message[i].discountAmount%>
+                                                                            <%= message[i].discountType==='percentage'
+                                                                                ? '%' : '₹' %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= message[i].maxDiscountAmount %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= message[i].minCartAmount %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= message[i].maxUsers %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%=
+                                                                            message[i].expiryDate.toISOString().substring(0,10)%>
+                                                                    </td>
+                                                                    <td>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-info"
+                                                                            onclick="confirmDelete('<%= message[i]._id %>')"
+                                                                            style="color: rgb(251, 8, 8);">delete</button>
+                                                                        <button type="button"
+                                                                            class="btn btn-outline-info"><a
+                                                                                href="/admin/edit?id=<%= message[i]._id%>"
+                                                                                style="color: darkgreen;">edit</a></button>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                    <% } else { %>
+                                                                        <tr>
+                                                                            <td colspan="3">Coupons not found</td>
+                                                                        </tr>
+                                                                        <% } %>
+
+                                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        </div>
+        </div>
+
+        <style>
+            .table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            .table th,
+            .table td {
+                border: 1px solid #201f1f;
+                text-align: left;
+                padding: 8px;
+            }
+
+            .table th {
+                background-color: #eadfdf;
+
+            }
+        </style>
+
+        <script>
+            function confirmDelete(couponId) {
+                if (confirm('Are you sure you want to delete this coupon code?')) {
+
+                    window.location.href = "/admin/coupon/delete?id=" + couponId;
+                }
+            }
+
+        </script>
+    </body>
+
+    <%- include('../layout/adminfooter.ejs') %>

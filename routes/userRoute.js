@@ -1,22 +1,19 @@
-const express=require('express')
-const user_route= express()
-const session= require('express-session')
-const { sessionSecret } = require('../secret/secret')
-const logPassport= require('../secret/passportGoogle')
-const authMiddleware= require('../middleware/authMiddleware')
-const fetchDataMiddleware= require('../middleware/fetchCateProData')
-
-const userAuthenticationController= require('../controller/userController')
-const productController= require('../controller/productCOntroller')
-const cartContrller= require('../controller/cartController')
-const orderController= require('../controller/orderController')
-const checkOutController= require('../controller/checkOutController')
-const wishlistController= require('../controller/wishListController')
-const passport= require('passport')
-
+const express=require('express');
+const user_route= express();
+const { sessionSecret } = require('../secret/secret');
+const logPassport= require('../secret/passportGoogle');
+const authMiddleware= require('../middleware/authMiddleware');
+const fetchDataMiddleware= require('../middleware/fetchCateProData');
+const userAuthenticationController= require('../controller/userController');
+const productController= require('../controller/productCOntroller');
+const cartContrller= require('../controller/cartController');
+const orderController= require('../controller/orderController');
+const checkOutController= require('../controller/checkOutController');
+const wishlistController= require('../controller/wishListController');
+const passport= require('passport');
+const nocache= require('nocache')
 // user_route.use(secret())
 user_route.use(sessionSecret())
-
 
 user_route.set('view engine','ejs')
 user_route.set('views','./views/users')
@@ -25,14 +22,9 @@ user_route.set('views','./views/users')
 user_route.use(express.json())
 user_route.use(express.urlencoded({extended:true}))
 
-user_route.use(fetchDataMiddleware)
+user_route.use(nocache());
 
-// Middleware to prevent caching
-const preventCache = (req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-    next();
-};
-user_route.use(preventCache);
+user_route.use(fetchDataMiddleware)
 
 //auth
 user_route.get('/auth/google',passport.authenticate('google',{scope: ['email','profile']}))
@@ -57,13 +49,9 @@ user_route.post('/forgotPass', userAuthenticationController.verifyForgetLogin)
 user_route.get('/login',authMiddleware.is_logout,userAuthenticationController.loadLogin)    
 user_route.post('/login',userAuthenticationController.verifyLogin)  
 user_route.post('/logout',authMiddleware.is_login,userAuthenticationController.userLogout)  
-user_route.post('/logout',authMiddleware.is_login, async(req,res)=>{
-    if(req.query.logout){
-        await userAuthenticationController.userLogout(req,res)
-    }else{
-        res.redirect('/register')
-    }
-}) 
+user_route.post('/logout',authMiddleware.is_login, async(req,res)=>{if(req.query.logout){await userAuthenticationController.userLogout(req,res)}else{res.redirect('/register')}}) 
+
+user_route.get('/',productController.loadHome);    
 
 user_route.get('/userProfile',authMiddleware.is_login, userAuthenticationController.loadUserProfile)
 user_route.get('/myProfile',authMiddleware.is_login, userAuthenticationController.loadMyProfile)
@@ -78,7 +66,7 @@ user_route.get('/addData',authMiddleware.is_login, userAuthenticationController.
 user_route.post('/addData', userAuthenticationController.addProfile)
 user_route.get('/delete/:index', userAuthenticationController.deleteAddress)
 
-user_route.get('/home',authMiddleware.is_login, productController.loadHome)
+user_route.get('/home',nocache(),authMiddleware.is_login, productController.loadHome)
 user_route.get('/viewProduct',authMiddleware.is_login, productController.loadViewProduct)
 user_route.get('/allProducts',authMiddleware.is_login, productController.loadAllProducts)
 
@@ -92,13 +80,19 @@ user_route.get('/wishlistProducts',authMiddleware.is_login,wishlistController.vi
 user_route.post('/wishToCart',authMiddleware.is_login,wishlistController.addWishToCart)
 user_route.get('/removeWishItem/:id',authMiddleware.is_login,wishlistController.removeWishItem)
 
-
 user_route.get('/order',authMiddleware.is_login, orderController.loadUserOrder)
 user_route.get('/successOrder',authMiddleware.is_login,orderController.loadConfirmOrder)
 user_route.post('/placeOrder',authMiddleware.is_login, orderController.placeOrder)
-user_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, orderController.cancelOrder)
-user_route.get('/trackOrder',authMiddleware.is_login, orderController.loadTrackOrder)
+user_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, orderController.cancelOrder);
 
-user_route.get('/checkOut',authMiddleware.is_login, checkOutController.loadcheckOut)
+user_route.get('/wallet',authMiddleware.is_login, userAuthenticationController.loadwallet);
+
+user_route.post('/applyCoupon',authMiddleware.is_login,userAuthenticationController.applyCoupon);
+user_route.post('/removeCoupon',authMiddleware.is_login,userAuthenticationController.removeCoupon)
+user_route.post('/paymentSuccess',authMiddleware.is_login, orderController.paymentSuccess);
+
+user_route.get('/checkOut',authMiddleware.is_login, checkOutController.loadcheckOut);
+
+/////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 module.exports= user_route

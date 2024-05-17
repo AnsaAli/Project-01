@@ -6,6 +6,8 @@ const UserAddress = require('../models/addressModel')
 const bcrypt = require("bcrypt")
 const nodemailer = require('nodemailer')
 const session = require('express-session')
+const couponModel = require('../models/couponModel')
+
 
 const seccurePassword = async (password) => {
     try {
@@ -312,6 +314,7 @@ const veryfyOtp = async (req, res) => {
 ////////////////////// user login\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const loadLogin = async (req, res) => {
     try {
+        console.log('loadLogin================================')
         const user_id = req.session.user_id
         if (user_id) {
             return res.redirect('/home')
@@ -334,7 +337,6 @@ const verifyLogin = async (req, res) => {
 
         //console.log(userdata._id,userdata.email,userdata.password +'is the id')
         if (userdata) {
-
             if (!userdata.is_blocked) {
                 const passwrdCheck = await bcrypt.compare(password, userdata.password);
                 if (passwrdCheck) {
@@ -342,6 +344,7 @@ const verifyLogin = async (req, res) => {
                         res.render('login', { successMessage: 'Please verify your email' });
                     } else {
                         req.session.user_id = userdata._id;
+                        console.log('in verifyLogin req.session.user_id:', req.session.user_id);
                         res.redirect('/home');
                     }
                 } else {
@@ -362,7 +365,7 @@ const loadverifyGoogleSignin = async (req, res) => {
     try {
         let profile = req.session.passport.user._json;
         console.log(profile, 'req.user==========')
-        
+
         const email = profile.email;
         if (profile.email_verified) {
             //req.session.user_id=profile.sub;
@@ -394,8 +397,14 @@ const loadverifyGoogleSignin = async (req, res) => {
 
 const userLogout = async (req, res) => {
     try {
-        req.session.destroy();
-        res.redirect('/login')
+        console.log('=====================================in userLogout')
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.redirect('/login');
+            }
+        });
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Internal Server Error');
@@ -404,6 +413,7 @@ const userLogout = async (req, res) => {
 }
 
 ////////////////////// user forgot login\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 const loadForget = async (req, res) => {
     try {
         res.render('forgotPass')
@@ -473,7 +483,7 @@ const loadUserEditAddress = async (req, res) => {
 
 const updateUserAddress = async (req, res) => {
     try {
-        console.log('============460')
+        console.log('========================================updateUserAddress')
         const { index } = req.params;
         console.log(index, 'is the index')
         const {
@@ -486,16 +496,6 @@ const updateUserAddress = async (req, res) => {
             address_type,
             district,
             pincode } = req.body;
-
-        //  console.log( house_num,
-        //    address_customer_name,
-        //    mobile_num, 
-        //     apartment_name, 
-        //     city,
-        //     landmark,
-        //     address_type, 
-        //     district, 
-        //     pincode, 'are the inputs')
 
         const userId = req.session.user_id;
 
@@ -697,7 +697,138 @@ const loadMyProfile = async (req, res) => {
     }
 }
 
+////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+const loadwallet = async (req, res) => {
+    try {
+        res.render('loadWallet')
+    } catch (error) {
+        console.log('Error while loading loadwallet', error)
+    }
+}
+////////////////////////
+const applyCoupon = async (req, res) => {
+    try {
+        console.log('===================================applyCoupon 1')
+        const code = req.body.code;
+        // console.log('code======: ', code)
+        const amount = Number(req.body.amount);
+        // console.log('amount=====: ', amount);
+        const userId = req.session.user_id;
+        let discAmount = 0;
+        const couponData = await couponModel.findOne({ code: code });
+        console.log('couponData: ', couponData)
+        if (couponData) {
+            const userUsedCoupon = couponData.user.includes(userId);
+            if (!userUsedCoupon) {
+                await couponModel.findOneAndUpdate({ _id: couponData._id }, { $push: { user: userId } });
+            }
+            // console.log('===================================applyCoupon 2')
+             if(amount < couponData.discountAmount){
+                return res.json({ amount: true });
+             }
+            if (couponData.maxUsers <= 0) {
+                return res.json({ limit: true });
+            }
+            console.log('===================================applyCoupon 3')
 
+            if (couponData.status == false) {
+                return res.json({ status: true });
+            }
+            console.log('===================================applyCoupon 4')
+
+            if (couponData.expiryDate <= new Date()) {
+                return res.json({ date: true });
+            }
+            console.log('===================================applyCoupon 5')
+
+            if (couponData.minCartAmount >= amount) {
+                return res.json({ cartAmount: true });
+            }
+            else {
+                console.log('===================================applyCoupon else 6')
+
+                await couponModel.findByIdAndUpdate({ _id: couponData._id }, { $push: { user: req.session.user_id } });
+                await couponModel.findByIdAndUpdate({ _id: couponData._id }, { $inc: { maxUsers: -1 } });
+
+                if (couponData.discountType == "percentage") {
+                    const perAmount = (amount * couponData.discountAmount) / 100;
+                    // const discountAmount = (amount * couponData.maxDiscountAmount) / 100;
+                    console.log('perAmount ===================================applyCoupon: ', perAmount)
+                    if (perAmount > couponData?.maxDiscountAmount) {
+                        discAmount = couponData.maxDiscountAmount;
+                        console.log('if case  discAmount:===================================applyCoupon750', discAmount)
+                    } else {
+                        discAmount = perAmount;
+                        console.log('else case  discAmount===================================applyCoupon753: ', discAmount)
+                    }
+
+                } else if (couponData.discountType == "fixed") {
+                    discAmount = couponData.discountAmount
+                    console.log('===================================applyCoupon couponData.discountType == "fixed": discAmount', discAmount)
+                }
+                const disTotal = Math.round(amount - discAmount);
+                console.log('discAmount : ', discAmount);
+                console.log('disTotal : ', disTotal);
+
+                return res.json({ amountOkey: true, discAmount, disTotal });
+
+            }
+
+        } else {
+            res.json({ invalid: true });
+        }
+
+    } catch (error) {
+        console.log('Error whilw applying coupon', error)
+    }
+}
+
+async function fetchCart(userId) {
+    try {
+        const cart = await Cart.findOne({ user: userId }).populate('cartItems.productId');
+
+        if (!cart) {
+            return { totalPrice: 0, cartItems: [] };
+        }
+
+        // Calculate total price of the cart
+        let totalPrice = 0;
+        totalPrice = cart.totalPrice;
+
+        return { totalPrice: totalPrice, cartItems: cart.cartItems };
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        return { totalPrice: 0, cartItems: [] };
+    }
+}
+
+// Controller function to remove a coupon
+const removeCoupon = async (req, res) => {  
+    try {
+        const code = req.body.code;
+        const userId = req.session.user_id;
+
+        const couponData = await couponModel.findOne({ code: code });
+
+        if (couponData && couponData.user.includes(userId)) {
+            // Remove the user from the coupon's applied list
+            await couponModel.findByIdAndUpdate({ _id: couponData._id }, { $pull: { user: userId } });
+            // Increment maxUsers since the coupon is no longer applied by this user
+            await couponModel.findByIdAndUpdate({ _id: couponData._id }, { $inc: { maxUsers: 1 } });
+
+            // Fetch the updated cart total amount
+            const cart = await fetchCart(userId); 
+            const totalAmount = cart.totalPrice || 0; // Get the total price from the cart
+
+            return res.json({ success: true, totalAmount: totalAmount });
+        } else {
+            return res.status(400).json({ error: "Coupon not found or not applied" });
+        }
+    } catch (error) {
+        console.error('Error while removing coupon:', error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 module.exports = {
     loadRegister,
@@ -725,6 +856,9 @@ module.exports = {
     loadChngePassword,
     chngePassword,
     loadMyProfile,
+    loadwallet,
+    applyCoupon,
+    removeCoupon
 
 
 }

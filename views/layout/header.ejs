@@ -39,18 +39,20 @@
                                     class="main-menu main-menu-grow main-menu-padding-1 main-menu-lh-1 main-menu-mrg-1 hm3-menu-padding d-none d-lg-block hover-boder">
                                     <nav>
                                         <ul>
-                                            <li><a class="active" href="/home" style="font-size: large;">Home <i class="fi-rs-angle-down"></i></a>
+                                            <li><a class="active" href="/home" style="font-size: large;">Home <i
+                                                        class="fi-rs-angle-down"></i></a>
 
                                             </li>
-                                            <li><a class="active" href="/allProducts" style="font-size: large;">All Products <i
-                                                        class="fi-rs-angle-down"></i></a>
+                                            <li><a class="active" href="/allProducts" style="font-size: large;">All
+                                                    Products <i class="fi-rs-angle-down"></i></a>
 
                                             </li>
                                             <li class="position-static"><a href="" style="font-size: large;">Category <i
                                                         class="fi-rs-angle-down"></i></a>
                                                 <ul class="mega-menu">
                                                     <% categories.forEach(category=> { %>
-                                                        <li><a href="/categories/<%= category._id %>" style="font-size: large;">
+                                                        <li><a href="/categories/<%= category._id %>"
+                                                                style="font-size: large;">
                                                                 <%= category.name %>
                                                             </a></li><br>
                                                         <% }); %>
@@ -60,7 +62,8 @@
                                                         class="fi-rs-angle-down"></i></a>
                                                 <ul class="mega-menu">
                                                     <% products.forEach(product=> { %>
-                                                        <li><a href="/products/<%= product._id %>" style="font-size: large;">
+                                                        <li><a href="/products/<%= product._id %>"
+                                                                style="font-size: large;">
                                                                 <%= product.productName %>
                                                             </a></li><br>
                                                         <% }); %>
@@ -85,7 +88,7 @@
                                                     id="cartCount"></span>
                                                 <p class="pro-count "><img alt="GoEAsy"
                                                         src="/assets/imgs/theme/icons/icon-cart.svg">
-                                                    </p>
+                                                </p>
                                             </a>
                                             <!-- <a class="mini-cart-icon" href="">
                                          <img alt="GoEAsy" src="/assets/imgs/theme/icons/icon-cart.svg"> 
@@ -126,17 +129,19 @@
                                         </form>
                                     </div>
                                     <% } else { %>
-                                        
+                                        <div class="row">
+                                            <div class="form">
+                                                 <a href="/login">Login/</a>
+                                            <div class="form">
+                                                  <a href="/register">Register</a>
+                                            </div>
+                                        </div>
                                         <% } %>
 
                             </div>
                         </div>
                     </div>
-
-
                 </div>
-
-
             </div>
         </div>
 
@@ -147,5 +152,19 @@
             align-items: center;
             margin-top: 50px;
         }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            /* Horizontally center the forms */
+            align-items: center;
+            /* Vertically center the forms */
+        }
+
+        .form {
+            margin: 0 0px;
+        }
+
+       
     </style>
 </body>

@@ -27,12 +27,12 @@
         <main class="main">
             <div class="page-header breadcrumb-wrap">
                 <div class="container">
-                    <% if (typeof error !='undefined') { %>
+                    <% if (typeof error !='undefined' ) { %>
                         <div class="alert alert-danger" role="alert">
                             <%= error %>
                         </div>
-                    <% } %>
-                   
+                        <% } %>
+
                 </div>
             </div>
             <section class="mt-50 mb-50">
@@ -74,9 +74,10 @@
                                                             <%= cartItem.weight %> g
                                                         </span>
                                                     </td>
-                                                    <td class="price" data-title="Price"><span> ₹<%=cartItem.productId.weightOptions[3].priceAfterDiscount %>
-                                                                </span></td>
-                                                                
+                                                    <td class="price" data-title="Price"><span> ₹
+                                                            <%=cartItem.productId.weightOptions[3].priceAfterDiscount %>
+                                                        </span></td>
+
                                                     <!-- <td class="text-center" data-title="Quantity">
                                                 <div class="detail-qty border radius  m-auto">
                                                     <span class="qty-val"><a href="" style="font-size: 30px;">-</a> <%= cartItem.quantity %> <a href="" style="font-size: 20px;">+</a></span>
@@ -91,7 +92,7 @@
                                                                     data-action="decrement"
                                                                     data-product-id="<%= cartItem.productId._id %> "> -
                                                                 </a>
-                                                          
+
                                                                 <p class="qty-val">
                                                                     <%= cartItem.quantity %>
                                                                 </p>
@@ -99,13 +100,13 @@
                                                                     data-action="increment"
                                                                     data-product-id="<%= cartItem.productId._id %>">+
                                                                 </a>
-                                                               
+
                                                             </span>
                                                         </div>
                                                     </td>
 
                                                     <td class="text-right" data-title="Subtotal ">
-                                                        <span class="subtotal-val" >₹ <%= cartItem.subtotal%> </span>
+                                                        <span class="subtotal-val">₹ <%= cartItem.subtotal%> </span>
                                                     </td>
 
                                                     <td class="action" data-title="Remove"><a
@@ -114,22 +115,18 @@
                                                     </td>
                                                 </tr>
 
-                                                <!-- <tr>
-                                                    <td colspan="6" class="text-end">
-                                                        <a href="#" class="text-muted"> <i
-                                                                class="fi-rs-cross-small"></i> Clear Cart</a>
-                                                    </td>
-                                                </tr> -->
                                                 <% }); %>
-                                                <tr>
-                                                    <td colspan="6" class="text-right cart-total-price" data-title="totalPrice ">
-                                                        <div class="total">
-                                                            <p ><span class="total-val">Total Price: ₹<%= cartData.totalPrice %></span>
-                                                            </p>
-                                                        </div>
-                                                      
-                                                    </td>
-                                                </tr>
+                                                    <tr>
+                                                        <td colspan="6" class="text-right cart-total-price"
+                                                            data-title="totalPrice ">
+                                                            <div class="total">
+                                                                <p><span class="total-val">Total Price: ₹<%=
+                                                                            cartData.totalPrice %></span>
+                                                                </p>
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
                                                     <% } else { %>
                                                         <tr>
                                                             <td colspan="6">
@@ -144,12 +141,12 @@
                                 <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue
                                     Shopping</a>
                                 <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i
-                                        class="fi-rs-shuffle mr-10" ></i>Checkout</a>
+                                        class="fi-rs-shuffle mr-10"></i>Checkout</a>
                             </div>
                             <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
 
                         </div>
-                        
+
                     </div>
                 </div>
             </section>
@@ -188,6 +185,7 @@
                         data: { productId: productId, action: action },
                         success: function (response) {
                             // Handle success response, update quantity, weight, and subtotal
+
                             quantityElement.text(response.quantity);
                             //    console.log(' quantityElement.text(response.quantity):', quantityElement.text(response.quantity))
                             weightEement.text(response.weight);
@@ -195,11 +193,21 @@
                             subtotalElement.text('₹' + response.subtotal);
                             $('.cart-total-price').text('Total Price: ₹' + response.totalPrice);
 
+                            // Remove error message if it exists
+                            $('.alert-danger').remove();
+
                         },
                         error: function (xhr, status, error) {
                             // Handle error
                             console.error('Error:', error);
-                            alert('An error occurred while updating quantity. Please try again later.');
+                            if (xhr.responseJSON && xhr.responseJSON.error) {
+                                // Update UI to display error message
+                                var errorMessage = xhr.responseJSON.error;
+                                var errorElement = $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage);
+                                $('.cart-action').prepend(errorElement);
+                            } else {
+                                alert('An error occurred while updating quantity. Please try again later.');
+                            }
                         }
                     });
                 });

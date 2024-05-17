@@ -41,8 +41,6 @@ const orderSchema = new Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['clientSideProcessing', 'shipmentProcessing', 'shipped', 'delivered', 'cancelled'],
-        default: 'clientSideProcessing',
         required: true,
 
     }

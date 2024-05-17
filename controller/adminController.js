@@ -1,15 +1,14 @@
 const { ObjectId } = require('mongodb');
-
+const couponModel = require('../models/couponModel');
 const shortid = require('shortid');
 const uniqueId = shortid.generate();
-const UserAddress= require('../models/addressModel');
+const UserAddress = require('../models/addressModel');
 const adminModel = require('../models/userAuthenticationModel')
 const { Category, Product } = require('../models/categoryModel')
 const bcrypt = require("bcrypt")
 const sharp = require('sharp')
 const Order = require('../models/orderModel')
 const User = require('../models/userAuthenticationModel');
-const nodemon = require('nodemon');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -20,21 +19,21 @@ cloudinary.config({
 
 
 function validateProductName(productName, existingNames) {
-    const regexPattern = /^[a-zA-Z\s]+$/; 
-    const trimmedName = productName.trim(); 
+    const regexPattern = /^[a-zA-Z\s]+$/;
+    const trimmedName = productName.trim().toLowerCase(); 
 
     // Check if the name meets the length requirement
     if (trimmedName.length < 3 || trimmedName.length > 50) {
         return false;
     }
 
-    // Check if the name already exists
-    if (existingNames.includes(trimmedName) && trimmedName !== "") {
+    // Check if the name already exists (case-insensitive check)
+    if (existingNames.some(name => name.toLowerCase() === trimmedName) && trimmedName !== "") {
         return false;
     }
 
     // Check if the name matches the regex pattern
-    return regexPattern.test(trimmedName);
+    return regexPattern.test(productName);
 }
 
 
@@ -102,9 +101,9 @@ const loadDashboard = async (req, res) => {
 
 const loadUserProfile = async (req, res) => {
     try {
-        
+
         const userData = await User.find({ is_admin: 0 }).populate('address')
-   
+
         if (userData.length > 0) {
 
             res.render('customerProfile', { userData });
@@ -114,7 +113,7 @@ const loadUserProfile = async (req, res) => {
         }
     } catch (error) {
 
-        console.log('error while loading loadUserProfile',error)
+        console.log('error while loading loadUserProfile', error)
     }
 }
 
@@ -142,15 +141,15 @@ const userBlockUnblock = async (req, res) => {
 
 const loadCategory = async (req, res) => {
     try {
-        let myQuery= Category.find({ is_deleted: false })
-        const searchQuery= req.query.searchQuery;
+        let myQuery = Category.find({ is_deleted: false })
+        const searchQuery = req.query.searchQuery;
         if (searchQuery && searchQuery.trim() !== '') {
-           
+
             myQuery.where('name').regex(new RegExp(searchQuery, 'i'));
         }
         const categories = await myQuery
 
-        res.render('category', { categories,searchQuery:searchQuery });
+        res.render('category', { categories, searchQuery: searchQuery });
     } catch (error) {
         console.log('Error wile loading category', error.message)
     }
@@ -171,25 +170,25 @@ const addCategory = async (req, res) => {
 
         const existingCategories = await Category.find({}, 'name');
         const existingNames = existingCategories.map(category => category.name);
-        
+
         if (!validateProductName(name, existingNames)) {
-            return res.status(500).redirect('/admin/category?errorMessage=InvalidCategoryName');
+            return res.status(500).redirect('/admin/addCategory?error=InvalidCategoryName');
         }
         console.log(name, description, '=========input values 137')
 
         // Check if the category already exists
         const existingCategory = await Category.findOne({ name })
         if (existingCategory) {
-            return res.status(400).redirect('/admin/category?errorMessage=CategoryAlreadyExists');
+            return res.status(400).redirect('/admin/addCategory?error=CategoryAlreadyExists');
         }
         const newCategory = new Category({ name, description, is_deleted: false })
         await newCategory.save()
         console.log(newCategory, 'Is the new category')
         // Redirect with success message
-        res.redirect('/admin/category?successMessage=CategoryAddedSuccessfully');
+        res.redirect('/admin/addCategory?success=CategoryAddedSuccessfully');
     } catch (error) {
         console.log('Error while adding category', error.message)
-        res.status(500).redirect('/admin/category?errorMessage=ServerError');
+        res.status(500).redirect('/admin/addCategory?error=ServerError');
         // Handle errors appropriately
     }
 }
@@ -310,7 +309,7 @@ const addProducts = async (req, res) => {
 
         console.log(' ================================311')
 
-         // Validate productName
+        // Validate productName
         const existingProducts = await Product.find({}, 'productName');
         const existingNames = existingProducts.map(product => product.productName);
         if (!validateProductName(productName, existingNames)) {
@@ -346,26 +345,26 @@ const addProducts = async (req, res) => {
         }
 
         console.log('================================350 B addProducts')
-       
+
         let price1g = (pricePer100g / 100);
-        console.log('price1g : ',price1g)
-        let price100g=(price1g * 100);
-        console.log('price100g : ',price100g)
+        console.log('price1g : ', price1g)
+        let price100g = (price1g * 100);
+        console.log('price100g : ', price100g)
         let price250 = (price1g * 250);
-        console.log('price250 : ',price250)
+        console.log('price250 : ', price250)
         let price500 = (price1g * 500);
-        console.log('price500 : ',price500)
-        let price1Kg =(price1g * 1000);
-        console.log('price1Kg : ',price1Kg)
+        console.log('price500 : ', price500)
+        let price1Kg = (price1g * 1000);
+        console.log('price1Kg : ', price1Kg)
 
         let offerprice100 = price100g - (price100g * offerPercentage / 100);
-        console.log('offerprice100 : ',offerprice100)
-        let offerprice250 =  price250 - (price250 * offerPercentage / 100);
-        console.log('offerprice250 : ',offerprice250)
+        console.log('offerprice100 : ', offerprice100)
+        let offerprice250 = price250 - (price250 * offerPercentage / 100);
+        console.log('offerprice250 : ', offerprice250)
         let offerprice500 = price500 - (price500 * offerPercentage / 100);
-        console.log('offerprice500 : ',offerprice500)
+        console.log('offerprice500 : ', offerprice500)
         let offerprice1kg = price1Kg - (price1Kg * offerPercentage / 100);
-        console.log('offerprice1kg : ',offerprice1kg)
+        console.log('offerprice1kg : ', offerprice1kg)
 
 
         console.log('================================890 C addProducts')
@@ -430,18 +429,18 @@ const addProducts = async (req, res) => {
 
 const loadViewProducts = async (req, res) => {
     try {
-        
-       let query =  Product.find({is_deleted:false}).populate('category');
-      
+
+        let query = Product.find({ is_deleted: false }).populate('category');
+
         // Handling sorting
         const sortby = req.query.sortby;
-       
-         if (sortby === 'totalQuantity') { query = query.sort({ totalQuantity: 1 });} 
-        else if (sortby === 'offerPercentage') {query = query.sort({ offerPercentage: 1 });}
+
+        if (sortby === 'totalQuantity') { query = query.sort({ totalQuantity: 1 }); }
+        else if (sortby === 'offerPercentage') { query = query.sort({ offerPercentage: 1 }); }
 
         const products = await query;
         //console.log('Products:', products); 
-        res.render('viewProduct', { products: products});
+        res.render('viewProduct', { products: products });
     } catch (error) {
         console.log('Error while loading view product page:', error.message);
         res.status(500).send('Error while loading view product page');
@@ -586,16 +585,16 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-const loadViewSingleProducts= async(req,res)=>{
+const loadViewSingleProducts = async (req, res) => {
     try {
         const id = req.query._id;
         console.log(id, '===============id 611 loadViewSingleProducts')
-        
+
         const products = await Product.findById({ _id: id }).populate('category');
         console.log(products.productName, '===============products  loadViewSingleProducts')
 
         const categories = await Category.find({})
-      
+
         if (!products) {
             console.log('Error while loading edit-category page with data')
             redirect('/admin/viewProducts')
@@ -603,8 +602,8 @@ const loadViewSingleProducts= async(req,res)=>{
             console.log('=================622')
             res.render('singleProduct', { products: products, categories: categories })
         }
-       
-        
+
+
     } catch (error) {
         console.log('Error occure while viewing single product in loadViewSingleProducts', error)
     }
@@ -650,7 +649,7 @@ const loadOrderDetails = async (req, res) => {
     try {
         const orderPlaced = await Order.find({}).populate('shippingAddress').populate('orderItems').populate('user_id');
 
-        res.render('OrderDetailsAdmin', { orderPlaced})
+        res.render('OrderDetailsAdmin', { orderPlaced })
     } catch (error) {
         console.log('Error while loading order deatls page')
     }
@@ -673,7 +672,7 @@ const cancelOrder = async (req, res) => {
             try {
                 console.log('ProductId: ', element.product_id);
                 let product = await Product.findById(element.product_id);
-                product.totalQuantity += (element.orderedWeight[0].weight)/1000;
+                product.totalQuantity += (element.orderedWeight[0].weight) / 1000;
                 await product.save();
             } catch (error) {
                 console.error('Error updating product quantity:', error);
@@ -687,23 +686,151 @@ const cancelOrder = async (req, res) => {
     }
 }
 
-
-const loadSingleOrderDetails= async(req,res)=>{
+const loadSingleOrderDetails = async (req, res) => {
     try {
-        const orderId= req.query._id;
-        
-        console.log(orderId,'==========orderId loadSingleOrderDetails')
-        
-        const orderDetails = await Order.findById({_id: orderId}).populate('shippingAddress').populate('orderItems').populate('user_id');
+        const orderId = req.query._id;
+
+        console.log(orderId, '==========orderId loadSingleOrderDetails')
+
+        const orderDetails = await Order.findById({ _id: orderId }).populate('shippingAddress').populate('orderItems').populate('user_id');
         // .populate('user_id shippingAddress')
         // .exec();
-        res.render('singleOrderDetails',{ orderDetails})
+        res.render('singleOrderDetails', { orderDetails })
     } catch (error) {
         console.log('Error occure while loading loadSingleOrderDetails', error)
     }
 }
 
+/////////////////////////////////////coupons\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
+const loadCoupons = async (req, res) => {
+    try {
+        console.log('in view coupon');
+        const couponData = await couponModel.find({})
+        res.render('viewCoupon', { message: couponData })
+    } catch (error) {
+        console.log('Error while loading viewCoupons page: ', error)
+    }
+}
+
+const loadaddCoupons = async (req, res) => {
+    try {
+        const yourValidationErrorValue = true;
+        res.render('loadAddCoupon', { validationError: yourValidationErrorValue })
+    } catch (error) {
+
+    }
+}
+
+const addCoupons = async (req, res) => {
+    try {
+        console.log('=================================addCoupons')
+
+        // Check if the coupon code already exists
+        const existingCoupon = await couponModel.findOne({ code: req.body.code.trim() });
+        console.log('=================================existingCoupon: ', existingCoupon);
+
+        if (existingCoupon) {
+            return res.status(400).render('loadAddCoupon', { existingCoupon });
+        }
+        if ((req.body.code).length < 6) {
+            return res.status(400).send('Coupon Code must be minimum of 6 length.')
+        }
+        // Client-side validation: Ensure required fields are not empty
+        if (!req.body.code || !req.body.discountType || !req.body.discountAmount || !req.body.cartamount || !req.body.expirydate || !req.body.couponcount) {
+            return res.status(400).send("All fields are required. Please fill in all the details");
+        }
+        console.log('req.body.code: ', req.body.code)
+        console.log('req.body.discountType: ', req.body.discountType)
+        console.log('req.body.discountAmount: ', req.body.discountAmount)
+        console.log('req.body.cartamount: ', req.body.cartamount)
+        console.log('req.body.expirydate: ', req.body.expirydate)
+        console.log(' req.body.couponcount: ', req.body.couponcount)
+
+        const newCoupon = new couponModel({
+            code: req.body.code,
+            discountType: req.body.discountType,
+            discountAmount: req.body.discountAmount,
+            maxDiscountAmount: req.body.amount,
+            minCartAmount: req.body.cartamount,
+            expiryDate: req.body.expirydate,
+            maxUsers: req.body.couponcount
+        });
+        console.log('===================================756');
+        console.log(' newCoupon: ', newCoupon);
+        const couponData = await newCoupon.save();
+        if (couponData) {
+            console.log('couponData is true==============')
+            res.redirect('/admin/coupon');
+        } else {
+            console.log('couponData is false==============')
+            res.redirect('/admin/addcoupon');
+        }
+    } catch (error) {
+        console.log('Error while adding coupons addCoupons', error);
+    }
+}
+
+const deleteCoupon = async (req, res) => {
+    try {
+        console.log('===================deleteCoupon');
+        const id = req.query.id
+        await couponModel.deleteOne({ _id: id });
+        res.redirect('/admin/coupon');
+    } catch (error) {
+        console.log('Error while loading deleteCoupon', error)
+    }
+}
+
+const loadeditCoupon = async (req, res) => {
+    try {
+        console.log('in editloadeditCoupon ==========================');
+        const id = req.query.id
+        const couponData = await couponModel.findById({ _id: id })
+        console.log(couponData);
+        res.render("editCoupon", { couponData })
+    } catch (error) {
+        console.log('Error while editing the coupon editCoupon', error)
+    }
+}
+
+const editCoupon = async (req, res) => {
+    try {
+        console.log('in editCoupon =================');
+        const id = req.body.id;
+
+        // Client-side validation: Ensure required fields are not empty
+        if (!req.body.code || !req.body.discountType || !req.body.discountAmount || !req.body.amount || !req.body.cartamount || !req.body.expirydate || !req.body.couponcount) {
+            return res.status(400).send("All fields are required. Please fill in all the details.");
+        }
+
+        await couponModel.updateMany({ _id: id }, {
+            $set: {
+                code: req.body.code,
+                discountType: req.body.discountType,
+                discountAmount: req.body.discountAmount,
+                maxDiscountAmount: req.body.amount,
+                maxCartAmount: req.body.cartamount,
+                expiryDate: req.body.expirydate,
+                maxUsers: req.body.couponcount
+            }
+
+        });
+
+        res.redirect('/admin/coupon');
+
+    } catch (error) {
+        console.log('Error while editing coupons in editCoupon', error)
+    }
+}
+/////////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
+const viewWallet = async (req, res) => {
+    try {
+        res.render('viewWallet')
+    } catch (error) {
+        console.log('Error while loading wallet page')
+    }
+}
 ////////////////////////////exports\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 module.exports = {
@@ -730,5 +857,12 @@ module.exports = {
     deleteImages,
     cancelOrder,
     loadViewSingleProducts,
-    loadSingleOrderDetails
+    loadSingleOrderDetails,
+    loadCoupons,
+    viewWallet,
+    loadaddCoupons,
+    addCoupons,
+    deleteCoupon,
+    loadeditCoupon,
+    editCoupon
 }

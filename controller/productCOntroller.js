@@ -1,13 +1,15 @@
-
 const User = require('../models/userAuthenticationModel')
 const { Category, Product } = require('../models/categoryModel')
 const Review = require('../models/reviewModel')
+const session= require('express-session')
 
 
 const loadHome = async (req, res) => {
     try {
+        console.log('req.session.user_id ================loadHome', req.session.user_id );
         const user_id = req.session.user_id;
         let user_name = '';
+        let loggedIn = false;
 
         if (user_id) {
             const user = await User.findById(user_id);
@@ -17,6 +19,7 @@ const loadHome = async (req, res) => {
             }
         }
 
+       
         let products = await Product.find().lean().populate('category');
 
         // Organize products by category
@@ -36,6 +39,7 @@ const loadHome = async (req, res) => {
             categorizedProducts: categorizedProducts,
             loggedIn: loggedIn,
         });
+        
     } catch (error) {
         console.log("Error occurred while loading the home page");
         res.status(500).send('Internal Server Error');
@@ -44,10 +48,13 @@ const loadHome = async (req, res) => {
 
 const loadAllProducts = async (req, res) => {
     try {
+        console.log(' req.session.user_id ================loadAllProducts', req.session.user_id );
+
         const user_id = req.session.user_id;
         let user_name = '';
+        let loggedIn=false;
         const categoryId = req.query.category;
-        console.log('categoryId: ', categoryId)
+        console.log('=============categoryId: ', categoryId)
 
         if (user_id) {
             const user = await User.findById(user_id);
@@ -61,28 +68,24 @@ const loadAllProducts = async (req, res) => {
         const perPage = 6; //no: of producs
         const page = parseInt(req.query.page) || 1; 
         const skip = (page - 1) * perPage; 
-
-        // let myQuery = Product.find({}).lean().populate('category');
-        // let myQuery = Product.find({}).lean().populate('category').skip(skip).limit(perPage);
+        
         let myQuery = categoryId ? Product.find({ category: categoryId }) : Product.find({});
-        myQuery = myQuery.lean().populate('category').skip(skip).limit(perPage);
+            myQuery = myQuery.lean().populate('category').skip(skip).limit(perPage);
 
         //search
         const searchQuery = req.query.searchQuery;
         console.log('searchQuerys: ', searchQuery)
         if (searchQuery && searchQuery.trim() !== '') {
-
             myQuery.where('productName').regex(new RegExp(searchQuery, 'i'));
         }
         // Handling sorting
         const sortby = req.query.sortby;
-
         if (sortby === 'lowerPrice') {
-            myQuery = myQuery.sort({ 'weightOptions.priceAfterDiscount': 1 });
+            myQuery = myQuery.find({'totalQuantity': {$gt:0}}).sort({ 'weightOptions.priceAfterDiscount': 1 });
         } else if (sortby === 'higherPrice') {
-            myQuery = myQuery.sort({ 'weightOptions.priceAfterDiscount': -1 });
+            myQuery = myQuery.find({'totalQuantity':{$gt:0}}).sort({ 'weightOptions.priceAfterDiscount': -1 });
         } else if (sortby === 'onOffer') {
-            myQuery = myQuery.find({ 'offerPercentage': { $gt: 0 } });
+            myQuery = myQuery.find({ $and:[{'offerPercentage': { $gt: 0 }},{'totalQuantity':{$gt:0}}] });
         }
 
         const products = await myQuery.exec();
@@ -99,7 +102,8 @@ const loadAllProducts = async (req, res) => {
             searchQuery: searchQuery,
             currentPage: page,
             perPage: perPage,
-            totalPages: totalPages
+            totalPages: totalPages,
+         
         });
     } catch (error) {
         console.log("Error occurred while loading loadAllProducts", error);
@@ -109,9 +113,10 @@ const loadAllProducts = async (req, res) => {
 
 const loadViewProduct = async (req, res) => {
     try {
+        console.log('in loadViewProduct=======')
         const user_id = req.session.user_id;
         let user_name = '';
-
+        let loggedIn = false;
         if (user_id) {
             const user = await User.findById(user_id);
             if (user) {

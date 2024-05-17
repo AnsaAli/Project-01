@@ -106,7 +106,16 @@ const updateQuantity = async (req, res) => {
         }
 
         let length = cartItem.userAddedWeight.length;
+        //if there is no enough quantity.
+        if((cartItem.productId.totalQuantity)*1000 < cartItem.weight ){
+            return res.status(404).json({ error: `${cartItem.productId.productName} has only ${cartItem.productId.totalQuantity}kg available in stock.` });
+        }
         if (action === 'increment') {
+            //user can't add more than 5kg
+            if(cartItem.weight >= 5000){
+                return res.status(404).json({ error: "Max allowed weight is 5kg/product, please reduce the weight to within limit. Cannot proceed with checkout." });
+            }
+          
             if (cartItem) {
                 cartItem.quantity += 1;
                 console.log('increment  cartItem.quantity: ',  cartItem.quantity)

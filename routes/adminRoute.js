@@ -71,22 +71,18 @@ const uploadMiddleware = (req, res, next) => {
     });
   };  
 
+  
 admin_route.set('view engine','ejs')
 admin_route.set('views','./views/admin')
-
 admin_route.use(express.json())
 admin_route.use(express.urlencoded({extended:true}))
-
 admin_route.use(sessionSecret())
 
 //loginpage\\
 admin_route.get('/',authMiddleware.is_logout, adminController.loadAdminLogin)
 admin_route.post('/', adminController.verifyAdminLogin)
-
 admin_route.get('/logout',authMiddleware.is_login,adminController.adminLogout)
-
 admin_route.get('/dashboard',authMiddleware.is_login,adminController.loadDashboard)
-
 admin_route.get('/customerProfile',authMiddleware.is_login,adminController.loadUserProfile)
 admin_route.post('/customerProfile/:id/status/:action',authMiddleware.is_login,adminController.userBlockUnblock)
 
@@ -97,26 +93,38 @@ admin_route.post('/addCategory',authMiddleware.is_login,adminController.addCateg
 admin_route.get('/editCategory',authMiddleware.is_login,adminController.loadEditCategory)
 admin_route.post('/editCategory',authMiddleware.is_login,adminController.updateCategory)
 admin_route.post('/category/:id/delete',authMiddleware.is_login,adminController.softDeleteCategory)
-
 admin_route.get('/addProducts',authMiddleware.is_login,adminController.loadAddProducts)
 admin_route.post('/addProducts',uploadMiddleware,adminController.addProducts)
-
 admin_route.get('/viewProducts',authMiddleware.is_login,adminController.loadViewProducts)
 admin_route.get('/editProduct',authMiddleware.is_login,adminController.loadEditProduct)
 admin_route.post('/editProduct',upload.array('image', 12),adminController.updateProduct)
 admin_route.post('/viewProducts/:id/deleteProduct',authMiddleware.is_login,adminController.deleteProduct)
-
 admin_route.get('/viewSingleProduct',authMiddleware.is_login,adminController.loadViewSingleProducts)
-
 admin_route.post("/deleteImage/:productId/:imageId",authMiddleware.is_login, adminController.deleteImages)
-
 admin_route.get('/orders',authMiddleware.is_login,adminController.loadOrderDetails)
 admin_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, adminController.cancelOrder)
-
 admin_route.get('/viewOrderDetails',authMiddleware.is_login,adminController.loadSingleOrderDetails)
 
 
+/////coupons
+admin_route.get('/coupon',authMiddleware.is_login,adminController.loadCoupons);
+admin_route.get('/coupon/delete',authMiddleware.is_login, adminController.deleteCoupon);
+admin_route.get('/edit', authMiddleware.is_login, adminController.loadeditCoupon);
+admin_route.post('/edit', authMiddleware.is_login, adminController.editCoupon);
+
+admin_route.get('/addcoupon',authMiddleware.is_login,adminController.loadaddCoupons)
+admin_route.post('/addcoupon',authMiddleware.is_login,adminController.addCoupons);
+
+//wallet
+admin_route.get('/viewWallet',authMiddleware.is_login,adminController.viewWallet)
+
+
+
+////////////////////////////////////////\\\\\\\\\\\\\\\\\\\
+
 admin_route.get('*',(req,res)=>{
-    res.redirect('/admin')
+  res.redirect('/admin')
 })
+ ///////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 module.exports=admin_route

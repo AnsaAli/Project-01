@@ -1,15 +1,22 @@
 
-const { Category, Product } = require('../models/categoryModel')
-const Review = require('../models/reviewModel')
-const Address = require('../models/addressModel')
-const Cart = require('../models/cartModel')
-const CartItem = require('../models/cartItemModel')
-const User = require('../models/userAuthenticationModel')
+const { Category, Product } = require('../models/categoryModel');
+const Review = require('../models/reviewModel');
+const Address = require('../models/addressModel');
+const Cart = require('../models/cartModel');
+const CartItem = require('../models/cartItemModel');
+const User = require('../models/userAuthenticationModel');
 const shortid = require('shortid');
-const { ObjectId } = require('mongodb')
+const { ObjectId } = require('mongodb');
+const Order = require('../models/orderModel');
+const OrderItem = require('../models/orderItemModel');
 
-const Order = require('../models/orderModel')
-const OrderItem = require('../models/orderItemModel')
+
+const Razorpay = require('razorpay');
+const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
+const razorpayinstance = new Razorpay({
+    key_id: RAZORPAY_ID_KEY,
+    key_secret: RAZORPAY_SECRET_KEY
+});
 
 
 const loadUserOrder = async (req, res) => {
@@ -36,14 +43,14 @@ const cancelOrder = async (req, res) => {
             try {
                 console.log('ProductId: ', element.product_id);
                 let product = await Product.findById(element.product_id);
-                product.totalQuantity += (element.orderedWeight[0].weight)/1000;
+                product.totalQuantity += (element.orderedWeight[0].weight) / 1000;
                 await product.save();
             } catch (error) {
                 console.error('Error updating product quantity:', error);
             }
         }));
-        
-        
+
+
         res.status(200).json({ message: 'Order cancelled successfully', orderId: order._id });
     } catch (error) {
         console.log('Error occure while canceling the order', error.message)
@@ -65,14 +72,22 @@ const loadConfirmOrder = async (req, res) => {
 
 const placeOrder = async (req, res) => {
     try {
-        //console.log(req.body)
+        console.log('request body:', req.body);
+        console.log('=============================================placeorder')
         const userId = req.session.user_id;
         console.log(userId, 'is the userId')
 
-        const { items, weight, price, totalAmount, shippingAddress,payment_option } = req.body;
-        // console.log('items: ', items, 'weight: ', weight, 'price : ', price, 'totalAmount: ', totalAmount, 'shippingAddress: ', shippingAddress)
-         console.log('payment_option: ',payment_option)
-        console.log('typeof items : ', typeof items, 'items.length: ', items.length);
+        const { items, weight, price, totalAmount, shippingAddress, payment_option, productIds } = req.body;
+        console.log('items: ', items, 'weight: ', weight, 'price : ', price, 'totalAmount: ', totalAmount, 'shippingAddress: ', shippingAddress)
+        console.log('payment_option: ', payment_option)
+        console.log('productid : ', productIds);
+
+        let orderStatus;
+        if (payment_option === 'razorpay') {
+            orderStatus = "pending"
+        } else {
+            orderStatus = "placed"
+        }
 
         let orderId = shortid.generate();
         console.log('orderId: ', orderId)
@@ -85,12 +100,13 @@ const placeOrder = async (req, res) => {
             shippingAddress: shippingAddress,
             paymentMethod: payment_option,
             paymentStatus: payment_option,
-            orderStatus: 'clientSideProcessing'
+            orderStatus: orderStatus
         });
         console.log('=================================78')
         await order.save();
 
-        const productIds = req.body.productId.map(productId => productId.trim());
+        // const productIds = req.body.productId.map(productId => productId.trim());
+
         console.log('=================================80')
 
         if (items && weight && price) {
@@ -135,25 +151,25 @@ const placeOrder = async (req, res) => {
             }
         }
 
-        await order.save();
+        const saveorder = await order.save();
 
         console.log('=================================91')
 
         //update quantity in product collection.
         if (typeof items === 'string' && items.trim().length > 0) {
-            let orderedWeight= weight; 
+            let orderedWeight = weight;
             const ProductWeight = await Product.findById(productIds[0]);
             if (ProductWeight.totalQuantity > 0) {
                 let weightInGrams = ProductWeight.totalQuantity * 1000;
                 let updatedQuantity = (weightInGrams - orderedWeight) / 1000;
                 console.log('updatedQuantity: ', updatedQuantity)
-                await Product.updateMany({ _id: productIds[0]}, { totalQuantity: updatedQuantity });
+                await Product.updateMany({ _id: productIds[0] }, { totalQuantity: updatedQuantity });
             } else {
                 console.log('No stock.')
             }
 
-        }else{
-            for (let i =0; i<= items.length-1; i++ ) {
+        } else {
+            for (let i = 0; i <= items.length - 1; i++) {
                 const orderWeight = weight[i];
                 console.log('orderWeight: ', orderWeight)
                 const ProductWeight = await Product.findById(productIds[i])
@@ -162,42 +178,94 @@ const placeOrder = async (req, res) => {
                     let weightInGrams = ProductWeight.totalQuantity * 1000;
                     let updatedQuantity = (weightInGrams - orderWeight) / 1000;
                     console.log('updatedQuantity: ', updatedQuantity)
-                    await Product.updateMany({ _id: productIds[i]}, { totalQuantity: updatedQuantity });
+                    await Product.updateMany({ _id: productIds[i] }, { totalQuantity: updatedQuantity });
                 } else {
                     console.log('No stock.')
                 }
-            
-        }
-        }
-       
 
-        // console.log('=================================111')
-        await CartItem.deleteMany({ userId: userId })
-        console.log('CartItem deleted================================91')
-        await Cart.deleteOne({ userId: userId });
-        console.log('Cart deleted================================91')
-        console.log('Order placed successfully')
-        res.redirect('/successOrder');
+            }
+        }
 
+        if (payment_option === 'COD') {
+            console.log('=================================111 COD')
+            await CartItem.deleteMany({ userId: userId })
+            console.log('CartItem deleted================================91')
+            await Cart.deleteOne({ userId: userId });
+            console.log('Cart deleted================================91')
+            console.log('Order placed successfully')
+            res.json({ success: true });
+
+        } else if (payment_option === 'razorpay') {
+            const orderId = saveorder._id;
+            console.log('orderId in razor pay===================200', orderId);
+            const totalAmount = saveorder.finalPrice;
+            console.log('totalAmount in razor pay =========202', totalAmount);
+
+            var options = {
+                amount: totalAmount * 100,
+                currency: "INR",
+                receipt: "" + orderId
+            }
+
+            // update payment status to paid
+            order.paymentStatus = 'paid';
+            order.orderStatus= 'Confirmed'
+            await order.save()
+            await CartItem.deleteMany({ userId: userId })
+            console.log('CartItem deleted================================91')
+            await Cart.deleteOne({ userId: userId });
+            console.log('Cart deleted================================91')
+
+            console.log('options in razor pay: =======================209', options)
+            razorpayinstance.orders.create(options, function (err, order) {
+                console.log('order================================211 razor', order);
+                console.log('orderId: ==========221',orderId)
+                res.json({ order});
+            })
+        }
     } catch (error) {
         console.log('Error, while placing the order ', error)
     }
 }
 
-const loadTrackOrder = async (req, res) => {
+
+const paymentSuccess = (req, res) => {
     try {
-        res.render('trackOrder')
+        console.log('==============================in paymentSuccess');
+      const { paymentid, signature, orderId } = req.body;
+      console.log('paymentid : ',paymentid, 'signature: ',signature, 'orderId: ',orderId);
+
+      const { createHmac } = require("node:crypto");
+    //   generated_signature = hmac_sha256(order_id + "|" + paymentid, RAZORPAY_SECRET_KEY);
+      const hash = createHmac("sha256", RAZORPAY_SECRET_KEY)
+        .update(orderId + "|" + paymentid)
+        .digest("hex");
+        
+    console.log('hash : ',hash);
+
+  
+      if (hash === signature) {
+        console.log('==============================in paymentSuccess 243');
+        console.log("success");
+        res.status(200).json({ success: true, message: "Payment successful" });
+      } else {
+        console.log("error");
+        res.json({ success: false, message: "Invalid payment details" });
+      }
     } catch (error) {
-        console.log('Error while loading track order page', error.message)
+      console.log('paymentSuccess=========================',error);
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
-}
+  };
+
 
 
 module.exports = {
     loadUserOrder,
-    loadTrackOrder,
     loadConfirmOrder,
     placeOrder,
-    cancelOrder
+    cancelOrder,
+    paymentSuccess
+
 
 }

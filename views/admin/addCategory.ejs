@@ -9,6 +9,7 @@
           </div>
           <div class="card-body">
             <form action="/admin/addCategory" method="POST" id="addCategoryForm">
+             
               <div class="row">
                 <div class="col-md-5 pr-1">
                   <div class="form-group">
@@ -67,30 +68,32 @@
   </style>
 
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Retrieve URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const successMessage = urlParams.get('success');
-      const errorMessage = urlParams.get('error');
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Retrieve URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const successMessage = urlParams.get('success');
+    const errorMessage = urlParams.get('error');
 
-      // Get references to message elements
-      const successDiv = document.getElementById('successMessage');
-      const errorDiv = document.getElementById('errorMessage');
+    // Get references to message elements
+    const successDiv = document.getElementById('successMessage');
+    const errorDiv = document.getElementById('errorMessage');
 
-      // Display success message if present
-      if (successMessage) {
-        successDiv.textContent = successMessage;
-        successDiv.style.display = 'block';
-      }
+    // Display success message if present
+    if (successMessage) {
+      successDiv.textContent = successMessage;
+      successDiv.style.display = 'block';
+    }
 
-      // Display error message if present
-      if (errorMessage) {
-        errorDiv.textContent = errorMessage;
-        errorDiv.style.display = 'block';
-      }
-    });
-  </script>
+    // Display error message if present
+    if (errorMessage) {
+      errorDiv.textContent = errorMessage;
+      errorDiv.style.display = 'block';
+    }
+  });
+</script>
+</script>
+
 
 
 

@@ -83,58 +83,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <% orderPlaced.forEach(order => { %>
-                                                                <tr id="orderRow_<%= order._id %>">
-                                                                    <td>
-                                                                        <%= order.order_id %>
-                                                                    </td>
-                                                                    <td>
-                                                                        <%= order.orderDate.toDateString() %>
-                                                                    </td>
-                                                                    <td>
-                                                                        <% order.orderItems.forEach(orderItem => { %>
-                                                                            <% if (orderItem.orderedWeight) { %>
-                                                                                <% orderItem.orderedWeight.forEach(pdt => { %>
-                                                                                    <%= pdt.name %>: 
-                                                                                    <% if (pdt.weight >= 1000) { %>
-                                                                                        <%= Math.floor(pdt.weight / 1000) %>kg 
-                                                                                        <% let remainingGrams = pdt.weight % 1000; %>
-                                                                                        <% if (remainingGrams > 0) { %>
-                                                                                            <%= remainingGrams %>g
-                                                                                        <% } %><br>
-                                                                                    <% } else { %>
-                                                                                        <%= pdt.weight %>g <br>
-                                                                                    <% } %>  
-                                                                                    
-                                                                                <% }); %>
-                                                                            <% } %>
-                                                                        <% }); %>
-                                                                        
-                                                                    </td>
-                                                                    <td id="orderStatus_<%= order._id %>">
-                                                                        <%= order.orderStatus %>
-                                                                    </td>
-                                                                    <td>₹<%= order.finalPrice %></td>
-                                                                    <td>
-                                                                        <% if (order.paymentMethod === 'razorpay') { %>
-                                                                            <p style="font-size: small;">Razorpay</p>
-                                                                        <% } else { %>
-                                                                            <p style="font-size: small;">COD</p>
-                                                                        <% } %>
-                                                                    </td>
-                                                                    
-                                                                    <td>  
-                                                                     
-                                                                      
-                                                                    </td>
-                                                                    <td class="form-group">
-                                                                        <button class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
-                                                                                data-order-id="<%= order._id %>" type="submit" onclick="confirmCancel()">
-                                                                            Cancel Order
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            <% }); %>
+                                                            
                                                         </tbody>
                                                         
                                                     </table>
@@ -153,40 +102,7 @@
             </section>
   
     <script>
-        function confirmCancel() {
-            if (confirm("Are you sure you want cancel this order?")) {
-                document.getElementById('deleteForm').submit();
-            }
-        }
-
-        // Add event listener to all cancel order buttons
-        document.querySelectorAll('.cancelOrderBtn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const orderId = btn.dataset.orderId;
-
-                // Send a DELETE request to cancel the order
-                try {
-                    const response = await fetch(`/cancelOrder/${orderId}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to cancel order');
-                    }
-
-                    // Update the UI to reflect the cancelled order
-                    const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
-                    orderStatusCell.textContent = 'Cancelled';
-
-                    btn.textContent = 'Order Cancelled' //chnage the buttn
-                    btn.disabled = true;
-                } catch (error) {
-                    console.error('Error cancelling order:', error);
-                    alert('Failed to cancel order. Please try again.');
-                }
-            });
-        });
-
+      
     </script>
 
     </html>
