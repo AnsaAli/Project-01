@@ -88,6 +88,14 @@
               <li><a href="/admin/orders">View</a></li>
             </ul>
           </li>
+          <li id="sales">
+            <a style="font-size: 13px;">
+              <p>Sales</p>
+            </a>
+            <ul>
+              <li><a href="/admin/sales">View</a></li>
+            </ul>
+          </li>
           <li id="profile">
             <a style="font-size: 13px;">
               <p>User Profile</p>
@@ -138,12 +146,12 @@
           </button>
           <div class="collapse navbar-collapse justify-content-end" id="navigation">
            
-              <li class="nav-item">
+              <li class="nav-item " style="color: rgb(0, 104, 78); margin-bottom: 40px;">
                
                   <i class="now-ui-icons users_single-02" style="color:rgb(1, 106, 80);"></i>
-                  <a href="/admin/logout" style="color: rgb(0, 104, 78);">Logout</a>
+                  <a href="/admin/logout" style="color: rgb(0, 104, 78); margin-bottom: 40px;">Logout</a>
                   <p>
-                    <span class="d-lg-none d-md-block">Account</span>
+                  
                   </p>
                 
               </li>
@@ -160,30 +168,9 @@
       <style>
        .panel_color{
         height: 50px;
+        margin-top: 50px;
        }
 
       </style>
 
-      <!-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-          //select all the list items in the nav menu
-          const navOptions = document.querySelectorAll('.sidebar-wrapper .nav li');
-
-          //click event listener to each list items
-          navOptions.forEach(navOption => {
-            navOption.addEventListener('click', function () {
-
-              //remove the active class for all the items
-              navOption.forEach(item => {
-                item.classList.remove('active')
-              })
-
-              //add the active class when click
-              this.classList.add('active')
-            })
-          })
-
-
-        })
-      </script> -->
+      

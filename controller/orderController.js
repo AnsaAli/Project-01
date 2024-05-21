@@ -21,8 +21,25 @@ const razorpayinstance = new Razorpay({
 
 const loadUserOrder = async (req, res) => {
     try {
+         // Pagination parameters
+         const page = parseInt(req.query.page) || 1;  // Current page number
+         const limit = 3;  // Number of items per page
+
+        // Total count of Order
+        const count = await Order.countDocuments(); 
+        const coupons = await Order.find()
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ createdAt: 1 });  // Sort by descending createdAt
+
         const orderPlaced = await Order.find({}).populate('shippingAddress').populate('orderItems').sort({ orderDate: -1 });
-        res.render('userOrder', { orderPlaced })
+        res.render('userOrder', 
+        { 
+            orderPlaced ,
+            coupons: coupons,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit)
+        })
     } catch (error) {
         console.log('Error while loading user order page', error.message)
     }

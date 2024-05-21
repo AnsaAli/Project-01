@@ -1,0 +1,152 @@
+<%- include('../layout/adminHeader.ejs') %>
+<body>
+    <div class="content">
+        <div class="row">
+            <% if (orderPlaced.length > 0) { %>
+                <div class="col-md-12">
+                    <div class="card p-5">
+                        <a class="btn btn-secondary ml-3 mt-3" href="/admin/dailysales/download?date=<%= orderDate %>">Download</a>
+                <button class="btn btn-success ml-3 mt-3" onclick="printPage()">Print</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Daily Order</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table" id="orderTable">
+                                    <thead class="text-primary" style="font-size: small;">
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Products</th>
+                                        <th>Payment <br> Method</th>
+                                        <th>Total Bill</th>
+                                        <th>Status</th>
+                                    </thead>
+                                    <tbody>
+                                        <% orderPlaced.forEach(order => { %>
+                                            <tr>
+                                                <td><%= order.orderDate.toDateString().substring(0, 10) %></td>
+                                                <td><%= order.shippingAddress.address_customer_name %></td>
+                                                <td>
+                                                    <% order.orderItems.forEach(orderItem => { %>
+                                                        <% if (orderItem.orderedWeight) { %>
+                                                            <% orderItem.orderedWeight.forEach(pdt => { %>
+                                                                <%= pdt.name %>: 
+                                                                <% if (pdt.weight >= 1000) { %>
+                                                                    <%= Math.floor(pdt.weight / 1000) %>kg
+                                                                    <% let remainingGrams = pdt.weight % 1000; %>
+                                                                    <% if (remainingGrams > 0) { %>
+                                                                        <%= remainingGrams %>g
+                                                                    <% } %><br>
+                                                                <% } else { %>
+                                                                    <%= pdt.weight %>g <br>
+                                                                <% } %>
+                                                            <% }); %>
+                                                        <% } %>
+                                                    <% }); %>
+                                                </td>
+                                               
+                                                <td><%= order.paymentMethod %></td>
+                                                <td><%= order.finalPrice %></td>
+                                                <td id="orderStatus_<%= order._id %>"><%= order.orderStatus %></td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                          // Get the current date in the format "YYYY-MM-DD"
+                                          var currentDate = new Date().toISOString().split('T')[0];
+        
+                                          // Set the max attribute for the "From" input to prevent future dates
+                                          var fromDateInput = document.getElementById('fromDate');
+                                          if (fromDateInput) {
+                                            fromDateInput.max = currentDate;
+                                          } else {
+                                            console.error('Element with id "fromDate" not found.');
+                                          }
+        
+                                          // Set the max attribute for the "To" input to prevent future dates
+                                          var toDateInput = document.getElementById('toDate');
+                                          if (toDateInput) {
+                                            toDateInput.max = currentDate;
+                                          } else {
+                                            console.error('Element with id "toDate" not found.');
+                                          }
+        
+                                          toDateInput.addEventListener('change', function () {
+                                            if (fromDateInput.value > toDateInput.value) {
+                                              alert('To date cannot be earlier than From date. Please select a valid range.');
+                                              toDateInput.value = fromDateInput.value;
+                                            }
+                                          });
+                                        });
+                                      </script>
+                                </table>
+                            </div>
+                            <nav aria-label="navigation">
+                                <ul class="pagination justify-content-end mt-50">
+                                    <% if (currentPage > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>"
+                                                style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
+                                                background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; 
+                                                cursor: pointer; text-decoration: none;">
+                                                Prev
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                    <% for (let j = 1; j <= totalPages; j++) { %>
+                                        <li class="page-item <% if (j === currentPage) { %>active<% } %>">
+                                            <a class="page-link" href="?page=<%= j %>"
+                                                style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
+                                                background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px;
+                                                cursor: pointer; text-decoration: none;">
+                                                <%= j %>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>"
+                                                style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
+                                                background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; 
+                                                cursor: pointer; text-decoration: none;">
+                                                Next
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="container p-5">
+                        <h2>No Sales Yet!</h2>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <script>
+        function printPage() {
+            window.print();
+        }
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/chart/chart.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+</body>
+
+    

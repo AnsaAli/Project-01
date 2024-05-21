@@ -1,0 +1,100 @@
+<%- include('../layout/adminHeader.ejs') %>
+<body>
+    <div class="content">
+        <div class="row">
+            <% if (monthlyOrders) { %>
+                <div>
+                    <!-- <a class="btn btn-secondary ml-3 mt-3" href="/admin/monthlysales/download">Download</a>
+                    <button class="btn btn-success ml-3 mt-3" onclick="printPage()">Print</button> -->
+                </div>
+
+                <div class="container mt-3">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" >Total Order</th>
+                                <th scope="col"></th>
+                                <th scope="col">Total Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <%= monthlyOrders.length %>
+                                </td>
+                                <td></td>
+                                <td>
+                                    <%= totalMonthlyBill %>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table" style="border: 1px solid black;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col" style="font-size: large;">Order<br>Id</th>
+                                <th scope="col" style="font-size: large;">Order Date</th>
+                                <th scope="col" style="font-size: large;">Items</th>
+                                <th scope="col" style="font-size: large;">Payment<br>Method</th>
+                                <th scope="col" style="font-size: large;">Shipping<br>Status</th>
+                                <th scope="col" style="font-size: large;">TOTAL BILL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% monthlyOrders.forEach(order=> { %>
+                                <tr>
+                                    <td>
+                                        <%= order.order_id %>
+                                    </td>
+                                    <td>
+                                        <%= order.orderDate.toDateString().substring(0, 10)  %>
+                                    </td>
+                                    <td>
+                                        <%= order.orderItems.length%>
+                                    </td>
+                                    <td>
+                                        <%= order.paymentMethod %>
+                                    </td>
+                                    <td>
+                                     <%= order.orderStatus %>
+                                     </td>
+                                    <td>
+                                        <%= order.finalPrice %>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <% } else { %>
+                    <div class="container p-5">
+                        <div>
+                            <h2>Nothing Here..</h2>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+        </div>
+    </div>
+    <script>
+        function printPage() {
+            window.print();
+        }
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/chart/chart.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+</body>
+
+    

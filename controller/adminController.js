@@ -11,6 +11,7 @@ const Order = require('../models/orderModel')
 const User = require('../models/userAuthenticationModel');
 const cloudinary = require('cloudinary').v2;
 
+
 cloudinary.config({
     cloud_name: 'dn6d0gspr',
     api_key: '841139655134895',
@@ -20,7 +21,7 @@ cloudinary.config({
 
 function validateProductName(productName, existingNames) {
     const regexPattern = /^[a-zA-Z\s]+$/;
-    const trimmedName = productName.trim().toLowerCase(); 
+    const trimmedName = productName.trim().toLowerCase();
 
     // Check if the name meets the length requirement
     if (trimmedName.length < 3 || trimmedName.length > 50) {
@@ -90,23 +91,149 @@ const adminLogout = async (req, res) => {
 ////////////////////////////admin pages\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 const loadDashboard = async (req, res) => {
     try {
-        //console.log('inside load dashboard page')
+        console.log('inside load dashboard page===========================??????????')
         const userData = await adminModel.findById({ _id: req.session.user_id });
-        res.render('dashboard', { admin: userData })
-    } catch (error) {
+        const total = await Order.aggregate([
+            {
+                $match: {
+                    orderStatus: { $nin: ["cancelled", "returned"] } // Exclude "cancelled" and "returned" statuses
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$finalPrice" } // Sum the finalPrice field
+                }
+            }
+        ]);
+        console.log('total: ', total);
 
-        console.log('inside load dashboard error page', error.message)
+        const user_count = await User.find({ is_admin: 0 }).count();
+        const order_count = await Order.find({}).count();
+        const product_count = await Product.find({}).count();
+
+        const payment = await Order.aggregate([
+            {
+                $group: {
+                    _id: "$paymentMethod",
+                    totalPayment: { $count: {} }
+                }
+            }
+        ]);
+
+        console.log('payment: ', payment);
+
+        const year = new Date().getFullYear();
+        const startOfYear = new Date(year, 0, 1);
+        const startOfMonth = new Date(year, new Date().getMonth(), 1);
+
+        let salesByYear = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: { $gte: startOfYear },
+                    orderStatus: { $nin: ["cancelled", "returned"] }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: "$orderDate" },
+                    total: { $sum: "$finalPrice" }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        console.log('salesByYear: ', salesByYear);
+
+        // Initialize an empty array to store the sales data for each month
+        let sales = [];
+        for (let i = 1; i <= 12; i++) {
+            let found = false;
+            for (let k = 0; k < salesByYear.length; k++) {
+                if (parseInt(salesByYear[k]._id) === i) {
+                    sales.push(salesByYear[k]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                sales.push({ _id: i.toString().padStart(2, '0'), total: 0 });
+            }
+        }
+        
+        let salesData = sales.map(sale => sale.total);
+        console.log('salesData: ', salesData);
+
+        let salesByDay = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: { $gte: startOfMonth },
+                    orderStatus: { $nin: ["cancelled", "returned"] }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dayOfMonth: "$orderDate" },
+                    total: { $sum: "$finalPrice" }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        console.log('salesByDay: ', salesByDay);
+
+        // Initialize an empty array to store the sales data for each day of the current month
+        let dailySales = [];
+        let daysInMonth = new Date(year, new Date().getMonth() + 1, 0).getDate();
+        for (let i = 1; i <= daysInMonth; i++) {
+            let found = false;
+            for (let k = 0; k < salesByDay.length; k++) {
+                if (parseInt(salesByDay[k]._id) === i) {
+                    dailySales.push(salesByDay[k]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                dailySales.push({ _id: i.toString().padStart(2, '0'), total: 0 });
+            }
+        }
+
+        let dailySalesData = dailySales.map(sale => sale.total);
+        console.log('dailySalesData: ', dailySalesData);
+
+        res.render('dashboard', { admin: userData, total, user_count, order_count, product_count, payment, month: salesData, daily: dailySalesData });
+
+    } catch (error) {
+        console.log('inside load dashboard error page', error.message);
     }
 }
 
+
 const loadUserProfile = async (req, res) => {
     try {
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;  // Current page number
+        const limit = 3;  // Number of items per page
+
+        // Total count of users
+        const count = await User.countDocuments();
+        const coupons = await User.find()
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: 1 });  // Sort by descending createdAt
 
         const userData = await User.find({ is_admin: 0 }).populate('address')
 
         if (userData.length > 0) {
 
-            res.render('customerProfile', { userData });
+            res.render('customerProfile',
+                {
+                    userData,
+                    coupons: coupons,
+                    currentPage: page,
+                    totalPages: Math.ceil(count / limit)
+                });
         } else {
 
             res.render('customerProfile', { message: 'No users found' });
@@ -706,8 +833,28 @@ const loadSingleOrderDetails = async (req, res) => {
 const loadCoupons = async (req, res) => {
     try {
         console.log('in view coupon');
+
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;  // Current page number
+        const limit = 3;  // Number of items per page
+
+        // Total count of coupons
+        const count = await couponModel.countDocuments();
+
+        const coupons = await couponModel.find()
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 });  // Sort by descending createdAt
+
+
         const couponData = await couponModel.find({})
-        res.render('viewCoupon', { message: couponData })
+        res.render('viewCoupon',
+            {
+                message: couponData,
+                coupons: coupons,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit)
+            })
     } catch (error) {
         console.log('Error while loading viewCoupons page: ', error)
     }
@@ -833,6 +980,7 @@ const viewWallet = async (req, res) => {
 }
 ////////////////////////////exports\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
+
 module.exports = {
     loadAdminLogin,
     verifyAdminLogin,
@@ -864,5 +1012,6 @@ module.exports = {
     addCoupons,
     deleteCoupon,
     loadeditCoupon,
-    editCoupon
+    editCoupon,
+
 }

@@ -4,7 +4,7 @@ const admin_route= express()
 const adminController= require('../controller/adminController')
 const  {sessionSecret}  = require('../secret/secret')
 const authMiddleware= require('../middleware/adminAuthMiddlware')
-
+const salesController= require('../controller/salesController')
 const multer= require('multer')
 const fs = require('fs');
 const path = require('path');
@@ -117,6 +117,16 @@ admin_route.post('/addcoupon',authMiddleware.is_login,adminController.addCoupons
 
 //wallet
 admin_route.get('/viewWallet',authMiddleware.is_login,adminController.viewWallet)
+
+//salesController
+admin_route.get('/sales',authMiddleware.is_login,salesController.loadSales);
+admin_route.get('/sales/download', authMiddleware.is_login, salesController.downloadSalesReport); 
+admin_route.post('/dailyReport', authMiddleware.is_login, salesController.dailySales);
+admin_route.get('/dailysales/download', authMiddleware.is_login, salesController.dailyDownload);
+admin_route.post('/monthlyReport',  authMiddleware.is_login, salesController.monthlysales);
+admin_route.get('/monthlysales/download',authMiddleware.is_login, salesController.monthlyDownload);
+admin_route.post('/yearlyReport',authMiddleware.is_login, salesController.yearlyreport);
+
 
 
 

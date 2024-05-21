@@ -1,157 +1,200 @@
 <%- include('../layout/header.ejs') %>
 
 
-            <section class="pt-150 pb-150">
-                <div class="container">
+    <section class="pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 m-auto">
                     <div class="row">
-                        <div class="col-lg-12 m-auto">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="dashboard-menu">
-                                        <ul class="nav flex-column" role="tablist">
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
-                                                    href="/myProfile" role="tab" aria-controls="dashboard"
-                                                    aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
-                                                    Profile</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
-                                                    href="#dashboard" role="tab" aria-controls="dashboard"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
-                                            </li>
-                                            <li class="nav-item ">
-                                                <a class="nav-link  active" id="orders-tab" data-bs-toggle="tab"
-                                                    href="/order" role="tab" aria-controls="orders"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-shopping-bag mr-10"></i>Orders</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
-                                                    href="/wallet" role="tab" aria-controls="track-orders"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="address-tab" data-bs-toggle="tab"
-                                                    href="/userProfile" role="tab" aria-controls="address"
-                                                    aria-selected="true"><i class="fi-rs-marker mr-10"></i>My
-                                                    Address</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
-                                                    href="#account-detail" role="tab" aria-controls="account-detail"
-                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Account
-                                                    details</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
-                                                    href="/changePassword" role="tab" aria-controls="change-password"
-                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
-                                                    Password</a>
-                                            </li>
-                                            <!-- <li class="nav-item">
+                        <div class="col-md-3">
+                            <div class="dashboard-menu">
+                                <ul class="nav flex-column" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab" href="/myProfile"
+                                            role="tab" aria-controls="dashboard" aria-selected="false"><i
+                                                class="fi-rs-settings-sliders mr-10"></i>My
+                                            Profile</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab" href="#dashboard"
+                                            role="tab" aria-controls="dashboard" aria-selected="false"><i
+                                                class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a class="nav-link  active" id="orders-tab" data-bs-toggle="tab" href="/order"
+                                            role="tab" aria-controls="orders" aria-selected="false"><i
+                                                class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="/wallet"
+                                            role="tab" aria-controls="track-orders" aria-selected="false"><i
+                                                class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " id="address-tab" data-bs-toggle="tab" href="/userProfile"
+                                            role="tab" aria-controls="address" aria-selected="true"><i
+                                                class="fi-rs-marker mr-10"></i>My
+                                            Address</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
+                                            href="#account-detail" role="tab" aria-controls="account-detail"
+                                            aria-selected="true"><i class="fi-rs-user mr-10"></i>Account
+                                            details</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
+                                            href="/changePassword" role="tab" aria-controls="change-password"
+                                            aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
+                                            Password</a>
+                                    </li>
+                                    <!-- <li class="nav-item">
                                                 <a class="nav-link" href="/logout"><i
                                                         class="fi-rs-sign-out mr-10"></i>Logout</a>
 
                                             </li> -->
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- //order deatils -->
-                                <div class="col-md-9">
-                                    <div class="tab-content dashboard-content">
-
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h5 class="mb-0">Your Orders</h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="table-responsive">
-                                                    <table class="table">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Order</th>
-                                                                <th>Date</th>
-                                                                <th>Product List</th>
-                                                                <th>Status</th>
-                                                                <th>Total</th>
-                                                                <th>Payment Method</th>
-                                                                <th>Order Address</th>
-                                                                <th>Actions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <% orderPlaced.forEach(order => { %>
-                                                                <tr id="orderRow_<%= order._id %>">
-                                                                    <td>
-                                                                        <%= order.order_id %>
-                                                                    </td>
-                                                                    <td>
-                                                                        <%= order.orderDate.toDateString() %>
-                                                                    </td>
-                                                                    <td>
-                                                                        <% order.orderItems.forEach(orderItem => { %>
-                                                                            <% if (orderItem.orderedWeight) { %>
-                                                                                <% orderItem.orderedWeight.forEach(pdt => { %>
-                                                                                    <%= pdt.name %>: 
-                                                                                    <% if (pdt.weight >= 1000) { %>
-                                                                                        <%= Math.floor(pdt.weight / 1000) %>kg 
-                                                                                        <% let remainingGrams = pdt.weight % 1000; %>
-                                                                                        <% if (remainingGrams > 0) { %>
-                                                                                            <%= remainingGrams %>g
-                                                                                        <% } %><br>
-                                                                                    <% } else { %>
-                                                                                        <%= pdt.weight %>g <br>
-                                                                                    <% } %>  
-                                                                                    
-                                                                                <% }); %>
-                                                                            <% } %>
-                                                                        <% }); %>
-                                                                        
-                                                                    </td>
-                                                                    <td id="orderStatus_<%= order._id %>">
-                                                                        <%= order.orderStatus %>
-                                                                    </td>
-                                                                    <td>₹<%= order.finalPrice %></td>
-                                                                    <td>
-                                                                        <% if (order.paymentMethod === 'razorpay') { %>
-                                                                            <p style="font-size: small;">Razorpay</p>
-                                                                        <% } else { %>
-                                                                            <p style="font-size: small;">COD</p>
-                                                                        <% } %>
-                                                                    </td>
-                                                                    
-                                                                    <td>  
-                                                                     
-                                                                      
-                                                                    </td>
-                                                                    <td class="form-group">
-                                                                        <button class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
-                                                                                data-order-id="<%= order._id %>" type="submit" onclick="confirmCancel()">
-                                                                            Cancel Order
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            <% }); %>
-                                                        </tbody>
-                                                        
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
+                                </ul>
                             </div>
                         </div>
+                        <!-- //order deatils -->
+                        <div class="col-md-9">
+                            <div class="tab-content dashboard-content">
 
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Your Orders</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order</th>
+                                                        <th>Date</th>
+                                                        <th>Product List</th>
+                                                        <th>Status</th>
+                                                        <th>Total</th>
+                                                        <th>Payment Method</th>
+                                                        <th>Order Address</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% orderPlaced.forEach(order=> { %>
+                                                        <tr id="orderRow_<%= order._id %>">
+                                                            <td>
+                                                                <%= order.order_id %>
+                                                            </td>
+                                                            <td>
+                                                                <%= order.orderDate.toDateString() %>
+                                                            </td>
+                                                            <td>
+                                                                <% order.orderItems.forEach(orderItem=> { %>
+                                                                    <% if (orderItem.orderedWeight) { %>
+                                                                        <% orderItem.orderedWeight.forEach(pdt=> { %>
+                                                                            <%= pdt.name %>:
+                                                                                <% if (pdt.weight>= 1000) { %>
+                                                                                    <%= Math.floor(pdt.weight / 1000) %>
+                                                                                        kg
+                                                                                        <% let remainingGrams=pdt.weight
+                                                                                            % 1000; %>
+                                                                                            <% if (remainingGrams> 0) {
+                                                                                                %>
+                                                                                                <%= remainingGrams %>g
+                                                                                                    <% } %><br>
+                                                                                                        <% } else { %>
+                                                                                                            <%= pdt.weight
+                                                                                                                %>g <br>
+                                                                                                                <% } %>
+
+                                                                                                                    <% });
+                                                                                                                        %>
+                                                                                                                        <% }
+                                                                                                                            %>
+                                                                                                                            <% });
+                                                                                                                                %>
+
+                                                            </td>
+                                                            <td id="orderStatus_<%= order._id %>">
+                                                                <%= order.orderStatus %>
+                                                            </td>
+                                                            <td>₹<%= order.finalPrice %>
+                                                            </td>
+                                                            <td>
+                                                                <% if (order.paymentMethod==='razorpay' ) { %>
+                                                                    <p style="font-size: small;">Razorpay</p>
+                                                                    <% } else { %>
+                                                                        <p style="font-size: small;">COD</p>
+                                                                        <% } %>
+                                                            </td>
+
+                                                            <td>
+                                                                <%= order.shippingAddress.address_customer_name %> <br>
+                                                                    <%= order.shippingAddress.mobile_num %> <br>
+                                                                        <%= order.shippingAddress.apartment_name %> <br>
+                                                                            <%= order.shippingAddress.city %>
+
+                                                            </td>
+                                                            <td class="form-group">
+                                                                <button
+                                                                    class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
+                                                                    data-order-id="<%= order._id %>" type="submit"
+                                                                    onclick="confirmCancel()">
+                                                                    Cancel Order
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <% }); %>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                        <!-- Pagination -->
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination">
+                                                <% if (currentPage> 1) { %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="?page=<%= currentPage - 1 %>"
+                                                            aria-label="Previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+
+                                                        <% for (let i=1; i <=totalPages; i++) { %>
+                                                            <li
+                                                                class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                                <a class="page-link" href="?page=<%= i %>">
+                                                                    <%= i %>
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+
+                                                                <% if (currentPage < totalPages) { %>
+                                                                    <li class="page-item">
+                                                                        <a class="page-link"
+                                                                            href="?page=<%= currentPage + 1 %>"
+                                                                            aria-label="Next">
+                                                                            <span aria-hidden="true">&raquo;</span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <% } %>
+                                            </ul>
+                                        </nav>
+                                        <!-- End Pagination -->
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-            </section>
-  
+
+            </div>
+        </div>
+    </section>
+
     <script>
         function confirmCancel() {
             if (confirm("Are you sure you want cancel this order?")) {

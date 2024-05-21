@@ -1,0 +1,65 @@
+<%- include('../layout/adminHeader.ejs') %>
+<body>
+    <div class="content">
+        <div class="container mt-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Total Order</th>
+                        <th scope="col"></th>
+                        <th scope="col">Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><%= yearlyorders.length %></td>
+                        <td></td>
+                        <td><%= totalYearlyBill %></td>
+                    </tr>
+                </tbody>
+            </table>
+    
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="font-size: large;">NAME</th>
+                        <th scope="col" style="font-size: large;">ORDER DATE</th>
+                        <!-- <th scope="col">DISCOUNT</th> -->
+                        <th scope="col" style="font-size: large;">TOTAL BILL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (yearlyorders) { %>
+                        <% yearlyorders.forEach(order => { %>
+                            <tr>
+                                <td><%= order.user %></td>
+                                <td><%= order.date.toISOString().substring(0,10) %></td>
+                                <!-- <td><%= order.discount %></td> -->
+                                <td><%= order.totalAmount %></td>
+                            </tr>
+                        <% }); %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function printPage() {
+            window.print();
+        }
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/chart/chart.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+</body>
+
+    
