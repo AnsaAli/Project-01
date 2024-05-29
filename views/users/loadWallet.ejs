@@ -1,110 +1,352 @@
 <%- include('../layout/header.ejs') %>
 
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <!-- Include Razorpay -->
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <!-- Bootstrap JavaScript -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    </head>
 
-            <section class="pt-150 pb-150">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12 m-auto">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="dashboard-menu">
-                                        <ul class="nav flex-column" role="tablist">
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
-                                                    href="/myProfile" role="tab" aria-controls="dashboard"
-                                                    aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
-                                                    Profile</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
-                                                    href="#dashboard" role="tab" aria-controls="dashboard"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
-                                            </li>
-                                            <li class="nav-item ">
-                                                <a class="nav-link  active" id="orders-tab" data-bs-toggle="tab"
-                                                    href="/order" role="tab" aria-controls="orders"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-shopping-bag mr-10"></i>Orders</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
-                                                    href="/wallet" role="tab" aria-controls="track-orders"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="address-tab" data-bs-toggle="tab"
-                                                    href="/userProfile" role="tab" aria-controls="address"
-                                                    aria-selected="true"><i class="fi-rs-marker mr-10"></i>My
-                                                    Address</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
-                                                    href="#account-detail" role="tab" aria-controls="account-detail"
-                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Account
-                                                    details</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
-                                                    href="/changePassword" role="tab" aria-controls="change-password"
-                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
-                                                    Password</a>
-                                            </li>
-                                            <!-- <li class="nav-item">
+    <body>
+
+
+        <section class="pt-150 pb-150">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 m-auto">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="dashboard-menu">
+                                    <ul class="nav flex-column" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
+                                                href="/myProfile" role="tab" aria-controls="dashboard"
+                                                aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
+                                                Profile</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
+                                                href="#dashboard" role="tab" aria-controls="dashboard"
+                                                aria-selected="false"><i
+                                                    class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+                                        </li>
+                                        <li class="nav-item ">
+                                            <a class="nav-link " id="orders-tab" data-bs-toggle="tab"
+                                                href="/order" role="tab" aria-controls="orders" aria-selected="false"><i
+                                                    class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link  active" id="track-orders-tab" data-bs-toggle="tab"
+                                                href="/wallet" role="tab" aria-controls="track-orders"
+                                                aria-selected="false"><i
+                                                    class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link " id="address-tab" data-bs-toggle="tab"
+                                                href="/userProfile" role="tab" aria-controls="address"
+                                                aria-selected="true"><i class="fi-rs-marker mr-10"></i>My
+                                                Address</a>
+                                        </li>
+                                        
+                                        <li class="nav-item">
+                                            <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
+                                                href="/changePassword" role="tab" aria-controls="change-password"
+                                                aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
+                                                Password</a>
+                                        </li>
+                                        <!-- <li class="nav-item">
                                                 <a class="nav-link" href="/logout"><i
                                                         class="fi-rs-sign-out mr-10"></i>Logout</a>
 
                                             </li> -->
-                                        </ul>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- //wallet deatils -->
+                            <div class="col-md-9">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">My Wallet</h5>
+                                    </div>
+
+                                    <% if(user.wallet==0){ %>
+                                        <div class="col-lg-4">
+                                            <div class="card card-body mb-4">
+                                                <article class="icontext">
+                                                    <span class="icon icon-sm rounded-circle bg-primary-light"><i
+                                                            class="text-primary material-icons md-monetization_on"></i></span>
+                                                    <div class="text">
+                                                        <h3 class="mb-1 card-title" style="font-size: small;">Wallet
+                                                            Amount:</h3>
+                                                        <span>₹0.00</span>
+                                                    </div>
+                                                </article>
+                                            </div>
+                                        </div>
+                                        <% } else { %>
+                                            <div class="col-lg-4">
+                                                <div class="card card-body mb-4">
+                                                    <article class="icontext">
+                                                        <span class="icon icon-sm rounded-circle bg-primary-light"><i
+                                                                class="text-primary material-icons md-monetization_on"></i></span>
+                                                        <div class="text">
+                                                            <h3 class="mb-1 card-title" style="font-size: small;">Wallet
+                                                                Amount:</h3>
+                                                            <h5>₹<%= user.wallet.toFixed(2) %>
+                                                            </h5>
+                                                        </div>
+                                                    </article>
+                                                </div>
+                                            </div>
+                                            <% } %>
+
+                                                <div class="col-lg-4 col-md-4 mb-md-3 mb-lg-0">
+                                                    <div class="banner-features wow fadeIn animated hover-up">
+                                                        <img src="/user/assets/imgs/theme/icons/feature-3.png" alt="">
+                                                        <a href="#" data-toggle="modal" data-target="#addMoneyModal">
+                                                            <h4 class="bg-2">Add Money</h4>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                </div>
+
+                                <!-- Add Money Modal -->
+                                <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
+                                    aria-labelledby="addMoneyModalTitle" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addMoneyModalTitle">Add Money</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addMoneyForm">
+                                                    <div class="form-group">
+                                                        <label for="moneyAmount">Amount (₹)</label>
+                                                        <input type="number" class="form-control" id="moneyAmount"
+                                                            placeholder="Enter amount">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary" id="addMoneyButton">Add
+                                                    Money</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- //order deatils -->
-                                <div class="col-md-9">
-                                    <div class="tab-content dashboard-content">
 
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h5 class="mb-0">Your Orders</h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="table-responsive">
-                                                    <table class="table">
-                                                        <thead>
+                                <!-- Transaction Table -->
+                                <div class="tab-content dashboard-content">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <h3 class="mt-5 mb-2" style="font-size: large;">Wallet Transaction</h3>
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Id</th>
+                                                            <th>Date</th>
+                                                            <th>Status</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% const transactionsPerPage=3; // Number of transactions per page
+                                                            const totalPages=Math.ceil(user.history.length /transactionsPerPage);
+                                                            const currentPage=req.query.page ? parseInt(req.query.page) : 1; 
+                                                            const startIndex=(currentPage - 1) *transactionsPerPage; 
+                                                            const endIndex=Math.min(startIndex + transactionsPerPage, user.history.length); 
+                                                           
+                                                            for (let i=startIndex; i < endIndex; i++) { %>
                                                             <tr>
-                                                                <th>Order</th>
-                                                                <th>Date</th>
-                                                                <th>Product List</th>
-                                                                <th>Status</th>
-                                                                <th>Total</th>
-                                                                <th>Payment Method</th>
-                                                                <th>Order Address</th>
-                                                                <th>Actions</th>
+                                                                <td>
+                                                                    <%= i + 1 %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Date(user.history[i].timestamp).toLocaleDateString()
+                                                                        %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= user.history[i].status %>
+                                                                </td>
+                                                                <td>₹<%= user.history[i].amount %>
+                                                                </td>
                                                             </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            
-                                                        </tbody>
-                                                        
-                                                    </table>
+                                                            <% } %>
+                                                    </tbody>
+                                                </table>
+                                                <div class="pagination">
+                                                    <% if (totalPages> 1) { %>
+                                                        <% if (currentPage> 1) { %>
+                                                            <a href="?page=<%= currentPage - 1 %>"
+                                                                class="page-link" style="color: rgb(2, 103, 110);" >Previous</a>
+                                                            <% } %>
+                                                                <% for (let page=1; page <=totalPages; page++) { %>
+                                                                    <a href="?page=<%= page %>"
+                                                                        class="page-link<%= currentPage === page ? ' active' : '' %>" style="color: rgb(2, 103, 110);" >
+                                                                        <%= page %>
+                                                                    </a>
+                                                                    <% } %>
+                                                                        <% if (currentPage < totalPages) { %>
+                                                                            <a href="?page=<%= currentPage + 1 %>"
+                                                                                class="page-link" style="color: rgb(2, 103, 110);" >Next</a>
+                                                                            <% } %>
+                                                                                <% } %>
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                </div>
-            </section>
-  
-    <script>
-      
-    </script>
 
-    </html>
+                </div>
+            </div>
+        </section>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            $(document).ready(function () {
+                console.log()
+                // Handle form submission when "Add Money" button is clicked
+                $("#addMoneyButton").click(function () {
+                    var amount = $("#moneyAmount").val(); // Get the entered amount
+
+                    if (amount.trim() === "") {
+                        alert("Please enter a valid amount.");
+                        return;
+                    }
+
+                    // Hide the modal
+                    $("#addMoneyModal").modal("hide");
+
+                    // AJAX request to create Razorpay order
+                    $.ajax({
+                        url: "/addMoneyWallet",
+                        method: "POST",
+                        data: { amount: amount },
+                        success: function (response) {
+                            if (response.status) {
+                                // Calculate the amount in paise
+                                var orderAmount = Math.round(amount * 100);
+                                console.log('orderAmount: ', orderAmount);
+                                // Define the Razorpay options
+                                var options = {
+                                    "key": "rzp_test_UwQd6G9xYlg4El",
+                                    "amount": orderAmount, 
+                                    "currency": "INR",
+                                    "name": "Go-Easy Shopping",
+                                    "description": "Add money to wallet",
+                                    "order_id": response.razorpayOrder.id, // Razorpay order ID
+                                    "handler": function (response) {
+                                        console.log(response);
+                                        verifyPayment(response,amount);
+                                    },
+                                    "prefill": {
+                                        "name": "Customer Name", // Customer's name
+                                        "email": "customer@example.com", // Customer's email
+                                        "contact": "9000090000" // Customer's contact number
+                                    },
+                                    "callback_url": "/your-server-callback-url", // Server callback URL
+                                    "theme": {
+                                        "color": "#3399cc"
+                                    }
+                                };
+
+                                // Create a new Razorpay instance and open the payment dialog
+                                var rzp1 = new Razorpay(options);
+                                rzp1.open();
+                            } else {
+                                Swal.fire({
+                                    title: 'Error Occurred',
+                                    text: "Can't process order, an error occurred",
+                                    icon: 'error',
+                                    timer: 5000
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: 'Error Occurred',
+                                text: "Can't process order, an error occurred",
+                                icon: 'error',
+                                timer: 5000
+                            });
+                        }
+                    });
+                });
+            });
+
+            function verifyPayment(response, amount) {
+                console.log('verifyPayment==========response: ', response);
+                console.log('verifyPayment==========amount: ', amount);
+                // Send the payment response to your server for verification
+                $.ajax({
+                    url: "/verifyPayment",
+                    method: "POST",
+                    data: {
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    },
+                    success: function (verificationResponse) {
+                        if (verificationResponse.status) {
+                            Swal.fire({
+                                title: 'Payment Successful',
+                                text: "Money has been added to your wallet",
+                                icon: 'success',
+                                timer: 5000
+                            });
+
+                            // Update wallet balance in the UI
+
+                            $.ajax({
+                                url: "/updateWalletField",
+                                method: "POST",
+                                data: { amount: amount },
+                                success: function (response) {
+                                    console.log('updateWalletField==========')
+                                    if (response.status) {
+                                        Swal.fire({
+                                            title: "Added Successfully",
+                                            text: "Money added to wallet successfully",
+                                            icon: "success",
+                                            showConfirmButton: false,
+                                            timer: 2000
+                                        });
+                                        location.reload();
+                                    }
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Payment Failed',
+                                text: "Verification failed, please contact support",
+                                icon: 'error',
+                                timer: 5000
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Payment Failed',
+                            text: "Verification failed, please contact support",
+                            icon: 'error',
+                            timer: 5000
+                        });
+                    }
+                });
+            }
+        </script>
+    </body>
 
     <%- include('../layout/footer.ejs') %>

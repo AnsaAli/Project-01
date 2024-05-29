@@ -11,6 +11,7 @@ const orderController= require('../controller/orderController');
 const checkOutController= require('../controller/checkOutController');
 const wishlistController= require('../controller/wishListController');
 const passport= require('passport');
+const walletController=  require('../controller/walletController');
 const nocache= require('nocache')
 // user_route.use(secret())
 user_route.use(sessionSecret())
@@ -40,10 +41,11 @@ user_route.get('/existingEmailVerification',userAuthenticationController.loadExi
 user_route.post('/existingEmailVerification',userAuthenticationController.existingEmailVerification)
 user_route.get('/existingEmailVerifyOTP',userAuthenticationController.loadexistingEmailVerifyOTP)
 user_route.post('/existingEmailVerifyOTP',userAuthenticationController.existingEmailVerifyOTP)
-user_route.get('/resendOtp', userAuthenticationController.loadresendOTP)
-user_route.post('/resendOtp', userAuthenticationController.resendOTP)
+user_route.get('/resendOtp', userAuthenticationController.loadresendOTP);
+user_route.post('/resendOtp', userAuthenticationController.resendOTP);
+user_route.post('/resendOtpVerify', userAuthenticationController.sendOtpToEmail);
 user_route.get('/veryfyOtp', userAuthenticationController.loadVerifyOtp)
-user_route.post('/veryfyOtp', userAuthenticationController.veryfyOtp)
+user_route.post('/veryfyOtp', userAuthenticationController.verifyOtp)
 user_route.get('/forgotPass', userAuthenticationController.loadForget)   
 user_route.post('/forgotPass', userAuthenticationController.verifyForgetLogin)   
 user_route.get('/login',authMiddleware.is_logout,userAuthenticationController.loadLogin)    
@@ -61,6 +63,9 @@ user_route.post("/editAddress/:index" ,userAuthenticationController.updateUserAd
 
 user_route.get('/changePassword',authMiddleware.is_login, userAuthenticationController.loadChngePassword)
 user_route.post('/changePassword', userAuthenticationController.chngePassword)
+
+user_route.get('/changeMyProfile',authMiddleware.is_login, userAuthenticationController.loadChangeMyProfile);
+user_route.post('/changeMyProfile',authMiddleware.is_login, userAuthenticationController.changeMyProfile)
 
 user_route.get('/addData',authMiddleware.is_login, userAuthenticationController.loadAddProfile)
 user_route.post('/addData', userAuthenticationController.addProfile)
@@ -85,7 +90,13 @@ user_route.get('/successOrder',authMiddleware.is_login,orderController.loadConfi
 user_route.post('/placeOrder',authMiddleware.is_login, orderController.placeOrder)
 user_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, orderController.cancelOrder);
 
-user_route.get('/wallet',authMiddleware.is_login, userAuthenticationController.loadwallet);
+user_route.get('/wallet',authMiddleware.is_login, walletController.loadwallet);
+user_route.post('/addMoneyWallet',authMiddleware.is_login, walletController.addMoneyWallet);
+user_route.post("/verifyPayment",authMiddleware.is_login, walletController.verifyPayment);
+user_route.post("/updateWalletField",authMiddleware.is_login, walletController.updateWalletField);
+// user_route.post("/useWallet",authMiddleware.is_login, walletController.useWalletAmount);
+
+
 
 user_route.post('/applyCoupon',authMiddleware.is_login,userAuthenticationController.applyCoupon);
 user_route.post('/removeCoupon',authMiddleware.is_login,userAuthenticationController.removeCoupon)

@@ -5,10 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <!-- Include necessary libraries -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="path/to/your/styles.css">
 
   <style>
     .chart-container-1 {
@@ -32,12 +30,13 @@
                 <div class="col-12 col-lg-6 col-xl-3 border-light">
                   <div class="card-body">
                     <h5 class="text-white mb-0">
-                      <% if(total.length==0){ %>
-                        ₹ <span>0</span>
-                        <% }else{ %>
-                          <p class="text-lg font-semibold text-black-700 dark:text-gray-200">₹ <%=total[0].total%>
-                          </p>
-                          <% } %><span class="float-right"></span>
+                      <% if (total.length===0) { %>
+                        ₹ <span style="color: black;">0</span>
+                        <% } else { %>
+                          <span style="color: black;">
+                            ₹<%= total[0].total %>
+                          </span>
+                          <% } %>
                     </h5>
                     <div class="progress my-3" style="height:3px;">
                       <div class="progress-bar" style="width:55%"></div>
@@ -89,192 +88,252 @@
       </div>
 
       <div class="row">
-        <div class="col-12 col-lg-8 col-xl-8">
-          <div class="card">
-            <div class="card-header">Monthly Report
-              <div class="card-action">
-                <div class="dropdown">
-                  <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                    <i class="icon-options"></i>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right">
-                    <a class="dropdown-item" href="javascript:void();">Action</a>
-                    <a class="dropdown-item" href="javascript:void();">Another action</a>
-                    <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="javascript:void();">Separated link</a>
-                  </div>
+    <div class="col-lg-12 col-xl-12">
+        <!-- Monthly Report -->
+        <div class="col-12 col-lg-12 col-xl-12">
+            <div class="card">
+                <div class="card-header">Monthly Report
+                    <div class="card-action">
+                        <div class="dropdown">
+                            <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
+                                <i class="icon-options"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="javascript:void();">Action</a>
+                                <a class="dropdown-item" href="javascript:void();">Another action</a>
+                                <a class="dropdown-item" href="javascript:void();">Something else here</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="javascript:void();">Separated link</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <ul class="list-inline">
-                <li class="list-inline-item"><i class="fa fa-circle mr-2 text-white"></i>Revenue</li>
-                <li class="list-inline-item"></li>
-              </ul>
-              <div class="chart-container-1">
-                <canvas id="monthlySalesChart"></canvas>
-              </div>
-            </div>
-
-            <% for (let i=0; i < month.length; i++) { %>
-              <input type="hidden" id="input<%= i + 1 %>" value="<%= month[i] %>">
-              <% } %>
-
-                <div class="row m-0 row-group text-center border-top border-light-3">
-                  <div class="col-12 col-lg-4">
-                    <div class="p-3">
-                      <!-- <h5 class="mb-0">45.87M</h5> -->
-                      <!-- <small class="mb-0">Overall Visitor <span> <i class="fa fa-arrow-up"></i> 2.43%</span></small> -->
+                <div class="card-body">
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><i class="fa fa-circle mr-2 text-white"></i>Revenue</li>
+                        <li class="list-inline-item"></li>
+                    </ul>
+                    <div class="chart-container-1">
+                        <canvas id="monthlySalesChart"></canvas>
                     </div>
-                  </div>
-                  <div class="col-12 col-lg-4">
-                    <div class="p-3">
-                      <!-- <h5 class="mb-0">15:48</h5> -->
-                      <!-- <small class="mb-0">Visitor Duration <span> <i class="fa fa-arrow-up"></i> 12.65%</span></small> -->
-                    </div>
-                  </div>
-                  <div class="col-12 col-lg-4">
-                    <div class="p-3">
-                      <!-- <h5 class="mb-0">245.65</h5> -->
-                      <!-- <small class="mb-0">Pages/Visit <span> <i class="fa fa-arrow-up"></i> 5.62%</span></small> -->
-                    </div>
-                  </div>
                 </div>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- Daily Sales Chart -->
-      <div class="row">
-        <div class="col-12 col-lg-8 col-xl-8">
-          <div class="card">
-            <div class="card-header">Daily Report</div>
-            <div class="card-body">
-              <div class="chart-container-1">
-                <canvas id="dailyOrderChart"></canvas>
-              </div>
+                <% for (let i=0; i < month.length; i++) { %>
+                    <input type="hidden" id="input<%= i + 1 %>" value="<%= month[i] %>">
+                <% } %>
             </div>
-            <% for (let i=0; i < daily.length; i++) { %>
-              <input type="hidden" id="dailyInput<%= i %>" value="<%= daily[i] %>">
-              <% } %>
-          </div>
         </div>
-      </div>
+
+        <!-- Daily Report -->
+        <div class="col-12 col-lg-12 col-xl-12">
+            <div class="card">
+                <div class="card-header">Daily Report</div>
+                <div class="card-body">
+                    <div class="chart-container-1">
+                        <canvas id="dailyOrderChart"></canvas>
+                    </div>
+                </div>
+                <% for (let i=0; i < daily.length; i++) { %>
+                    <input type="hidden" id="dailyInput<%= i %>" value="<%= daily[i] %>">
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Payment Report -->
+        <div class="col-4 col-lg-4 col-xl-4">
+            <div class="card">
+                <div class="card-header">Payment Methods</div>
+                <div class="card-body">
+                    <div class="chart-container-2">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-items-center">
+                            <tbody>
+                                <tr>
+                                    <% payment.forEach((pay)=> { %>
+                                        <% if (pay._id=='COD' ) { %>
+                                            <td><i class="fa fa-circle text-white mr-2"></i>COD</td>
+                                            <td><%= pay.totalPayment %></td>
+                                        <% } else if (pay._id=='razorpay' ) { %>
+                                            <td><i class="fa fa-circle text-light-1 mr-2"></i>Online</td>
+                                            <td><%= pay.totalPayment %></td>
+                                        <% } else { %>
+                                            <td><i class="fa fa-circle text-light-2 mr-2"></i>Wallet Only</td>
+                                            <td><%= pay.totalPayment %></td>
+                                        <% } %>
+                                    <% }) %>
+                                </tr>
+                                <!-- Add additional rows here if needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script>
-      $(document).ready(function () {
+<script>
+    $(document).ready(function () {
         // Initialize charts when the document is ready
         const monthlySalesData = [];
         for (let i = 1; i <= 12; i++) {
-          monthlySalesData.push(Number(document.getElementById(`input${i}`).value));
+            monthlySalesData.push(Number(document.getElementById(`input${i}`).value));
         }
 
         const dailySalesData = JSON.parse(`<%- JSON.stringify(daily) %>`.replace(/&quot;/g, '"')).map(Number);
 
         var ctxMonthly = document.getElementById('monthlySalesChart').getContext('2d');
         var monthlyChart = new Chart(ctxMonthly, {
-          type: 'bar',
-          data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            datasets: [{
-              label: 'Sales',
-              data: monthlySalesData,
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              borderColor: "transparent",
-              borderWidth: 3
-            }]
-          },
-          options: {
-            maintainAspectRatio: false,
-            legend: {
-              display: false,
-              labels: {
-                fontColor: '#ddd',
-                boxWidth: 40
-              }
+            type: 'bar',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [{
+                    label: 'Sales',
+                    data: monthlySalesData,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: "transparent",
+                    borderWidth: 3
+                }]
             },
-            tooltips: {
-              displayColors: false
-            },
-            scales: {
-              xAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                  fontColor: '#ddd'
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    display: false,
+                    labels: {
+                        fontColor: '#ddd',
+                        boxWidth: 40
+                    }
                 },
-                gridLines: {
-                  display: true,
-                  color: "rgba(221, 221, 221, 0.08)"
+                tooltips: {
+                    displayColors: false
                 },
-              }],
-              yAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                  fontColor: '#ddd'
-                },
-                gridLines: {
-                  display: true,
-                  color: "rgba(221, 221, 221, 0.08)"
-                },
-              }]
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            fontColor: '#ddd'
+                        },
+                        gridLines: {
+                            display: true,
+                            color: "rgba(221, 221, 221, 0.08)"
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            fontColor: '#ddd'
+                        },
+                        gridLines: {
+                            display: true,
+                            color: "rgba(221, 221, 221, 0.08)"
+                        },
+                    }]
+                }
             }
-          }
         });
 
         var ctxDaily = document.getElementById('dailyOrderChart').getContext('2d');
         var dailyChart = new Chart(ctxDaily, {
-          type: 'bar',
-          data: {
-            labels: dailySalesData.map((sale, index) => index + 1),
-            datasets: [{
-              label: 'Daily Sales',
-              data: dailySalesData,
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              borderColor: "transparent",
-              borderWidth: 3
-            }]
-          },
-          options: {
-            maintainAspectRatio: false,
-            legend: {
-              display: false,
-              labels: {
-                fontColor: '#ddd',
-                boxWidth: 40
-              }
+            type: 'bar',
+            data: {
+                labels: dailySalesData.map((sale, index) => index + 1),
+                datasets: [{
+                    label: 'Daily Sales',
+                    data: dailySalesData,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: "transparent",
+                    borderWidth: 3
+                }]
             },
-            tooltips: {
-              displayColors: false
-            },
-            scales: {
-              xAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                  fontColor: '#ddd'
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    display: false,
+                    labels: {
+                        fontColor: '#ddd',
+                        boxWidth: 40
+                    }
                 },
-                gridLines: {
-                  display: true,
-                  color: "rgba(221, 221, 221, 0.08)"
+                tooltips: {
+                    displayColors: false
                 },
-              }],
-              yAxes: [{
-                ticks: {
-                  beginAtZero: true,
-                  fontColor: '#ddd'
-                },
-                gridLines: {
-                  display: true,
-                  color: "rgba(221, 221, 221, 0.08)"
-                },
-              }]
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            fontColor: '#ddd'
+                        },
+                        gridLines: {
+                            display: true,
+                            color: "rgba(221, 221, 221, 0.08)"
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            fontColor: '#ddd'
+                        },
+                        gridLines: {
+                            display: true,
+                            color: "rgba(221, 221, 221, 0.08)"
+                        },
+                    }]
+                }
             }
-          }
         });
-      });
-    </script>
+
+        // Pie chart for Payment Methods
+        const paymentData = JSON.parse(`<%- JSON.stringify(payment) %>`);
+        
+        // Extract relevant payment amounts
+        const codData = paymentData.find(pay => pay._id === 'COD') ? paymentData.find(pay => pay._id === 'COD').totalPayment : 0;
+        const razorpayData = paymentData.find(pay => pay._id === 'razorpay') ? paymentData.find(pay => pay._id === 'razorpay').totalPayment : 0;
+        const walletData = paymentData.find(pay => pay._id !== 'COD' && pay._id !== 'razorpay') ? paymentData.find(pay => pay._id !== 'COD' && pay._id !== 'razorpay').totalPayment : 0;
+
+        // Initialize the payment chart
+        var ctxPie = document.getElementById('chart2').getContext('2d');
+        var paymentChart = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: ['COD', 'Online', 'Wallet Only'],
+                datasets: [{
+                    label: 'Payment Methods',
+                    data: [codData, razorpayData, walletData],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                legend: {
+                    labels: {
+                        fontColor: '#ddd'
+                    }
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var label = data.labels[tooltipItem.index];
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            return label + ': ' + value;
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 
 </html>

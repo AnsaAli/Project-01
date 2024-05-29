@@ -1,8 +1,4 @@
 <%- include('../layout/header.ejs') %>
-    <!-- <%- include('../layout/cartAndwishlist.ejs') %> -->
-
-    <!-- <%= cart.cartItems[0].productId.productName%>
-  <%= existingAddress[0].address_customer_name %> -->
 
     <body>
         <!-- Include SweetAlert CSS -->
@@ -13,17 +9,27 @@
         <main class="main">
             <section class="mt-50 mb-50">
                 <div class="container">
-                    <div class="row mb-20">
-                        <div class="col-md-6">
+                    <div class="row mb-30">
 
-                        </div>
                         <div class="col-md-6">
-                            <div class="toggle_info">
+                            <div class="toggle_info"
+                                style="background-color: #012c2c; color: #f9f9f9; display: flex; justify-content: space-between; align-items: center;">
+                                <span>
+                                    <i class="fi-rs-label mr-10"></i>
+                                    Wallet: <span class="" style="color: yellow;">₹ <%= user.wallet %></span>
+                                </span>
+                                <a href="/wallet" aria-expanded="false" style="color: #f9f9f9b0;">Add Money?</a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="toggle_info" style="background-color: #012c2c; color: #f9f9f9;">
                                 <span>
                                     <i class="fi-rs-label mr-10"></i>
                                     <span class="text-muted">Have a coupon?</span>
                                     <a href="#" class="toggle_coupon_link" data-bs-toggle="collapse"
-                                        aria-expanded="false">Click here to enter your code</a>
+                                        aria-expanded="false" style="color: #f9f9f9;">Click here to enter
+                                        your coupon code!</a>
                                 </span>
                                 <input type="hidden" id="apply_coupon_btn_clicked" name="apply_coupon_btn_clicked"
                                     value="0">
@@ -32,7 +38,8 @@
                                     <input type="text" id="code" placeholder="Enter coupon code">
                                     <button id="apply_coupon_btn" class="btn btn-fill-out btn-block mt-30"
                                         onclick="applycoupon($('#code').val())">Apply</button> <br>
-                                    <a href="#" style="color: red;" onclick="removeCoupon()">Remove Coupon</a>
+                                    <a href="#" style="color: red;" onclick="removeCoupon()">Remove
+                                        Coupon</a>
                                 </div>
                             </div>
                         </div>
@@ -123,8 +130,7 @@
                                                     <% }); %>
                                                         <tr>
                                                             <th>SubTotal</th>
-                                                            <td class="product-subtotal" colspan="2">₹ <%=
-                                                                    cart.totalPrice %>
+                                                            <td class="product-subtotal" colspan="2">₹ <%= cart.totalPrice.toFixed(2) %>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -147,14 +153,23 @@
                                                                     id="afterDiscount">₹ 0</span>
                                                             </td>
                                                         </tr>
+                                                        <!-- <tr>
+                                                            <th>Wallet Applied</th>
+                                                            <td colspan="2">
+                                                                <span class="font-xl text-brand fw-900"
+                                                                    id="walletApplied">₹ 0</span>
+                                                            </td>
+                                                        </tr> -->
                                             </tbody>
                                         </table>
                                     </div>
 
 
 
-
-                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                    <!-- 
+                                    <div class="bt-1 border-color-1 mt-30 mb-30">
+                                      <button id="useWalletButton" class="btn btn-small" style="cursor: pointer;" data-wallet="<%= user.wallet %>" >Pay By Wallet</button>
+                                    </div> -->
                                     <div class="payment_method">
                                         <div class="mb-25">
                                             <h5>Payment</h5>
@@ -166,6 +181,9 @@
                                             <input type="radio" name="payment_option" id="razorpay" value="razorpay"
                                                 class="mr-10 mt-2">
                                             <label for="razorpay"><strong>RazorPay</strong></label><br>
+                                            <input type="radio" name="payment_option" id="wallet" value="wallet"
+                                                class="mr-10 mt-2">
+                                            <label for="wallet"><strong>Wallet</strong></label><br>
                                         </div>
                                         <input type="hidden" name="selectedPaymentMethod" id="selectedPaymentMethod">
                                     </div>
@@ -248,10 +266,50 @@
                 return true;
             }
 
+            // $(document).ready(function () {
+            //     $('#useWalletButton').click(function () {
+            //         console.log('in useWalletButton');
+            //         var walletAmount = $(this).data('wallet');
+            //         var totalAmount = parseFloat($("#total").text().replace(/[^\d.-]/g, ''));
+            //         console.log('in useWalletButton walletAmount: ',walletAmount);
+            //         console.log('in useWalletButton totalAmount: ',totalAmount);
+
+            //         useWallet(totalAmount, walletAmount);
+            //     });
+
+            //     function useWallet(totalAmount, walletAmount) {
+            //         $.ajax({
+            //             url: "/useWallet",
+            //             method: "POST",
+            //             data: {
+            //                 total: totalAmount,
+            //                 wallet: walletAmount,
+            //             },
+            //             success: (response) => {
+            //                 if (response.status) {
+            //                     if (response.sum === 0) {
+            //                         alert("You have paid with wallet money!");
+            //                         location.href = '/successOrder';
+            //                     } else if (response.sum > 0) {
+            //                         alert("Not enough money in the wallet!");
+            //                     }
+            //                 } else {
+            //                     alert("Failed to apply wallet amount. Please try again.");
+            //                 }
+            //             },
+            //             error: (xhr, status, error) => {
+            //                 console.error('Error applying wallet amount:', error);
+            //                 alert("An error occurred while applying the wallet amount. Please try again.");
+            //             }
+            //         });
+            //     }
+            // });
+
 
             $(document).ready(function () {
                 $('input[name="payment_option"]').change(function () {
                     const selectedPaymentMethod = $('input[name="payment_option"]:checked').val();
+                    console.log('selectedPaymentMethod: ', selectedPaymentMethod);
                     $('#selectedPaymentMethod').val(selectedPaymentMethod);
                     if (selectedPaymentMethod) {
                         $('.place-order-btn').prop('disabled', false);
@@ -319,12 +377,19 @@
                         price: prices
                     },
                     success: (response) => {
-                        console.log('===========================333: ')
+                        console.log('===========================333response: ',response)
                         if (response.success === true) {
-                            console.log('===========================337: ')
+                            console.log('===========================337 COD: ')
                             console.log('response.success : ', response.success)
                             //cod 
                             window.location.href = '/successOrder';
+
+                        } else if (payment === 'wallet' && !response.error) {
+                            console.log('Paying using wallet');
+                            window.location.href = '/successOrder';
+                        } else if (response.error ) {
+                            console.log('error message wallet');
+                            alert(response.error);
 
                         } else if (payment === 'razorpay') {
 
@@ -384,28 +449,7 @@
                                     .then((data) => {
                                         if (data.success) {
                                             window.location.href = '/successOrder'
-                                            // fetch('/placeOrder', {
-                                            //     method: 'POST',
-                                            //     headers: {
-                                            //         'Content-Type': 'application/json',
-                                            //     },
-                                            //     body: JSON.stringify(
-                                            //         {
-                                            //             addressId: address,
-                                            //             paymentOption: payment,
-                                            //         }
-                                            //     ),
 
-                                            // })
-
-                                            //     .then(response => response.json())
-                                            //     .then(data => {
-                                            //         console.log(data);
-                                            //         window.location.href = '/successOrder'
-                                            //     })
-                                            //     .catch((error) => {
-                                            //         console.error('Error:', error);
-                                            //     })
                                         } else {
 
                                             console.error('Payment failed:', data.error);
@@ -504,7 +548,7 @@
                                 title: 'Oops...',
                                 text: 'Coupon expired!'
                             });
-                        } 
+                        }
                         else if (response.amountOkey) {
                             console.log('response.amountOkey==================', response.amountOkey)
                             console.log('response==================', response);
@@ -585,10 +629,6 @@
                     }
                 });
             }
-
-
-
-
 
 
         </script>

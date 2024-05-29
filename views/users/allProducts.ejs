@@ -9,24 +9,24 @@
             <div class="widget-category mb-30">
               <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
               <ul class="categories">
-                <li><a href="/allProducts?sortby=onOffer">On Offer</a></li>
-                <li><a href="/allProducts?sortby=lowerPrice">Price: Low to High</a></li>
-                <li><a href="/allProducts?sortby=higherPrice">Price: High to Low</a></li>
+                <li><a href="#" onclick="updateUrlParam('sortby', 'onOffer')">On Offer</a></li>
+                <li><a href="#" onclick="updateUrlParam('sortby', 'lowerPrice')">Price: Low to High</a></li>
+                <li><a href="#" onclick="updateUrlParam('sortby', 'higherPrice')">Price: High to Low</a></li>
               </ul>
             </div>
             <div class="m-5">
               <ul class="categories">
-                <li> <a href="/allProducts" style="border-radius: 5px;">Clear Filter</a>
-                </li>
+                <li> <a href="/allProducts" style="border-radius: 5px;">Clear Filter</a></li>
               </ul>
             </div>
             <div class="widget-category mb-30">
               <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
               <ul class="categories">
                 <% categories.forEach(category=> { %>
-                  <li><a href="/allProducts?category=<%= category._id %>" style="border-radius: 5px;">
+                  <li><a href="#" onclick="updateUrlParam('category', '<%= category._id %>')"
+                      style="border-radius: 5px;">
                       <%= category.name %>
-                    </a><br></li>
+                    </a></li>
                   <% }); %>
               </ul>
             </div>
@@ -164,6 +164,14 @@
         border-radius: 25px;
       }
     </style>
+
+    <script>
+      function updateUrlParam(key, value) {
+        const url = new URL(window.location.href);
+        url.searchParams.set(key, value);
+        window.location.href = url.toString();
+      }
+    </script>
   </body>
 
 

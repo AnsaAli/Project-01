@@ -48,6 +48,23 @@
             type: String,
            
         },
+        wallet: {
+           type: Number,
+           default: 0
+        },
+        history: {
+            type: Array,
+            amount: {
+              type: Number,
+            },
+            status: {
+              type: String,
+            },
+            timestamp: {
+              type: Date,
+              default: Date.now,
+            },
+          },
         is_blocked:{
             type:Boolean,
             default:false

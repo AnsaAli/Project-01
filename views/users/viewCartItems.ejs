@@ -185,7 +185,7 @@
                         data: { productId: productId, action: action },
                         success: function (response) {
                             // Handle success response, update quantity, weight, and subtotal
-
+                            console.log('response: ', response);
                             quantityElement.text(response.quantity);
                             //    console.log(' quantityElement.text(response.quantity):', quantityElement.text(response.quantity))
                             weightEement.text(response.weight);
@@ -195,15 +195,17 @@
 
                             // Remove error message if it exists
                             $('.alert-danger').remove();
-
+                            console.log(`  $('.alert-danger').remove(): `, $('.alert-danger').remove());
                         },
                         error: function (xhr, status, error) {
                             // Handle error
-                            console.error('Error:', error);
+
                             if (xhr.responseJSON && xhr.responseJSON.error) {
                                 // Update UI to display error message
                                 var errorMessage = xhr.responseJSON.error;
+                                console.log('errorMessage: ', errorMessage);
                                 var errorElement = $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage);
+                                console.log('errorElement: ', errorElement);
                                 $('.cart-action').prepend(errorElement);
                             } else {
                                 alert('An error occurred while updating quantity. Please try again later.');

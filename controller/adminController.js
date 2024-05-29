@@ -201,7 +201,10 @@ const loadDashboard = async (req, res) => {
 
         let dailySalesData = dailySales.map(sale => sale.total);
         console.log('dailySalesData: ', dailySalesData);
-
+        console.log('total: ', total);
+        console.log('payment: ', payment);
+        console.log('salesData: ', salesData);
+        console.log('dailySalesData: ', dailySalesData);
         res.render('dashboard', { admin: userData, total, user_count, order_count, product_count, payment, month: salesData, daily: dailySalesData });
 
     } catch (error) {

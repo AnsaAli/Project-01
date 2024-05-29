@@ -18,7 +18,7 @@
             <div class="heading_s1">
                <h3 class="mb-30">Verify OTP</h3>
             </div>
-           
+            <p id="timer"></p> <!-- Timer display element -->
                 
                 <form action="/veryfyOtp" method="POST">
                     <%
@@ -38,13 +38,73 @@
                     <input type="hidden" id="email" name="email" value="<%= userData.email %>" required>
                     <label for="otp">Enter OTP:</label>
                     <input type="text" id="otp" name="otp" required>
-                    <button type="submit">Verify OTP</button>
+                    <button type="submit" style="margin: 10px;">Verify OTP</button>
+                    <a href="#" id="resendOtpLink" onclick="resendOtp()" style="display: none;">Resend OTP</a>
                 </form>
-            
+                
         </div>
     </div>
 </div>       
-  
+<script>
+    var timerInterval;
+
+    function startTimer(duration, display) {
+        clearInterval(timerInterval);
+        var timer = duration, minutes, seconds;
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = "Time left: " + minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                display.textContent = "OTP expired. Please request a new OTP.";
+                document.getElementById("resendOtpLink").style.display = "block"; // Show the resend link
+            }
+        }, 1000);
+    }
+
+    function resendOtp() {
+        console.log('in resendOtp')
+        fetch('/resendOtpVerify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: '<%= userData.email %>' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('OTP has been resent.');
+                document.getElementById("resendOtpLink").style.display = "none"; // Hide the resend link
+                var fiveMinutes = 60 * 1,
+                    display = document.querySelector('#timer');
+                startTimer(fiveMinutes, display); // Restart the timer
+            } else {
+                alert('Failed to resend OTP.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    window.onload = function () {
+        var fiveMinutes = 60 * 1,
+            display = document.querySelector('#timer');
+        startTimer(fiveMinutes, display);
+        document.getElementById("resendOtpLink").style.display = "none"; // Ensure the resend link is hidden on load
+    };
+</script>
+
+
+
+
 
 
 

@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt")
 const nodemailer = require('nodemailer')
 const session = require('express-session')
 const couponModel = require('../models/couponModel')
+const { ObjectId } = require('mongodb');
 
 
 const seccurePassword = async (password) => {
@@ -46,27 +47,21 @@ const saveOtp = async (email, otp, expiresAt) => {
 
 const sendOtp = async (email, otp) => {
     try {
-        const otpTimestamp = Date.now();
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
-            requireTLS: true,
-            auth: {
-                user: 'chinjuinbelfast@gmail.com',
-                pass: 'pkprjnrryzjzfijw'
-            }
+        const email = req.body.email;
+        const newOtp = generateOTP();
+        await sendOtp(email, newOtp);
+
+        // Calculate OTP expiration time
+        const otpValidityPeriod = 1 * 60; // 5 minutes in seconds
+        const expiresAt = new Date(Date.now() + otpValidityPeriod * 1000);
+
+        // Save OTP to database with expiration time
+        await saveOtp(email, newOtp, expiresAt);
+
+        res.json({
+            success: true,
+            successMessage: "Please verify your Email to complete the registration within 1 minutes"
         });
-        const mailoptions = {
-            from: 'chinjuinbelfast@gmail.com',
-            to: email,
-            subject: 'OTP for Email Verification',
-            text: `Your OTP is: ${otp}, OTP is valid only for 5 minutes`
-        }
-
-        await transporter.sendMail(mailoptions)
-        return otpTimestamp
-
     } catch (error) {
         throw new Error("Error sending OTP to database" + error.message)
 
@@ -135,7 +130,7 @@ const registerUser = async (req, res) => {
             //to make otp null after 5 minutes
             setTimeout(async () => {
                 await expireOtp(req.body.email)
-            }, 5 * 60 * 1000)
+            }, 1 * 60 * 1000)
 
             return res.render('veryfyOtp', {
                 userData,
@@ -249,7 +244,7 @@ const resendOTP = async (req, res) => {
         const otp = generateOTP();
         const otpTimestamp = await sendOtp(email, otp);
         // Calculate remaining time for OTP validity.............
-        const otpValidityPeriod = 5 * 60;
+        const otpValidityPeriod = 1 * 60;
         const expiresAt = new Date();
         expiresAt.setMinutes(expiresAt.getMinutes() + otpValidityPeriod);
 
@@ -264,6 +259,58 @@ const resendOTP = async (req, res) => {
 
     } catch (error) {
         console.log('Error occurred while resending the OTP, ' + error.message)
+    }
+}
+
+const sendOtpAgain = async (email, otp) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            requireTLS: true,
+            auth: {
+                user: 'chinjuinbelfast@gmail.com',
+                pass: 'pkprjnrryzjzfijw'
+            }
+        });
+
+        const mailoptions = {
+            from: 'chinjuinbelfast@gmail.com',
+            to: email,
+            subject: 'OTP for Email Verification',
+            text: `Your OTP is: ${otp}, OTP is valid only for 5 minutes`
+        };
+
+        await transporter.sendMail(mailoptions);
+    } catch (error) {
+        throw new Error("Error sending OTP email: " + error.message);
+    }
+};
+
+
+const sendOtpToEmail = async (req, res) => {
+    try {
+        console.log('===================in sendOtpToEmail ')
+        const email = req.body.email;
+        const newOtp = generateOTP();
+
+        // Calculate OTP expiration time
+        const otpValidityPeriod = 1 * 60; // 5 minutes in seconds
+        const expiresAt = new Date(Date.now() + otpValidityPeriod * 1000);
+
+        // Save OTP to database with expiration time
+        await saveOtp(email, newOtp, expiresAt);
+
+        // Send OTP email
+        await sendOtpAgain(email, newOtp);
+
+        res.json({
+            success: true,
+            successMessage: "Please verify your Email to complete the registration within 1 minutes"
+        });
+    } catch (error) {
+        console.log('Error resentOtp in verifyEmail sendOtpToEmail', error)
     }
 }
 
@@ -285,15 +332,14 @@ const loadVerifyOtp = async (req, res) => {
     }
 }
 
-const veryfyOtp = async (req, res) => {
+const verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
+        console.log('otp: ', otp)
         if (!email || !otp) {
             return res.status(400).json({ errorMessage: "Email and OTP are required." });
         }
         const user = await User.findOne({ email: email, otp: otp });
-        //console.log(email +'is the email')
-        //console.log(otp +'is the otp')
 
         if (user) {
             user.is_verified = true;
@@ -303,7 +349,7 @@ const veryfyOtp = async (req, res) => {
             res.render('login', { successMessage: 'OTP matched, user verified' })
         } else {
             // console.log('checking  resendotp page')
-            res.render('resendOtp', { errorMessage: 'Invalid OTP, please resend the OTP again.' })
+            res.render('resendOtp', { errorMessage: 'Invalid OTP, please enter your emai, and verify the OTP .' })
         }
     } catch (error) {
         console.log('Error occured while verifying the otp;' + error.message)
@@ -646,11 +692,12 @@ const loadChngePassword = async (req, res) => {
         console.log('Error while loading change password page', error.message)
     }
 }
+
 const chngePassword = async (req, res) => {
     try {
         // console.log('============21')
         const { epassword, password, confirmpassword } = req.body;
-        userId = req.session.user_id
+        const userId = req.session.user_id
         // console.log(userId, 'is the userId============1')
         const user = await User.findById(userId);
 
@@ -688,6 +735,48 @@ const chngePassword = async (req, res) => {
     }
 
 }
+//////////////////////////////////////////////////////
+
+const loadChangeMyProfile = async (req, res) => {
+    try {
+        const { name, mobile } = req.query;
+        console.log('type off mobile',typeof(mobile))
+        res.render('changeMyProfile',{ name, mobile });
+    } catch (error) {
+        console.log('Error while editing the name and the phone in loadChangeMyProfile', error)
+    }
+}
+const changeMyProfile = async(req,res)=>{
+    try {
+        console.log('in changeMyProfile=================');
+        const {username,mobile}= req.body;
+        console.log('type off mobile',typeof(mobile))
+        const userId =  ObjectId.createFromHexString(req.session.user_id);
+      
+        console.log('in changeMyProfile=================1');
+
+         // Update user profile
+         await User.findByIdAndUpdate(userId  , {
+            name: username
+        }, { new: true });
+
+        // Find and update the user's address
+        const user = await User.findById(userId).populate('address');
+        if (user && user.address.length > 0) {
+            const addressId = user.address[0]._id;
+            await UserAddress.findByIdAndUpdate(addressId, {
+                mobile_num: mobile
+            }, { new: true });
+        }
+
+        res.redirect('/myProfile')
+    } catch (error) {
+        console.log('Error in changeMyProfile',error)
+    }
+}
+//////////////////////////////////////////////////////
+
+
 const loadMyProfile = async (req, res) => {
     try {
         const userData = await User.findById(req.session.user_id).populate('address')
@@ -697,15 +786,8 @@ const loadMyProfile = async (req, res) => {
     }
 }
 
-////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-const loadwallet = async (req, res) => {
-    try {
-        res.render('loadWallet')
-    } catch (error) {
-        console.log('Error while loading loadwallet', error)
-    }
-}
 ////////////////////////
+
 const applyCoupon = async (req, res) => {
     try {
         console.log('===================================applyCoupon 1')
@@ -723,9 +805,9 @@ const applyCoupon = async (req, res) => {
                 await couponModel.findOneAndUpdate({ _id: couponData._id }, { $push: { user: userId } });
             }
             // console.log('===================================applyCoupon 2')
-             if(amount < couponData.discountAmount){
+            if (amount < couponData.discountAmount) {
                 return res.json({ amount: true });
-             }
+            }
             if (couponData.maxUsers <= 0) {
                 return res.json({ limit: true });
             }
@@ -802,8 +884,7 @@ async function fetchCart(userId) {
     }
 }
 
-// Controller function to remove a coupon
-const removeCoupon = async (req, res) => {  
+const removeCoupon = async (req, res) => {
     try {
         const code = req.body.code;
         const userId = req.session.user_id;
@@ -817,7 +898,7 @@ const removeCoupon = async (req, res) => {
             await couponModel.findByIdAndUpdate({ _id: couponData._id }, { $inc: { maxUsers: 1 } });
 
             // Fetch the updated cart total amount
-            const cart = await fetchCart(userId); 
+            const cart = await fetchCart(userId);
             const totalAmount = cart.totalPrice || 0; // Get the total price from the cart
 
             return res.json({ success: true, totalAmount: totalAmount });
@@ -830,15 +911,18 @@ const removeCoupon = async (req, res) => {
     }
 };
 
+//////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 module.exports = {
     loadRegister,
     registerUser,
-    veryfyOtp,
+    verifyOtp,
     loadExistingEmailVerification,
     existingEmailVerification,
     loadexistingEmailVerifyOTP,
     existingEmailVerifyOTP,
     resendOTP,
+    sendOtpToEmail,
     loadVerifyOtp,
     loadresendOTP,
     loadLogin,
@@ -851,14 +935,13 @@ module.exports = {
     loadUserEditAddress,
     loadAddProfile,
     addProfile,
+    loadChangeMyProfile,
+    changeMyProfile,
     updateUserAddress,
     deleteAddress,
     loadChngePassword,
     chngePassword,
     loadMyProfile,
-    loadwallet,
     applyCoupon,
     removeCoupon
-
-
 }

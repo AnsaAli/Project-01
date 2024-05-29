@@ -1,129 +1,131 @@
 <%- include('../layout/header.ejs') %>
 
-<body>
+    <body>
 
-    <main class="main">
-        
-        <section class="pt-150 pb-150">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-10 m-auto">
-                        <div class="row">
-                            <div class="col-md-4">
+        <main class="main">
 
-                                <div class="dashboard-menu">
-                                    <ul class="nav flex-column" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link  active" id="dashboard-tab" data-bs-toggle="tab"
-                                                href="/myProfile" role="tab" aria-controls="dashboard"
-                                                aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
-                                                Profile</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
-                                                href="#dashboard" role="tab" aria-controls="dashboard"
-                                                aria-selected="false"><i
-                                                    class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="/order"
-                                                role="tab" aria-controls="orders" aria-selected="false"><i
-                                                    class="fi-rs-shopping-bag mr-10"></i>Orders</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
-                                                href="/wallet" role="tab" aria-controls="track-orders"
-                                                aria-selected="false"><i
-                                                    class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link " id="address-tab" data-bs-toggle="tab"
-                                                href="/userProfile" role="tab" aria-controls="address"
-                                                aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
-                                                href="#account-detail" role="tab" aria-controls="account-detail"
-                                                aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
-                                                href="/changePassword" role="tab" aria-controls="change-password"
-                                                aria-selected="true"><i class="fi-rs-user mr-10"></i>Change Password</a>
-                                        </li>
-                                        <!-- <li class="nav-item">
+            <section class="pt-150 pb-150">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-10 m-auto">
+                            <div class="row">
+                                <div class="col-md-4">
+
+                                    <div class="dashboard-menu">
+                                        <ul class="nav flex-column" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link  active" id="dashboard-tab" data-bs-toggle="tab"
+                                                    href="/myProfile" role="tab" aria-controls="dashboard"
+                                                    aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
+                                                    Profile</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="dashboard-tab" data-bs-toggle="tab"
+                                                    href="#dashboard" role="tab" aria-controls="dashboard"
+                                                    aria-selected="false"><i
+                                                        class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="/order"
+                                                    role="tab" aria-controls="orders" aria-selected="false"><i
+                                                        class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
+                                                    href="/wallet" role="tab" aria-controls="track-orders"
+                                                    aria-selected="false"><i
+                                                        class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="address-tab" data-bs-toggle="tab"
+                                                    href="/userProfile" role="tab" aria-controls="address"
+                                                    aria-selected="true"><i class="fi-rs-marker mr-10"></i>My
+                                                    Address</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab"
+                                                    href="#account-detail" role="tab" aria-controls="account-detail"
+                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Account
+                                                    details</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
+                                                    href="/changePassword" role="tab" aria-controls="change-password"
+                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
+                                                    Password</a>
+                                            </li>
+                                            <!-- <li class="nav-item">
                                             <a class="nav-link" href="/logout"><i
                                                     class="fi-rs-sign-out mr-10"></i>Logout</a>
 
                                         </li> -->
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="col-lg-6">
-                                    <div class="card mb-3 mb-lg-0">
-                                       
-                                            <div class="card-header">
-
-                                                <h5 class="mb-0">My profile</h5>
-                                                <% if(userData ) {%>
-                                                <p>
-                                                    <%= userData.address[0].address_type %>
-                                                </p>
-                                            </div>
-                                            <div class="card-body" style="display: flex; justify-content: space-between;">
-                                                <div>
-                                                    <p>
-                                                        <%= userData.name %>
-                                                    </p>
-                                                    <p>
-                                                        <%= userData.email %>
-                                                    </p>
-                                                    <p>
-                                                        <%= userData.address[0].mobile_num %>
-                                                    </p>
-                                                </div>
-                                                <!-- <div style="font-size: small;">
-                                                    <a href="/changeMyProfile">Edit</a>
-                                                </div> -->
-                                            </div>
-                                            
-                                            <div class="card-body"> 
-                                               
-                                                <p>
-                                                    <%=userData.address[0].house_num %>
-                                                </p>
-                                                <p>
-                                                    <%= userData.address[0].apartment_name %>
-                                                </p>
-                                                <p>
-                                                    <%= userData.address[0].city %>
-                                                </p>
-                                                <p>
-                                                    <%= userData.address[0].district %>
-                                                </p>
-                                                <p>Pincode:
-                                                    <%= userData.address[0].pincode %>
-                                                </p>
-                                            </div>
-                                            <% }else{ %>
-                                                <p>
-                                                    No datas available,
-                                                    please complete your profile!
-                                                    <a href="/addData">click here</a>
-                                                </p>
-
-                                                <% } %>
-                                       
+                                        </ul>
                                     </div>
-                                </div>   
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="col-lg-6">
+                                        <div class="card mb-3 mb-lg-0">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">My profile</h5>
+                                                <% if(userData) { %>
+                                                    <% if(userData.address && userData.address[0] && userData.address[0].mobile_num) { %>
+                                                        <p>
+                                                            <%= userData.address[0].address_type %>
+                                                        </p>
+                                                    </div>
+                                                    <div class="card-body" style="display: flex; justify-content: space-between;">
+                                                        <div>
+                                                            <p>
+                                                                <%= userData.name %>
+                                                            </p>
+                                                            <p>
+                                                                <%= userData.email %>
+                                                            </p>
+                                                            <p>
+                                                                <%= userData.address[0].mobile_num %>
+                                                            </p>
+                                                        </div>
+                                                        <div style="font-size: small;">
+                                                            <a href="/changeMyProfile?name=<%= userData.name %>&mobile=<%= userData.address[0].mobile_num %>">Edit</a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <p>
+                                                            <%= userData.address[0].house_num %>
+                                                        </p>
+                                                        <p>
+                                                            <%= userData.address[0].apartment_name %>
+                                                        </p>
+                                                        <p>
+                                                            <%= userData.address[0].city %>
+                                                        </p>
+                                                        <p>
+                                                            <%= userData.address[0].district %>
+                                                        </p>
+                                                        <p>Pincode:
+                                                            <%= userData.address[0].pincode %>
+                                                        </p>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <p>Not Yet Added!</p>
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <p>
+                                                        No data available, please complete your profile!
+                                                        <a href="/addData">click here</a>
+                                                    </p>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
-                 </div>
-             </div>
-        </section>
-      
-    </main>
-</body>
+                </div>
+            </section>
+
+        </main>
+    </body>
     <%- include('../layout/footer.ejs') %>

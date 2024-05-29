@@ -10,7 +10,6 @@ const { ObjectId } = require('mongodb');
 const Order = require('../models/orderModel');
 const OrderItem = require('../models/orderItemModel');
 
-
 const Razorpay = require('razorpay');
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 const razorpayinstance = new Razorpay({
@@ -21,52 +20,78 @@ const razorpayinstance = new Razorpay({
 
 const loadUserOrder = async (req, res) => {
     try {
-         // Pagination parameters
-         const page = parseInt(req.query.page) || 1;  // Current page number
-         const limit = 3;  // Number of items per page
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;  // Current page number
+        const limit = 3;  // Number of items per page
 
         // Total count of Order
-        const count = await Order.countDocuments(); 
+        const count = await Order.countDocuments();
         const coupons = await Order.find()
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort({ createdAt: 1 });  // Sort by descending createdAt
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: 1 });  // Sort by descending createdAt
 
         const orderPlaced = await Order.find({}).populate('shippingAddress').populate('orderItems').sort({ orderDate: -1 });
-        res.render('userOrder', 
-        { 
-            orderPlaced ,
-            coupons: coupons,
-            currentPage: page,
-            totalPages: Math.ceil(count / limit)
-        })
+        res.render('userOrder',
+            {
+                orderPlaced,
+                coupons: coupons,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit)
+            })
     } catch (error) {
         console.log('Error while loading user order page', error.message)
     }
 }
 const cancelOrder = async (req, res) => {
     try {
+        console.log('=======================================cancelorder')
+        const userId = req.session.user_id;
         const orderId = req.params.orderId;
         //console.log(orderId,'is the orderid')
+
         const order = await Order.findById(orderId).populate('orderItems');
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        order.orderStatus = 'cancelled';
+        order.orderStatus = 'Cancelled';
         await order.save();
-
+        
+        //add product back to the database.
         await Promise.all(order.orderItems.map(async (element) => {
             try {
                 console.log('ProductId: ', element.product_id);
                 let product = await Product.findById(element.product_id);
                 product.totalQuantity += (element.orderedWeight[0].weight) / 1000;
                 await product.save();
+
+                // Update user wallet
+                if (order.paymentMethod === 'wallet' || order.paymentMethod === 'razorpay') {
+
+                    const user = await User.findById(userId);
+                    let existingWalletAmount = user.wallet;
+                    console.log('existingWalletAmount: ', existingWalletAmount);
+                    let productTotalAmount = order.finalPrice;
+                    console.log('productTotalAmount: ', productTotalAmount);
+                    existingWalletAmount += productTotalAmount;
+                    console.log('existingWalletAmount: ', existingWalletAmount);
+
+                    await User.findByIdAndUpdate(userId, {
+                        wallet: existingWalletAmount,
+                        $push: {
+                            history: {
+                                amount: productTotalAmount,
+                                status: "credit",
+                                timestamp: Date.now(),
+                            },
+                        },
+                    });
+                }
             } catch (error) {
                 console.error('Error updating product quantity:', error);
             }
         }));
-
 
         res.status(200).json({ message: 'Order cancelled successfully', orderId: order._id });
     } catch (error) {
@@ -101,6 +126,8 @@ const placeOrder = async (req, res) => {
 
         let orderStatus;
         if (payment_option === 'razorpay') {
+            orderStatus = "pending"
+        } else if (payment_option === 'wallet') {
             orderStatus = "pending"
         } else {
             orderStatus = "placed"
@@ -225,8 +252,8 @@ const placeOrder = async (req, res) => {
             }
 
             // update payment status to paid
-            order.paymentStatus = 'paid';
-            order.orderStatus= 'Confirmed'
+            order.paymentStatus = 'paid Online';
+            order.orderStatus = 'Confirmed'
             await order.save()
             await CartItem.deleteMany({ userId: userId })
             console.log('CartItem deleted================================91')
@@ -236,9 +263,53 @@ const placeOrder = async (req, res) => {
             console.log('options in razor pay: =======================209', options)
             razorpayinstance.orders.create(options, function (err, order) {
                 console.log('order================================211 razor', order);
-                console.log('orderId: ==========221',orderId)
-                res.json({ order});
+                console.log('orderId: ==========221', orderId)
+                res.json({ order });
             })
+        } else if (payment_option === 'wallet') {
+            console.log('inside wallet payment place order.')
+            //wallet amount in user model
+            const user = await User.findById(userId);
+            // const cart = await Cart.findById(userId)
+            let walletAmount = user.wallet;
+
+            let paidAmount;//100   cart.totalPrice : 100
+            let walletAmountBalance//0
+            if (walletAmount >= totalAmount) {
+
+                paidAmount = req.body.totalAmount;
+                walletAmountBalance = walletAmount - paidAmount;
+                console.log('walletAmount: ', walletAmount);
+                console.log('walletAmountBalance: ', walletAmountBalance);
+
+                await User.findByIdAndUpdate(userId, {
+                    wallet: walletAmountBalance,
+                    $push: {
+                        history: {
+                            amount: paidAmount,
+                            status: "debit",
+                            timestamp: Date.now(),
+                        },
+                    },
+                });
+
+                order.paymentStatus = 'Wallet Payment';
+                order.paymentMethod = 'Wallet'
+                order.orderStatus = 'Confirmed'
+                console.log('=================================111 wallet')
+
+                await CartItem.deleteMany({ userId: userId })
+                console.log('CartItem deleted================================91 wallet')
+                await Cart.deleteOne({ userId: userId });
+                console.log('Cart deleted================================91 wallet')
+                console.log('Order placed successfully using wallet');
+                res.json({ success: 'wallet' });
+            } else {
+                console.log('There is no enough amount in the wallet.')
+                res.json({ error: 'There is not enough amount in the wallet, Please add money to the wallet!' });
+            }
+
+
         }
     } catch (error) {
         console.log('Error, while placing the order ', error)
@@ -249,31 +320,31 @@ const placeOrder = async (req, res) => {
 const paymentSuccess = (req, res) => {
     try {
         console.log('==============================in paymentSuccess');
-      const { paymentid, signature, orderId } = req.body;
-      console.log('paymentid : ',paymentid, 'signature: ',signature, 'orderId: ',orderId);
+        const { paymentid, signature, orderId } = req.body;
+        console.log('paymentid : ', paymentid, 'signature: ', signature, 'orderId: ', orderId);
 
-      const { createHmac } = require("node:crypto");
-    //   generated_signature = hmac_sha256(order_id + "|" + paymentid, RAZORPAY_SECRET_KEY);
-      const hash = createHmac("sha256", RAZORPAY_SECRET_KEY)
-        .update(orderId + "|" + paymentid)
-        .digest("hex");
-        
-    console.log('hash : ',hash);
+        const { createHmac } = require("node:crypto");
+        //   generated_signature = hmac_sha256(order_id + "|" + paymentid, RAZORPAY_SECRET_KEY);
+        const hash = createHmac("sha256", RAZORPAY_SECRET_KEY)
+            .update(orderId + "|" + paymentid)
+            .digest("hex");
 
-  
-      if (hash === signature) {
-        console.log('==============================in paymentSuccess 243');
-        console.log("success");
-        res.status(200).json({ success: true, message: "Payment successful" });
-      } else {
-        console.log("error");
-        res.json({ success: false, message: "Invalid payment details" });
-      }
+        console.log('hash : ', hash);
+
+
+        if (hash === signature) {
+            console.log('==============================in paymentSuccess 243');
+            console.log("success");
+            res.status(200).json({ success: true, message: "Payment successful" });
+        } else {
+            console.log("error");
+            res.json({ success: false, message: "Invalid payment details" });
+        }
     } catch (error) {
-      console.log('paymentSuccess=========================',error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+        console.log('paymentSuccess=========================', error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  };
+};
 
 
 
