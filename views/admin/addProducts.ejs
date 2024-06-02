@@ -1,40 +1,57 @@
 <%- include('../layout/adminHeader.ejs') %>
 
-  <div class="content">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="title">Add Product</h5>
-        </div>
-        <div class="card-body">
-          <form action="/admin/addProducts" method="POST" id="addProductForm" enctype="multipart/form-data">
-            <% if(typeof successMessage !='undefined' ){ %>
-              <p style="color: green;">
-                <%= successMessage %>
-              </p>
-              <% } %>
-                <% if(typeof errorMessage !='undefined' ){ %>
-                  <p style="color: red;">
-                    <%= errorMessage %>
-                  </p>
-                  <% } %>
-                    <div class="row">
-                      <div class="col-md-5 pr-1">
-                        <div>
-                          <div id="imagePreview" class="imagePreview">
-                            <!-- image preview -->
+  <head>
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  </head>
 
+  <body>
+    <div class="content">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="title">Add Product</h5>
+          </div>
+          <div class="card-body">
+            <form action="/admin/addProducts" method="POST" id="addProductForm" enctype="multipart/form-data">
+              <% if(typeof successMessage !='undefined' ){ %>
+                <p style="color: green;">
+                  <%= successMessage %>
+                </p>
+                <% } %>
+                  <% if(typeof errorMessage !='undefined' ){ %>
+                    <p style="color: red;">
+                      <%= errorMessage %>
+                    </p>
+                    <% } %>
+                      <div class="row">
+                        <div class="col-md-5 pr-1">
+                          <div>
+                            <div id="imagePreview" class="imagePreview">
+                              <!-- image preview -->
+
+                            </div>
+                            <label for="imageInput">Choose images</label>
+
+                            <input type="file" name="image" id="imageInput" multiple require>
                           </div>
-                          <label for="imageInput">Choose images</label>
-
-                          <input type="file" name="image" id="imageInput" multiple require>
                         </div>
                       </div>
-                    </div>
-                    <!-- Product name and Category -->
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                      
+
+                      <!-- Modal for cropping image -->
+                      <div id="cropModal" style="display: none;">
+                        <div>
+                          <div>
+                            <img id="cropImage" src="" alt="Image for cropping">
+                          </div>
+                          <button id="cropButton">Crop</button>
+                        </div>
+                      </div>
+
+                      <!-- Product name and Category -->
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+
                           <div class="form-group">
                             <label for="productName">Product Name</label>
                             <input type="text" class="form-control" id="productName" name="productName" required>
@@ -43,7 +60,7 @@
                           <div id="successMessage" class="success-message" style="display: none; color: green">
                             Product added successfully!
                           </div>
-                       
+
                           <div class="form-group">
                             <label for="category">Choose Category </label>
                             <select class="form-control" name="category" id="category">
@@ -54,331 +71,433 @@
                                 <%} )%>
                             </select>
                           </div>
-                      
-                      </div>
-                      
-                    </div>
-                    <!-- Product description -->
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                        <div class="form-group">
-                          <label for="description">Description</label>
-                          <textarea name="description" rows="4" cols="80" class="form-control" id="description"
-                            required></textarea>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Nutritional info -->
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                        <div class="form-group">
-                          <label for="nutritionalInfo">Nutritional Information:</label>
-                          <textarea name="nutritionalInfo" rows="4" cols="80" class="form-control" id="nutritionalInfo"
-                            required></textarea>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Recepies -->
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                        <div class="form-group">
-                          <label for="recipies">Recepies</label>
-                          <textarea name="recipies" rows="20" cols="80" class="form-control" id="recipies"
-                            required></textarea>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- totalQuantity -->
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                        <div class="form-group">
-                          <label for="totalQuantity">Total Quantity </label>
-                          <input type="number" class="form-control"
-                            placeholder="how much quantity (in kg) is there in the ware house? " id="totalQuantity"
-                            name="totalQuantity" required>
-                          <div id="quantityError" class="error-message"></div>
 
                         </div>
+
                       </div>
-                    </div>
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                        <div class="form-group">
-                          <label for="pricePer100g">Price per 100g</label>
-                          <input type="number" class="form-control" placeholder="Price per 100grams" id="pricePer100g"
-                            name="pricePer100g" required>
-                          <div id="priceError" class="error-message"></div>
+                      <!-- Product description -->
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea name="description" rows="4" cols="80" class="form-control" id="description"
+                              required></textarea>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12 pr-1">
-                        <div class="form-group col-md-8 pr-1">
-                          <label for="totalPrice">Total Price</label>
-                          <input type="number" class="form-control" placeholder="Total price" id="totalPrice"
-                            name="totalPrice" readonly>
+                      <!-- Nutritional info -->
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group">
+                            <label for="nutritionalInfo">Nutritional Information:</label>
+                            <textarea name="nutritionalInfo" rows="4" cols="80" class="form-control"
+                              id="nutritionalInfo" required></textarea>
+                          </div>
                         </div>
                       </div>
-                      <div class="form-group col-md-4 pr-1">
-                        <button type="button" class="btn btn-primary" id="calculateButton"  onclick="findTotal()">Find Total
-                          Price</button>
-                      </div>
-                    </div>
-                   
-                    <div class="row">
-                      <div  class="col-md-12 pr-1">
-                        <div class="form-group col-md-8 pr-1">
-                          <label for="offerPercentage">Offer Percentage (%)</label>
-                          <input type="number" class="form-control" name="offerPercentage" value="0" min="0" max="80"
-                            id="offerPercentage">
+                      <!-- Recepies -->
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group">
+                            <label for="recipies">Recepies</label>
+                            <textarea name="recipies" rows="20" cols="80" class="form-control" id="recipies"
+                              required></textarea>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12 pr-1">
-                        <div class="form-group col-md-8 ">
-                          <label for="offerPrice">After Offer</label>
-                          <input type="number" class="form-control" name="offerPrice" id="offerPrice" readonly>
+                      <!-- totalQuantity -->
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group">
+                            <label for="totalQuantity">Total Quantity </label>
+                            <input type="number" class="form-control"
+                              placeholder="how much quantity (in kg) is there in the ware house? " id="totalQuantity"
+                              name="totalQuantity" required>
+                            <div id="quantityError" class="error-message"></div>
+
+                          </div>
                         </div>
                       </div>
-                      <div class="col-md-4 ">
-                        <button type="button" class="btn btn-primary" id="calculateOffer" onclick="findOfferPrice()"> Total
-                          Price(after offer)</button>
-                      </div>
-                    </div>
-                  
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <button type="submit" class="btn btn-fill-out btn-block hover-up btn-success">Add
-                            Product</button>
-                          <a href="/admin/viewProducts">Cancel</a>
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group">
+                            <label for="pricePer100g">Price per 100g</label>
+                            <input type="number" class="form-control" placeholder="Price per 100grams" id="pricePer100g"
+                              name="pricePer100g" required>
+                            <div id="priceError" class="error-message"></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-          </form>
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group col-md-8 pr-1">
+                            <label for="totalPrice">Total Price</label>
+                            <input type="number" class="form-control" placeholder="Total price" id="totalPrice"
+                              name="totalPrice" readonly>
+                          </div>
+                        </div>
+                        <div class="form-group col-md-4 pr-1">
+                          <button type="button" class="btn btn-primary" id="calculateButton" onclick="findTotal()">Find
+                            Total
+                            Price</button>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group col-md-8 pr-1">
+                            <label for="offerPercentage">Offer Percentage (%)</label>
+                            <input type="number" class="form-control" name="offerPercentage" value="0" min="0" max="80"
+                              id="offerPercentage">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12 pr-1">
+                          <div class="form-group col-md-8 ">
+                            <label for="offerPrice">After Offer</label>
+                            <input type="number" class="form-control" name="offerPrice" id="offerPrice" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-4 ">
+                          <button type="button" class="btn btn-primary" id="calculateOffer" onclick="findOfferPrice()">
+                            Total
+                            Price(after offer)</button>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <button type="submit" class="btn btn-fill-out btn-block hover-up btn-success">Add
+                              Product</button>
+                            <a href="/admin/viewProducts">Cancel</a>
+                          </div>
+                        </div>
+                      </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  </div>
-  <style>
-    .card {
-      margin-top: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    </div>
+    <style>
+      .card {
+        margin-top: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-    }
-    .error-message {
-      color: red;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 14px;
-      font-weight: bold;
-
-    }
-
-    .successMessage {
-      color: rgb(23, 193, 29)
-    }
-  </style>
-  <script>
-
-    //image preview
-    document.getElementById('imageInput').addEventListener('change', function (event) {
-      var files = event.target.files;
-      var imagePreview = document.getElementById('imagePreview');
-
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        var reader = new FileReader();
-
-        reader.onload = function (e) {
-          var img = document.createElement('img');
-          img.src = e.target.result;
-          img.width = 200; // Adjust as needed
-          img.height = 200; // Adjust as needed
-          img.style.marginBottom = '5px'; // Adjust as needed
-
-          var container = document.createElement('div');
-          container.classList.add('me-3', 'mb-3');
-          container.appendChild(img);
-
-          // Create delete button
-          var deleteButton = document.createElement('button');
-          deleteButton.textContent = 'Delete';
-          deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
-          deleteButton.addEventListener('click', function () {
-            // Remove the parent container when delete button is clicked
-            container.remove();
-          });
-          container.appendChild(deleteButton);
-
-          // Append each image to the imagePreview container
-          imagePreview.appendChild(container);
-        };
-
-        reader.readAsDataURL(file);
       }
-    });
 
-    //to validate the minimum price and minimum quantity
-    document.addEventListener('DOMContentLoaded', function () {
-      const addProductForm = document.getElementById('addProductForm');
-      const totalQuantity = document.getElementById('totalQuantity');
-      const priceInput = document.getElementById('pricePer100g')
-      const priceError = document.getElementById('priceError');
-      const quantityError = document.getElementById('quantityError');
+      .error-message {
+        color: red;
+      }
 
+      .error-message {
+        color: red;
+        font-size: 14px;
+        font-weight: bold;
 
-      function minimumquantity(totalQuantity) {
-        const quantity = parseFloat(document.getElementById('totalQuantity').value);
-        if (quantity < 0) {
-          return false;
+      }
+
+      .successMessage {
+        color: rgb(23, 193, 29)
+      }
+
+      /* styles.css */
+      #cropModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #cropModal>div {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      #cropModal img {
+        max-width: 100%;
+        max-height: 80vh;
+      }
+    </style>
+    <!-- Cropper.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+
+      //image preview
+      document.getElementById('imageInput').addEventListener('change', function (event) {
+        var files = event.target.files;
+        var imagePreview = document.getElementById('imagePreview');
+
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
+            img.width = 200; // Adjust as needed
+            img.height = 200; // Adjust as needed
+            img.style.marginBottom = '5px'; // Adjust as needed
+
+            var container = document.createElement('div');
+            container.classList.add('me-3', 'mb-3');
+            container.appendChild(img);
+
+            // Create delete button
+            var deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+            deleteButton.addEventListener('click', function () {
+              // Remove the parent container when delete button is clicked
+              container.remove();
+            });
+            container.appendChild(deleteButton);
+
+            // Append each image to the imagePreview container
+            imagePreview.appendChild(container);
+          };
+
+          reader.readAsDataURL(file);
         }
-        return true;
-      }
+      });
 
-      function priceminimum(pricePer100g) {
-        const price = parseFloat(document.getElementById('pricePer100g').value);
-        if (price < 0) {
-          return false;
-        }
-        return true;
-      }
+      // // scripts.js
+      // document.addEventListener('DOMContentLoaded', function () {
+      //   const imageInput = document.getElementById('imageInput');
+      //   const imagePreview = document.getElementById('imagePreview');
+      //   const cropModal = document.getElementById('cropModal');
+      //   const cropImage = document.getElementById('cropImage');
+      //   const cropButton = document.getElementById('cropButton');
+      //   let cropper;
 
+      //   imageInput.addEventListener('change', function (event) {
+      //     const files = event.target.files;
+      //     if (files && files.length > 0) {
+      //       const file = files[0];
+      //       const reader = new FileReader();
+      //       reader.onload = function (e) {
+      //         cropImage.src = e.target.result;
+      //         cropModal.style.display = 'flex';
 
-      addProductForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        const isValidQuantity = minimumquantity(totalQuantity.value);
-        const isValidPrice = priceminimum(pricePer100g.value)
-        if (!isValidQuantity) {
-          quantityError.textContent = 'Quantity should be greater than 0';
-          return;
-        }
-        if (!isValidPrice) {
-          quantityError.textContent = 'Price should be greater than 0';
-          return;
-        }
-      })
+      //         // Initialize Cropper.js
+      //         cropper = new Cropper(cropImage, {
+      //           aspectRatio: 1,
+      //           viewMode: 1,
+      //         });
+      //       };
+      //       reader.readAsDataURL(file);
+      //     }
+      //   });
 
-    })
+      //   cropButton.addEventListener('click', function () {
+      //     if (cropper) {
+      //       const canvas = cropper.getCroppedCanvas();
+      //       cropModal.style.display = 'none';
+      //       cropper.destroy();
+      //       cropper = null;
 
+      //       const img = document.createElement('img');
+      //       img.src = canvas.toDataURL();
+      //       img.width = 200; // Adjust as needed
+      //       img.height = 200; // Adjust as needed
+      //       img.style.marginBottom = '5px'; // Adjust as needed
 
-    //to find the total price of quantity 
+      //       const container = document.createElement('div');
+      //       container.classList.add('me-3', 'mb-3');
+      //       container.appendChild(img);
 
-    function findTotal() {
-      let pricePer100g = parseFloat(document.getElementById('pricePer100g').value);//20rupee
-      let totalQuantityinKg = parseFloat(document.getElementById('totalQuantity').value); //2000kg
-      //1g= 20/100
-      //1kg= 1000g
-      //2000kg= 2000* 1000 gi
+      //       // Create delete button
+      //       const deleteButton = document.createElement('button');
+      //       deleteButton.textContent = 'Delete';
+      //       deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+      //       deleteButton.addEventListener('click', function () {
+      //         // Remove the parent container when delete button is clicked
+      //         container.remove();
+      //       });
+      //       container.appendChild(deleteButton);
 
-      // Check if inputs are valid numbers
-      if (isNaN(pricePer100g) || isNaN(totalQuantityinKg)) {
-        console.error("Invalid input values");
-        return;
-      }
+      //       // Append each image to the imagePreview container
+      //       imagePreview.appendChild(container);
+      //     }
+      //   });
 
-      let quantityIngram = totalQuantityinKg * 1000;
-      let pricePerGram = pricePer100g / 100
-      let total = quantityIngram * pricePerGram;
-      if (isNaN(total)) {
-        console.error("Calculation error: totalPrice is not a number");
-        return;
-      }
-
-      // Update the value of totalPrice input field
-      //conts num='123'
-      //const result= num.toFixed(2)
-      //const result= Number(num).toFixed
-      document.getElementById('totalPrice').value = Number(total).toFixed(2);
-
-    }
-    // Add event listener to the button
-    document.getElementById('calculateButton').addEventListener('click', findTotal);
-
-    //==========================================================================================
-
-    //find offer price
-    function findOfferPrice() {
-      let totalPrice = parseFloat(document.getElementById('totalPrice').value)
-      let offerPercentage = parseFloat(document.getElementById('offerPercentage').value)
-
-      let result = totalPrice * offerPercentage / 100
-
-      let afterDiscount = totalPrice - result;
-      document.getElementById('offerPrice').value = Number(afterDiscount).toFixed(2);
-
-    }
-
-    document.getElementById('calculateOffer').addEventListener('click', findOfferPrice);
-
-    //==========================================================================================
+      //   // Hide the modal if clicked outside the crop area
+      //   window.addEventListener('click', function (event) {
+      //     if (event.target === cropModal) {
+      //       cropModal.style.display = 'none';
+      //       if (cropper) {
+      //         cropper.destroy();
+      //         cropper = null;
+      //       }
+      //     }
+      //   });
+      // });
 
 
+      //to validate the minimum price and minimum quantity
+      document.addEventListener('DOMContentLoaded', function () {
+        const addProductForm = document.getElementById('addProductForm');
+        const totalQuantity = document.getElementById('totalQuantity');
+        const priceInput = document.getElementById('pricePer100g')
+        const priceError = document.getElementById('priceError');
+        const quantityError = document.getElementById('quantityError');
 
 
-    //validate product name
-    document.addEventListener('DOMContentLoaded', function () {
-      const addProductForm = document.getElementById('addProductForm');
-      const productName = document.getElementById('productName');
-      const nameError = document.getElementById('nameError');
-
-    
-      // Frontend validation function
-      function validate(productName) {
-        const regexPattern = /^[a-zA-Z\s]{3,50}$/;
-        return regexPattern.test(productName.trim());
-      }
-
-
-      addProductForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        const isValid = validate(productName.value);
-        if (!isValid) {
-          nameError.textContent = 'Product name must contain at least minimun letter.';
-          console.log('===================184')
-          return;
-        }
-        const formData = new FormData(this);
-        try {
-          console.log('===================189')
-          const response = await fetch("/admin/addProducts", {
-            method: 'POST',
-            body: formData
-          });
-
-          console.log('===================195')
-          if (!response.ok) {
-            throw new Error('Failed to add product');
+        function minimumquantity(totalQuantity) {
+          const quantity = parseFloat(document.getElementById('totalQuantity').value);
+          if (quantity < 0) {
+            return false;
           }
-          const data = await response.json();
-          console.log('===================200')
-          // Handle successful response
-          nameError.textContent = '';
-          const successMessage = document.getElementById('successMessage');
-          successMessage.style.display = 'block';
-          addProductForm.reset();
-
-
-        } catch (error) {
-          console.error('Error:', error);
-          // Handle errors in fetching or parsing response
-          nameError.textContent = 'Error occurred while processing the request.';
+          return true;
         }
+
+        function priceminimum(pricePer100g) {
+          const price = parseFloat(document.getElementById('pricePer100g').value);
+          if (price < 0) {
+            return false;
+          }
+          return true;
+        }
+
+
+        addProductForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          const isValidQuantity = minimumquantity(totalQuantity.value);
+          const isValidPrice = priceminimum(pricePer100g.value)
+          if (!isValidQuantity) {
+            quantityError.textContent = 'Quantity should be greater than 0';
+            return;
+          }
+          if (!isValidPrice) {
+            quantityError.textContent = 'Price should be greater than 0';
+            return;
+          }
+        })
+
       })
-    })
+
+
+      //to find the total price of quantity 
+
+      function findTotal() {
+        let pricePer100g = parseFloat(document.getElementById('pricePer100g').value);//20rupee
+        let totalQuantityinKg = parseFloat(document.getElementById('totalQuantity').value); //2000kg
+        //1g= 20/100
+        //1kg= 1000g
+        //2000kg= 2000* 1000 gi
+
+        // Check if inputs are valid numbers
+        if (isNaN(pricePer100g) || isNaN(totalQuantityinKg)) {
+          console.error("Invalid input values");
+          return;
+        }
+
+        let quantityIngram = totalQuantityinKg * 1000;
+        let pricePerGram = pricePer100g / 100
+        let total = quantityIngram * pricePerGram;
+        if (isNaN(total)) {
+          console.error("Calculation error: totalPrice is not a number");
+          return;
+        }
+
+        // Update the value of totalPrice input field
+        //conts num='123'
+        //const result= num.toFixed(2)
+        //const result= Number(num).toFixed
+        document.getElementById('totalPrice').value = Number(total).toFixed(2);
+
+      }
+      // Add event listener to the button
+      document.getElementById('calculateButton').addEventListener('click', findTotal);
+
+      //==========================================================================================
+
+      //find offer price
+      function findOfferPrice() {
+        let totalPrice = parseFloat(document.getElementById('totalPrice').value)
+        let offerPercentage = parseFloat(document.getElementById('offerPercentage').value)
+
+        let result = totalPrice * offerPercentage / 100
+
+        let afterDiscount = totalPrice - result;
+        document.getElementById('offerPrice').value = Number(afterDiscount).toFixed(2);
+
+      }
+
+      document.getElementById('calculateOffer').addEventListener('click', findOfferPrice);
+
+      //==========================================================================================
+
+
+
+
+      //validate product name
+      document.addEventListener('DOMContentLoaded', function () {
+        const addProductForm = document.getElementById('addProductForm');
+        const productName = document.getElementById('productName');
+        const nameError = document.getElementById('nameError');
+
+
+        // Frontend validation function
+        function validate(productName) {
+          const regexPattern = /^[a-zA-Z\s]{3,50}$/;
+          return regexPattern.test(productName.trim());
+        }
+
+
+        addProductForm.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          const isValid = validate(productName.value);
+          if (!isValid) {
+            nameError.textContent = 'Product name must contain at least minimun letter.';
+            console.log('===================184')
+            return;
+          }
+          const formData = new FormData(this);
+          try {
+            console.log('===================189')
+            const response = await fetch("/admin/addProducts", {
+              method: 'POST',
+              body: formData
+            });
+
+            console.log('===================195')
+            if (!response.ok) {
+              throw new Error('Failed to add product');
+            }
+            const data = await response.json();
+            console.log('===================200')
+            // Handle successful response
+            nameError.textContent = '';
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            addProductForm.reset();
+
+
+          } catch (error) {
+            console.error('Error:', error);
+            // Handle errors in fetching or parsing response
+            nameError.textContent = 'Error occurred while processing the request.';
+          }
+        })
+      })
 
 
 
 
 
-  </script>
+    </script>
 
 
   </body>

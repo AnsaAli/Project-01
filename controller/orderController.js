@@ -9,6 +9,7 @@ const shortid = require('shortid');
 const { ObjectId } = require('mongodb');
 const Order = require('../models/orderModel');
 const OrderItem = require('../models/orderItemModel');
+const PDFDocument = require('pdfkit');
 
 const Razorpay = require('razorpay');
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
@@ -16,7 +17,6 @@ const razorpayinstance = new Razorpay({
     key_id: RAZORPAY_ID_KEY,
     key_secret: RAZORPAY_SECRET_KEY
 });
-
 
 const loadUserOrder = async (req, res) => {
     try {
@@ -43,6 +43,7 @@ const loadUserOrder = async (req, res) => {
         console.log('Error while loading user order page', error.message)
     }
 }
+
 const cancelOrder = async (req, res) => {
     try {
         console.log('=======================================cancelorder')
@@ -57,7 +58,7 @@ const cancelOrder = async (req, res) => {
 
         order.orderStatus = 'Cancelled';
         await order.save();
-        
+
         //add product back to the database.
         await Promise.all(order.orderItems.map(async (element) => {
             try {
@@ -126,15 +127,19 @@ const placeOrder = async (req, res) => {
 
         let orderStatus;
         if (payment_option === 'razorpay') {
-            orderStatus = "pending"
+            orderStatus = "Pending"
         } else if (payment_option === 'wallet') {
-            orderStatus = "pending"
+            orderStatus = "Pending"
         } else {
-            orderStatus = "placed"
+            if (totalAmount >= 1000) {
+                return res.json({ errorMessage: 'Sorry, you cannot choose COD on and above 1000rs!' });
+            }
+            orderStatus = "Placed"
         }
 
         let orderId = shortid.generate();
-        console.log('orderId: ', orderId)
+        let customerOrderId = orderId;
+        console.log('orderId in placeOrder: ', orderId)
         const order = new Order({
             order_id: orderId,
             user_id: userId,
@@ -240,6 +245,7 @@ const placeOrder = async (req, res) => {
             res.json({ success: true });
 
         } else if (payment_option === 'razorpay') {
+
             const orderId = saveorder._id;
             console.log('orderId in razor pay===================200', orderId);
             const totalAmount = saveorder.finalPrice;
@@ -251,20 +257,16 @@ const placeOrder = async (req, res) => {
                 receipt: "" + orderId
             }
 
-            // update payment status to paid
-            order.paymentStatus = 'paid Online';
-            order.orderStatus = 'Confirmed'
             await order.save()
             await CartItem.deleteMany({ userId: userId })
             console.log('CartItem deleted================================91')
             await Cart.deleteOne({ userId: userId });
             console.log('Cart deleted================================91')
 
-            console.log('options in razor pay: =======================209', options)
             razorpayinstance.orders.create(options, function (err, order) {
                 console.log('order================================211 razor', order);
-                console.log('orderId: ==========221', orderId)
-                res.json({ order });
+                console.log('customerOrderId: ==========221', customerOrderId)
+                res.json({ order, customerOrderId: customerOrderId });
             })
         } else if (payment_option === 'wallet') {
             console.log('inside wallet payment place order.')
@@ -316,12 +318,15 @@ const placeOrder = async (req, res) => {
     }
 }
 
-
-const paymentSuccess = (req, res) => {
+const paymentSuccess = async (req, res) => {
     try {
         console.log('==============================in paymentSuccess');
-        const { paymentid, signature, orderId } = req.body;
-        console.log('paymentid : ', paymentid, 'signature: ', signature, 'orderId: ', orderId);
+        console.log('==============================in paymentSuccess');
+        console.log('==============================in paymentSuccess');
+
+
+        const { paymentid, signature, orderId, customerOrderId } = req.body;
+        console.log('paymentid : ', paymentid, 'signature: ', signature, 'orderId in paymentSuccess: ', orderId, 'customerOrderId: in paymentSuccess', customerOrderId);
 
         const { createHmac } = require("node:crypto");
         //   generated_signature = hmac_sha256(order_id + "|" + paymentid, RAZORPAY_SECRET_KEY);
@@ -333,27 +338,229 @@ const paymentSuccess = (req, res) => {
 
 
         if (hash === signature) {
-            console.log('==============================in paymentSuccess 243');
-            console.log("success");
+            await Order.updateOne(
+                { order_id: customerOrderId },
+                { $set: { orderStatus: "Success", paymentStatus: "Paid By Razor Pay" } }
+            );
+
             res.status(200).json({ success: true, message: "Payment successful" });
         } else {
             console.log("error");
             res.json({ success: false, message: "Invalid payment details" });
         }
     } catch (error) {
-        console.log('paymentSuccess=========================', error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
 
+const paymentFailed = async (req, res) => {
+    try {
+        console.log('==============================in paymentFailed');
+        const { orderId, reason } = req.body;
+        console.log('orderId: ', orderId, 'reason: ', reason);
+
+        // Update order status to "Failed" in the database
+        await Order.updateOne(
+            { order_id: orderId },
+            { $set: { orderStatus: "Failed", paymentStatus: "Failed", failureReason: reason } }
+        );
+
+        res.status(200).json({ success: true, message: "Order status updated to Failed" });
+    } catch (error) {
+        console.log('Error in paymentFailed', error)
+    }
+}
+
+const retryPayment = async (req, res) => {
+    try {
+        const { orderId, finalPrice } = req.body;
+        console.log('orderId: ', orderId);
+      
+        console.log('finalPrice: ', finalPrice);
+
+        var options = {
+            amount: finalPrice * 100,
+            currency: "INR",
+            receipt: "" + orderId
+        }
+      
+        razorpayinstance.orders.create(options, function (err, order) {
+            if (err) {
+                console.error('Error creating Razorpay order:', err);
+                return res.json({ success: false, error: 'Failed to create Razorpay order' });
+            }
+         
+            console.error('order:', order);
+            res.json({ success: true, order });
+        });
+
+    } catch (error) {
+        console.log('Error in retryPayment', error)
+    }
+}
+
+const verifyPaymentRetry = async (req, res) => {
+
+    const { paymentid, razorpayorderid, signature, orderId } = req.body;
+
+    const crypto = require('crypto');
+    const hmac = crypto.createHmac('sha256', RAZORPAY_SECRET_KEY);
+    hmac.update(razorpayorderid + '|' + paymentid);
+    const generatedSignature = hmac.digest('hex');
+
+    if (generatedSignature === signature) {
+        await Order.updateOne(
+            { _id: orderId },
+            { $set: { orderStatus: "Success", paymentStatus: "Paid By Online" } }
+        );
+        res.json({ success: true });
+    } else {
+        res.json({ success: false, error: 'Invalid payment signature' });
+    }
+};
+
+const loadViewOrderDetails = async (req, res) => {
+    try {
+        const user_id = req.session.user_id;
+        const order_id = req.query.orderId;
+
+        let user_name = '';
+        let loggedIn = false;
+        if (user_id) {
+            const user = await User.findById(user_id);
+            if (user) {
+                user_name = user.name;
+                loggedIn = true;
+            }
+        }
+
+        const orderPlaced = await Order.findById(order_id)
+            .populate('shippingAddress')
+            .populate('orderItems')
+            .sort({ orderDate: -1 });
+
+        if (!orderPlaced) {
+            return res.status(404).send('Order not found');
+        }
 
 
+        // Save order details in session
+        req.session.Orderdtls = [{
+            order_id: orderPlaced.order_id,
+            user_id: orderPlaced.user_id,
+            orderDate: orderPlaced.orderDate,
+            paymentMethod: orderPlaced.paymentMethod,
+            finalPrice: orderPlaced.finalPrice,
+            orderStatus: orderPlaced.orderStatus,
+            shippingAddress: orderPlaced.shippingAddress,
+            orderItems: orderPlaced.orderItems
+        }];
+
+        res.render('orderDetails', {
+            user_id: user_id,
+            user_name: user_name,
+            orderPlaced
+        });
+
+    } catch (error) {
+        console.log('Error in loadViewOrderDetails', error)
+    }
+}
+
+const invoiceDownload = async (req, res) => {
+    try {
+        console.log('inside invoice download');
+        const { Orderdtls } = req.session;
+        console.log('Orderdtls: ', Orderdtls);
+
+        const doc = new PDFDocument({ margin: 50 });
+        const fileName = 'invoice.pdf';
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        doc.pipe(res);
+
+        // Document Title
+        doc.fontSize(20).text('Invoice', { align: 'center' });
+        doc.moveDown(2);
+
+        // Company Info
+        doc.fontSize(12).text('GoEasy Shopping', { align: 'right' });
+        doc.fontSize(12).text('SVRA', { align: 'right' });
+        doc.fontSize(12).text('Ernakulam, Kerala, 1234', { align: 'right' });
+        doc.fontSize(12).text('(000) 000-0000', { align: 'right' });
+        doc.fontSize(12).text('goeasy@example.com', { align: 'right' });
+        doc.moveDown(2);
+
+        // Customer Info
+        doc.fontSize(12).text(`Customer: ${Orderdtls[0].shippingAddress.address_customer_name}`, { align: 'left' });
+        doc.fontSize(12).text(`Address: ${Orderdtls[0].shippingAddress.apartment_name}`, { align: 'left' });
+        doc.fontSize(12).text(`${Orderdtls[0].shippingAddress.city}, ${Orderdtls[0].shippingAddress.district}`, { align: 'left' });
+        doc.fontSize(12).text(`Phone: ${Orderdtls[0].shippingAddress.mobile_num}`, { align: 'left' });
+        doc.moveDown(2);
+
+        // Add a line under the headers
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown(0.5);
+        // Add a line under the headers
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown(2);
+
+        // Iterate through the orders
+        for (const order of Orderdtls) {
+            const user = await User.findById(order.user_id).select('name');
+            const orderItems = order.orderItems;
+
+            const productDetails = orderItems.map(item => item.orderedWeight.map(pdt => {
+                let weightText = `${pdt.weight}g`;
+                if (pdt.weight >= 1000) {
+                    const kg = Math.floor(pdt.weight / 1000);
+                    const grams = pdt.weight % 1000;
+                    weightText = `${kg}kg${grams > 0 ? ` ${grams}g` : ''}`;
+                }
+                return `${pdt.name}: ${weightText}`;
+            }).join('\n')).join('\n');
+
+            const address = `${order.shippingAddress.address_customer_name}\n${order.shippingAddress.mobile_num}\n${order.shippingAddress.apartment_name}\n${order.shippingAddress.city}`;
+
+            // Order details
+            doc.fontSize(14).text('Order No:  ', { continued: true }).font('Helvetica-Bold').text(order.order_id);
+            doc.font('Helvetica').fontSize(12).text('Date:  ', { continued: true }).font('Helvetica-Bold').text(new Date(order.orderDate).toLocaleDateString());
+            doc.moveDown(0.5);
+
+            // Product Details
+            doc.font('Helvetica').fontSize(14).text('Product Details:  ').font('Helvetica-Bold');
+            doc.font('Helvetica').fontSize(12).text(productDetails);
+            doc.moveDown(2);
+
+            // Amount
+            doc.font('Helvetica').fontSize(12).text('Amount:', { continued: true }).font('Helvetica-Bold').text(`₹${order.finalPrice}Rs`);
+            doc.moveDown(2);
+
+            // Status
+            doc.font('Helvetica').fontSize(12).text('Order Status:  ', { continued: true }).font('Helvetica-Bold').text(order.orderStatus);
+            doc.moveDown(2);
+
+
+        }
+
+        doc.end();
+
+    } catch (error) {
+        console.log('Error in invoiceDownload:', error);
+    }
+};
+//////////////////////////////////////////////////////////////////////////////////
 module.exports = {
     loadUserOrder,
     loadConfirmOrder,
     placeOrder,
     cancelOrder,
-    paymentSuccess
+    paymentSuccess,
+    loadViewOrderDetails,
+    invoiceDownload,
+    paymentFailed,
+    retryPayment,
+    verifyPaymentRetry
 
 
 }

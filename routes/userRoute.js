@@ -89,18 +89,22 @@ user_route.get('/order',authMiddleware.is_login, orderController.loadUserOrder)
 user_route.get('/successOrder',authMiddleware.is_login,orderController.loadConfirmOrder)
 user_route.post('/placeOrder',authMiddleware.is_login, orderController.placeOrder)
 user_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, orderController.cancelOrder);
+user_route.get('/viewOrderDetails',authMiddleware.is_login, orderController.loadViewOrderDetails);
+user_route.get('/invoiceDownload',authMiddleware.is_login, orderController.invoiceDownload);
+
 
 user_route.get('/wallet',authMiddleware.is_login, walletController.loadwallet);
 user_route.post('/addMoneyWallet',authMiddleware.is_login, walletController.addMoneyWallet);
 user_route.post("/verifyPayment",authMiddleware.is_login, walletController.verifyPayment);
 user_route.post("/updateWalletField",authMiddleware.is_login, walletController.updateWalletField);
-// user_route.post("/useWallet",authMiddleware.is_login, walletController.useWalletAmount);
-
-
 
 user_route.post('/applyCoupon',authMiddleware.is_login,userAuthenticationController.applyCoupon);
 user_route.post('/removeCoupon',authMiddleware.is_login,userAuthenticationController.removeCoupon)
 user_route.post('/paymentSuccess',authMiddleware.is_login, orderController.paymentSuccess);
+user_route.post('/paymentFailed',authMiddleware.is_login, orderController.paymentFailed);
+user_route.post('/retryPayment',authMiddleware.is_login, orderController.retryPayment);
+user_route.post('/verifyPaymentRetry',authMiddleware.is_login, orderController.verifyPaymentRetry);
+
 
 user_route.get('/checkOut',authMiddleware.is_login, checkOutController.loadcheckOut);
 

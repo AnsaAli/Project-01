@@ -3,11 +3,12 @@ const couponModel = require('../models/couponModel');
 const shortid = require('shortid');
 const uniqueId = shortid.generate();
 const UserAddress = require('../models/addressModel');
-const adminModel = require('../models/userAuthenticationModel')
-const { Category, Product } = require('../models/categoryModel')
-const bcrypt = require("bcrypt")
-const sharp = require('sharp')
-const Order = require('../models/orderModel')
+const adminModel = require('../models/userAuthenticationModel');
+const { Category, Product } = require('../models/categoryModel');
+const bcrypt = require("bcrypt");
+const sharp = require('sharp');
+const Order = require('../models/orderModel');
+const OrderItems = require('../models/orderItemModel');
 const User = require('../models/userAuthenticationModel');
 const cloudinary = require('cloudinary').v2;
 
@@ -89,6 +90,7 @@ const adminLogout = async (req, res) => {
 }
 
 ////////////////////////////admin pages\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
 const loadDashboard = async (req, res) => {
     try {
         console.log('inside load dashboard page===========================??????????')
@@ -160,7 +162,7 @@ const loadDashboard = async (req, res) => {
                 sales.push({ _id: i.toString().padStart(2, '0'), total: 0 });
             }
         }
-        
+
         let salesData = sales.map(sale => sale.total);
         console.log('salesData: ', salesData);
 
@@ -285,6 +287,108 @@ const loadCategory = async (req, res) => {
     }
 }
 
+const getTopCategory = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 3;
+        const skip = (page - 1) * pageSize;
+
+        // Total count of categories
+        const totalCountQuery = await Order.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderItemDetails'
+                }
+            },
+            { $unwind: "$orderItemDetails" },
+            { $unwind: "$orderItemDetails.orderedWeight" }, // Unwind the orderedWeight array
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderItemDetails.product_id',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            { $unwind: "$product" },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'product.category',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            { $unwind: "$category" },
+            {
+                $group: {
+                    _id: '$category._id'
+                }
+            },
+            { $count: "count" }
+        ]);
+        const totalCount = totalCountQuery.length > 0 ? totalCountQuery[0].count : 0;
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        const topCategories = await Order.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderItemDetails'
+                }
+            },
+            { $unwind: "$orderItemDetails" },
+            { $unwind: "$orderItemDetails.orderedWeight" }, // Unwind the orderedWeight array
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderItemDetails.product_id',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            { $unwind: "$product" },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'product.category',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            { $unwind: "$category" },
+            {
+                $group: {
+                    _id: '$category._id',
+                    name: { $first: '$category.name' },
+                    totalQuantityOrdered: { $sum: "$orderItemDetails.orderedWeight.weight" } // Sum weights
+                }
+            },
+            { $sort: { totalQuantityOrdered: -1 } },
+            { $skip: skip },
+            { $limit: pageSize }
+        ]);
+console.log('topCategories.totalQuantityOrdered: ',topCategories.totalQuantityOrdered)
+        res.render('topCategories', {
+            categories: topCategories,
+            currentPage: page,
+            pageSize: pageSize,
+            totalPages: totalPages
+        });
+    } catch (error) {
+        console.log('Error in getTopCategory', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+
 const loadAddCategory = async (req, res) => {
     try {
         res.render('addCategory')
@@ -388,6 +492,91 @@ const cropImage = async (imagePath, width, height) => {
         console.log('Error while cropping the images', error.message)
     }
 }
+
+const getTopOrderedProducts = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 3;
+        const skip = (page - 1) * pageSize;
+
+        // Total count of products
+        const totalCountQuery = await Order.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderItemDetails'
+                }
+            },
+            { $unwind: "$orderItemDetails" },
+            { $group: { _id: "$orderItemDetails.product_id" } },
+            { $count: "count" }
+        ]);
+        const totalCount = totalCountQuery.length > 0 ? totalCountQuery[0].count : 0;
+
+        // Top products aggregation pipeline
+        const topProducts = await Order.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderItemDetails'
+                }
+            },
+            { $unwind: "$orderItemDetails" },
+            { $unwind: "$orderItemDetails.orderedWeight" },
+            {
+                $group: {
+                    _id: "$orderItemDetails.product_id",
+                    count: { $sum: "$orderItemDetails.orderedWeight.weight" }
+                }
+            },
+            { $sort: { count: -1 } },
+            {
+                $skip: skip
+            },
+            {
+                $limit: pageSize
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'productDetails.category',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            { $unwind: "$categoryDetails" }
+        ]);
+
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        res.render('topProducts', {
+            products: topProducts,
+            currentPage: page,
+            pageSize: pageSize,
+            totalPages: totalPages
+        });
+
+    } catch (error) {
+        console.log('Error in getTopOrderedProducts', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 
 const loadAddProducts = async (req, res) => {
     try {
@@ -992,12 +1181,14 @@ module.exports = {
     loadUserProfile,
     userBlockUnblock,
     loadCategory,
+    getTopCategory,
     loadAddCategory,
     addCategory,
     loadEditCategory,
     updateCategory,
     softDeleteCategory,
     loadAddProducts,
+    getTopOrderedProducts,
     addProducts,
     loadViewProducts,
     loadEditProduct,

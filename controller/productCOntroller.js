@@ -155,18 +155,9 @@ const loadViewProduct = async (req, res) => {
     }
 }
 
-const rating = async (req, res) => {
-    try {
-        const productId = req.params.id;
-    } catch (error) {
-        console.log('Error while rating', error.message)
-    }
-}
-
 
 module.exports = {
     loadViewProduct,
     loadHome,
-    rating,
     loadAllProducts
 }

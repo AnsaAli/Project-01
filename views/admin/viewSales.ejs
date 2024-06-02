@@ -38,9 +38,42 @@
                               <button class="sales-report-button" type="submit" style="margin: 5px; background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">View</button>
                             </form>
                           </div>
+
+                           <!-- Report selection form -->
+                        <!-- <div class="sales-report-form">
+                            <form id="reportForm" action="" method="post">
+                                <label for="reportType" style="color: black; font-weight: bold; margin: 5px;">Select Report Type</label>
+                                <select id="reportType" name="reportType" style="background-color: rgb(255, 255, 255); color: black; margin: 5px;">
+                                    <option value="daily">Daily sales</option>
+                                    <option value="monthly">Monthly sales</option>
+                                    <option value="yearly">Yearly sales</option>
+                                </select>
+
+                             
+                                <div id="dailyInput" class="report-input">
+                                    <label for="daily" style="color: black; font-weight: bold; margin: 5px;">Select Date</label>
+                                    <input type="date" name="daily" id="daily">
+                                </div>
+
+                              
+                                <div id="monthlyInput" class="report-input" style="display: none;">
+                                    <label for="month" style="color: black; font-weight: bold; margin: 5px;">Select Month</label>
+                                    <input type="month" name="month" id="month">
+                                </div>
+
+                              
+                                <div id="yearlyInput" class="report-input" style="display: none;">
+                                    <label for="yearly" style="color: black; font-weight: bold; margin: 5px;">Select Year</label>
+                                    <input type="number" name="yearly" id="yearly" min="2022" max="2024" value="2023">
+                                </div>
+
+                                <button class="sales-report-button" type="submit" style="margin: 5px; background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">View</button>
+                            </form>
+                        </div> -->
                 
                           <form action="/admin/sales/download" method="get">
-                            <button style="background-color: rgb(15, 191, 182);border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download</button>
+                            <button type="submit" name="format" value="excel" style="background-color: rgb(15, 191, 182);border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download Excel</button>
+                            <button type="submit" name="format" value="pdf" style="background-color: rgb(15, 191, 182);border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download PDF</button>
                           </form>
                     </div>
                 </div>
@@ -192,5 +225,3 @@
         });
     </script>
 </body>
-
-    

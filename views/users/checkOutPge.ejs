@@ -130,7 +130,8 @@
                                                     <% }); %>
                                                         <tr>
                                                             <th>SubTotal</th>
-                                                            <td class="product-subtotal" colspan="2">₹ <%= cart.totalPrice.toFixed(2) %>
+                                                            <td class="product-subtotal" colspan="2">₹ <%=
+                                                                    cart.totalPrice.toFixed(2) %>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -266,46 +267,6 @@
                 return true;
             }
 
-            // $(document).ready(function () {
-            //     $('#useWalletButton').click(function () {
-            //         console.log('in useWalletButton');
-            //         var walletAmount = $(this).data('wallet');
-            //         var totalAmount = parseFloat($("#total").text().replace(/[^\d.-]/g, ''));
-            //         console.log('in useWalletButton walletAmount: ',walletAmount);
-            //         console.log('in useWalletButton totalAmount: ',totalAmount);
-
-            //         useWallet(totalAmount, walletAmount);
-            //     });
-
-            //     function useWallet(totalAmount, walletAmount) {
-            //         $.ajax({
-            //             url: "/useWallet",
-            //             method: "POST",
-            //             data: {
-            //                 total: totalAmount,
-            //                 wallet: walletAmount,
-            //             },
-            //             success: (response) => {
-            //                 if (response.status) {
-            //                     if (response.sum === 0) {
-            //                         alert("You have paid with wallet money!");
-            //                         location.href = '/successOrder';
-            //                     } else if (response.sum > 0) {
-            //                         alert("Not enough money in the wallet!");
-            //                     }
-            //                 } else {
-            //                     alert("Failed to apply wallet amount. Please try again.");
-            //                 }
-            //             },
-            //             error: (xhr, status, error) => {
-            //                 console.error('Error applying wallet amount:', error);
-            //                 alert("An error occurred while applying the wallet amount. Please try again.");
-            //             }
-            //         });
-            //     }
-            // });
-
-
             $(document).ready(function () {
                 $('input[name="payment_option"]').change(function () {
                     const selectedPaymentMethod = $('input[name="payment_option"]:checked').val();
@@ -377,17 +338,23 @@
                         price: prices
                     },
                     success: (response) => {
-                        console.log('===========================333response: ',response)
-                        if (response.success === true) {
-                            console.log('===========================337 COD: ')
-                            console.log('response.success : ', response.success)
+                        console.log('===========================333response: ', response)
+                        if (response.success === true && !response.errorMessage) {
+
                             //cod 
                             window.location.href = '/successOrder';
 
+                        } else if (response.errorMessage) {
+
+                            alert(response.errorMessage);
+
                         } else if (payment === 'wallet' && !response.error) {
+
                             console.log('Paying using wallet');
                             window.location.href = '/successOrder';
-                        } else if (response.error ) {
+
+                        } else if (response.error) {
+
                             console.log('error message wallet');
                             alert(response.error);
 
@@ -396,6 +363,8 @@
                             console.log("razorpay selected");
                             const parseAmount = parseAmount1;
                             let orderId = response.order.id;
+                            let customerOrderId = response.customerOrderId;
+                            console.log('customOrderId: ', customerOrderId)
                             var options = {
                                 "key": "rzp_test_UwQd6G9xYlg4El",
                                 "amount": 100000,
@@ -423,11 +392,33 @@
                                     "color": "#3399cc"
                                 }
                             };
-                            var rzp = new Razorpay(options)
+                            var rzp = new Razorpay(options);
+                            console.log('rzp:================', rzp);
+
                             rzp.open();
+
                             rzp.on("payment.failed", function (response) {
-                                console.log('Payment failed:', response.error.description);
-                                // handleFailure(response.error.description, address, payment);
+                                alert('Payment Failed, please try again in the order page')
+                                console.log('Payment failed:', response);
+                                fetch('/paymentFailed', {
+                                                method: 'post',
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: JSON.stringify({
+                                                    orderId: customerOrderId,
+                                                    reason: response.error.description
+                                                })
+                                            }).then(response => response.json())
+                                                .then((data) => {
+                                                    if (data.success) {
+                                                        console.log('Order status updated to Failed');
+                                                        window.location.href = '/order'
+                                                    } else {
+                                                        console.error('Failed to update order status:', data.error);
+                                                    }
+                                                })
+
                             });
 
                             function verify(response, orderId) {
@@ -442,7 +433,8 @@
                                         paymentid: response.razorpay_payment_id,
                                         razorpayorderid: response.razorpay_order_id,
                                         signature: response.razorpay_signature,
-                                        orderId
+                                        orderId,
+                                        customerOrderId
                                     })
                                 })
                                     .then(response => response.json())
@@ -451,9 +443,7 @@
                                             window.location.href = '/successOrder'
 
                                         } else {
-
                                             console.error('Payment failed:', data.error);
-
                                             alert('Payment failed. Please try again later.');
                                         }
                                     })

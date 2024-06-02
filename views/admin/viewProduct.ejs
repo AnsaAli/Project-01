@@ -14,88 +14,18 @@
 
 
   <body>
-
-    <!-- <div class="row pdt-view-card  mt-5 mb-5">
-      <% products.forEach(product=> { %>
-        <%= product.image %>
-          <div class="col-md-3 col-sm-4 mb-3 ml-5">
-            <div class="card">
-              <div class="card-img-top" style="height: 250px; overflow: hidden;">
-                <% product.images.forEach(imageUrl=> { %>
-                  <img src="<%= imageUrl.url %>" alt="Product Image" class="img-fluid mx-auto d-block"
-                    alt="Product Image" style="width:100%">
-                  <% }) %>
-
-              </div>
-              <div class="card-body" style="height: 350px; padding: 2px;">
-                <h5 class="card-title">
-                  <%= product.productName %>
-                </h5>
-                <p class="card-text">Category: <%= product.category.name %>
-                </p>
-                <p class="card-text">Quantity: <%= product.totalQuantity %>kg
-                </p>
-                <p class="card-text">Total: ₹<%= product.totalPrice %>
-                </p>
-                <p class="card-text">Offer Percentage: <%= product.offerPercentage %>%
-                </p>
-                <p class="card-text">Offer Price: ₹<%= product.offerPrice %>
-                </p>
-                <p class="card-text">Available Weights:</p>
-                <select id="weightOptions" class="card-text">
-                  <% product.weightOptions.forEach(option=> { %>
-                    <option value="<%= option.weight %>">
-                      <%= option.weight %>g - ₹<%= option.weightPrice %> (<%= option.priceAfterDiscount %> after
-                            discount)
-                    </option>
-                    <% }) %>
-                </select>
-
-                </p>
-         
-
-              </div>
-              <div class="card-footer bott">
-                <form action="/admin/editProduct" method="GET" class="mb-3">
-                  <input type="hidden" name="_id" value="<%= product._id %>">
-                  <button type="submit" class="btn btn-primary">Edit</button>
-                </form>
-                <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
-                  <input type="hidden" name="_id" value="<%= product._id %>">
-                  <button type="submit" class="btn btn-primary">Delete</button>
-                </form>
-              </div>
-            </div>
-          </div>
-          <% }); %>
-    </div> -->
-
     <div class="content">
       <div class="row">
         <div class="col-md-12 ">
           <div class="card">
+
             <div class="card-header">
-              
-                <!-- sorting -->
-                <div class="row ">
-
-                  <!-- <div class="col-md-5">
-                    <label for="sortBy"></label>
-                    <select id="sortBy" name="sortby" class="form-control sort">
-                      <option>Sort by:</option>
-                      <option value="totalQuantity">Quantity</option>
-                      <option value="offerPercentage">Offer Percentage</option>
-                    </select>
-                  </div> -->
-                  <!-- <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary mt-2 btn-block">Sort</button>
-                  </div> -->
-                </div>
-              </form>
-
-
+              <div class="row container m-5 ">
+                <a href="/admin/findTop">Top Selling Products</a>
+              </div>
             </div>
-            <div class="card-body">
+
+            <div class="card-body m-5">
               <div class="table-responsive">
                 <table class="table" id="productTable">
                   <thead class=" text-primary" style="font-size: small;">
@@ -129,7 +59,7 @@
                           </td>
                           <td>
                             <% if (product.totalQuantity <=0) { %>
-                              <p style="color: red;">Not in stock. 
+                              <p style="color: red;">Not in stock.
                               </p>
                               <!-- Quantity: <%= product.totalQuantity %> -->
                               <% } else { %>
@@ -166,16 +96,16 @@
     </div>
 
     <style>
-    
-.card{
-  margin-top: 100px;
-}
-    th{
-      font-size: 10px;
-      font-weight: 0px;
-    }
+      .card {
+        margin-top: 100px;
+      }
 
-    
+      th {
+        font-size: 10px;
+        font-weight: 0px;
+      }
+
+
       th,
       td {
         margin-top: 30px;
@@ -192,7 +122,7 @@
 
       .card button {
         margin-left: 0;
-       padding: 20px;
+        padding: 20px;
         color: rgb(255, 39, 39);
         background-color: #ffffff;
         text-align: center;
@@ -215,7 +145,7 @@
 
       $(document).ready(function () {
         $('#productTable').DataTable({
-          "bInfo": false  
+          "bInfo": false
         });
       });
 

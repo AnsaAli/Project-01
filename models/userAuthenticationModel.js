@@ -73,7 +73,11 @@
         address: [{
             type:Schema.Types.ObjectId,
             ref:'UserAddress'
-        }]
+        }],
+        referralCode: {
+           type: String,
+           unique: true
+        }
     },{timestamps: true})
 
     module.exports = mongoose.model('UserAuth',userAuthenticationSchema)

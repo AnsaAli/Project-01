@@ -2,7 +2,7 @@ const Order = require('../models/orderModel');
 const excel = require('exceljs');
 const UserAuth = require('../models/userAuthenticationModel');
 const moment = require("moment-timezone");
-
+const PDFDocument = require('pdfkit');
 
 const loadSales = async (req, res) => {
   try {
@@ -103,46 +103,80 @@ const downloadSalesReport = async (req, res) => {
   try {
     const userId = req.session.user_id;
     const { Orderdtls } = req.session;
-    console.log('Orderdtls: ', Orderdtls)
+    console.log('Orderdtls: ', Orderdtls);
 
-    // Create a new Excel workbook and worksheet
-    const workbook = new excel.Workbook();
-    const worksheet = workbook.addWorksheet('Sales Report');
+    // Generate Excel report
+    if (req.query.format === 'excel') {
+      const workbook = new excel.Workbook();
+      const worksheet = workbook.addWorksheet('Sales Report');
 
-    // Define the columns in the worksheet
-    worksheet.columns = [
-      { header: 'User', key: 'user', width: 20 },
-      { header: 'Date', key: 'orderDate', width: 20 },
-      { header: 'Payment Method', key: 'paymentMethod', width: 20 },
-      { header: 'Total Amount', key: 'finalPrice', width: 20 },
-      { header: 'Status', key: 'orderStatus', width: 20 },
-    ];
+      worksheet.columns = [
+        { header: 'User', key: 'user', width: 20 },
+        { header: 'Date', key: 'orderDate', width: 20 },
+        { header: 'Payment Method', key: 'paymentMethod', width: 20 },
+        { header: 'Total Amount', key: 'finalPrice', width: 20 },
+        { header: 'Status', key: 'orderStatus', width: 20 },
+      ];
 
-    // Add data to the worksheet
-    const rows = await Promise.all(Orderdtls.map(async order => {
-      const user = await UserAuth.findById(order.user_id).select('name');
-      return {
-        user: user ? user.name : 'Unknown User',
-        orderDate: new Date(order.orderDate).toLocaleString(),
-        paymentMethod: order.paymentMethod,
-        finalPrice: order.finalPrice,
-        orderStatus: order.orderStatus,
-      };
-    }));
-    // Add data to the worksheet
-    worksheet.addRows(rows);
+      const rows = await Promise.all(Orderdtls.map(async order => {
+        const user = await UserAuth.findById(order.user_id).select('name');
+        return {
+          user: user ? user.name : 'Unknown User',
+          orderDate: new Date(order.orderDate).toLocaleString(),
+          paymentMethod: order.paymentMethod,
+          finalPrice: order.finalPrice,
+          orderStatus: order.orderStatus,
+        };
+      }));
 
-    // Set response headers for file download
-    const fileName = 'sales_report.xlsx';
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+      worksheet.addRows(rows);
 
-    // Stream the Excel content to the response
-    await workbook.xlsx.write(res);
-    res.end();
+      const fileName = 'sales_report.xlsx';
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+
+      await workbook.xlsx.write(res);
+      res.end();
+
+    // Generate PDF report
+    } else if (req.query.format === 'pdf') {
+      const doc = new PDFDocument();
+      const fileName = 'sales_report.pdf';
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+
+      doc.pipe(res);
+
+      doc.fontSize(16).text('Sales Report', { align: 'center' });
+      doc.moveDown();
+
+      const rows = await Promise.all(Orderdtls.map(async order => {
+        const user = await UserAuth.findById(order.user_id).select('name');
+        return {
+          user: user ? user.name : 'Unknown User',
+          orderDate: new Date(order.orderDate).toLocaleString(),
+          paymentMethod: order.paymentMethod,
+          finalPrice: order.finalPrice,
+          orderStatus: order.orderStatus,
+        };
+      }));
+
+      rows.forEach(row => {
+        doc.fontSize(12).text(`User: ${row.user}`);
+        doc.fontSize(12).text(`Date: ${row.orderDate}`);
+        doc.fontSize(12).text(`Payment Method: ${row.paymentMethod}`);
+        doc.fontSize(12).text(`Total Amount: ₹${row.finalPrice}`);
+        doc.fontSize(12).text(`Status: ${row.orderStatus}`);
+        doc.moveDown();
+      });
+
+      doc.end();
+    } else {
+      res.status(400).json({ message: 'Invalid format' });
+    }
   } catch (error) {
     console.log('Error while downloading sales report', error);
-
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 

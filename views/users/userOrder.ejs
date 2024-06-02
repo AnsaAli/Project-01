@@ -1,5 +1,9 @@
 <%- include('../layout/header.ejs') %>
 
+    <head>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
 
     <section class="pt-150 pb-150">
         <div class="container">
@@ -15,7 +19,7 @@
                                                 class="fi-rs-settings-sliders mr-10"></i>My
                                             Profile</a>
                                     </li>
-                                    
+
                                     <li class="nav-item ">
                                         <a class="nav-link  active" id="orders-tab" data-bs-toggle="tab" href="/order"
                                             role="tab" aria-controls="orders" aria-selected="false"><i
@@ -32,7 +36,7 @@
                                                 class="fi-rs-marker mr-10"></i>My
                                             Address</a>
                                     </li>
-                                    
+
                                     <li class="nav-item">
                                         <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
                                             href="/changePassword" role="tab" aria-controls="change-password"
@@ -114,11 +118,11 @@
                                                             <td>
                                                                 <% if (order.paymentMethod==='razorpay' ) { %>
                                                                     <p style="font-size: small;">Razorpay</p>
-                                                                    <% }else if(order.paymentMethod==='wallet') { %>  
+                                                                    <% }else if(order.paymentMethod==='wallet' ) { %>
                                                                         <p style="font-size: small;">Wallet</p>
                                                                         <% }else { %>
-                                                                        <p style="font-size: small;">COD</p>
-                                                                        <% } %>
+                                                                            <p style="font-size: small;">COD</p>
+                                                                            <% } %>
                                                             </td>
 
                                                             <td>
@@ -131,10 +135,26 @@
                                                             <td class="form-group">
                                                                 <button
                                                                     class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
-                                                                    data-order-id="<%= order._id %>" type="submit"
-                                                                    onclick="confirmCancel()">
-                                                                    Cancel Order
+                                                                    data-order-id="<%= order._id %>" type="button"
+                                                                    <%=order.orderStatus==='Cancelled' ? 'disabled' : ''
+                                                                    %>
+                                                                    onclick="confirmCancel(this)">
+                                                                    <%= order.orderStatus==='Cancelled'
+                                                                        ? 'Order Cancelled' : 'Cancel Order' %>
                                                                 </button>
+                                                                <form action="/viewOrderDetails" method="GET">
+                                                                    <input type="hidden" value="<%= order._id %>"
+                                                                        name="orderId">
+                                                                    <button class="btn btn-small"
+                                                                        style="margin-top: 4px; background-color: white; color: rgb(0, 0, 0); border: 0;">View</button>
+                                                                </form>
+
+                                                                <% if (order.orderStatus==='Failed' ) { %>
+                                                                    <button type="button" class="btn btn-small"
+                                                                        style="background-color: rgb(252, 230, 230); color: red; border: 0; font-weight: bolder;"
+                                                                        onclick="retryPayment('<%= order._id %>', '<%= order.finalPrice %>')">PAY</button>
+                                                                    <% } %>
+
                                                             </td>
                                                         </tr>
                                                         <% }); %>
@@ -189,39 +209,143 @@
     </section>
 
     <script>
-        function confirmCancel() {
-            if (confirm("Are you sure you want cancel this order?")) {
-                document.getElementById('deleteForm').submit();
+        function confirmCancel(button) {
+            if (confirm("Are you sure you want to cancel this order?")) {
+                const orderId = button.getAttribute('data-order-id');
+
+                // Send a DELETE request to cancel the order
+                fetch(`/cancelOrder/${orderId}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to cancel order');
+                        }
+
+                        // Update the UI to reflect the cancelled order
+                        const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
+                        orderStatusCell.textContent = 'Cancelled';
+
+                        button.textContent = 'Order Cancelled'; // Change the button text
+                        button.disabled = true;
+                    })
+                    .catch(error => {
+                        console.error('Error cancelling order:', error);
+                        alert('Failed to cancel order. Please try again.');
+                    });
             }
         }
 
         // Add event listener to all cancel order buttons
         document.querySelectorAll('.cancelOrderBtn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const orderId = btn.dataset.orderId;
-
-                // Send a DELETE request to cancel the order
-                try {
-                    const response = await fetch(`/cancelOrder/${orderId}`, {
-                        method: 'DELETE',
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to cancel order');
-                    }
-
-                    // Update the UI to reflect the cancelled order
-                    const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
-                    orderStatusCell.textContent = 'Cancelled';
-
-                    btn.textContent = 'Order Cancelled' //chnage the buttn
-                    btn.disabled = true;
-                } catch (error) {
-                    console.error('Error cancelling order:', error);
-                    alert('Failed to cancel order. Please try again.');
-                }
-            });
+            btn.addEventListener('click', () => confirmCancel(btn));
         });
+
+
+        function retryPayment(orderId, finalPrice) {
+            fetch('/retryPayment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    orderId,
+                    finalPrice,
+                }),
+            })
+                .then(response => response.json()) // Parse the JSON response here
+                .then(data => {
+                    if (data.success) {
+                        const options = {
+                            "key": "rzp_test_UwQd6G9xYlg4El",
+                            "amount": data.order.amount,
+                            "currency": "INR",
+                            "name": "Go-Easy Shopping",
+                            "description": "Test Transaction",
+                            "image": "https://example.com/your_logo",
+                            "order_id": data.order.id,
+                            "handler": function (response) {
+                                console.log('response:==========in handler ', response);
+                                verifyPayment(response, orderId);
+                                console.log("after invoking verify");
+                            },
+                            "prefill": {
+                                "name": "Gaurav Kumar",
+                                "email": "gaurav.kumar@example.com",
+                                "contact": "9000090000"
+                            },
+                            "notes": {
+                                "address": "Razorpay Corporate Office"
+                            },
+                            "theme": {
+                                "color": "#3399cc"
+                            }
+                        };
+                        const rzp = new Razorpay(options);
+                        rzp.open();
+
+                        rzp.on("payment.failed", function (response) {
+                            alert('Payment Failed, please try again on the order page');
+                            console.log('Payment failed:', response);
+                            fetch('/paymentFailed', {
+                                method: 'post',
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    orderId,
+                                    reason: response.error.description
+                                })
+                            }).then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        console.log('Order status updated to Failed');
+                                        window.location.href = '/order';
+                                    } else {
+                                        console.error('Failed to update order status:', data.error);
+                                    }
+                                });
+                        });
+                    } else {
+                        alert('Failed to initiate payment. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to initiate payment. Please try again.');
+                });
+        }
+
+        function verifyPayment(response, orderId) {
+            fetch('/verifyPaymentRetry', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    paymentid: response.razorpay_payment_id,
+                    razorpayorderid: response.razorpay_order_id,
+                    signature: response.razorpay_signature,
+                    orderId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Sucessfully completed the payment.');
+                        window.location.reload(); // Reload the page
+                    } else {
+                        console.error('Payment verification failed:', data.error);
+                        alert('Payment verification failed. Please try again later.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Payment verification failed. Please try again later.');
+                });
+        }
+
+
 
     </script>
 
