@@ -2,10 +2,10 @@
 <body>
     <div class="content">
         <div class="row">
-            <% if (monthlyOrders) { %>
+            <% if (monthlyOrders.length > 0) { %>
                 <div>
-                    <!-- <a class="btn btn-secondary ml-3 mt-3" href="/admin/monthlysales/download">Download</a>
-                    <button class="btn btn-success ml-3 mt-3" onclick="printPage()">Print</button> -->
+                    <a class="btn btn-secondary ml-3 mt-3" href="/admin/monthlysales/download?month=<%= monthinput %>" >Download</a>
+                    <button class="btn btn-success ml-3 mt-3" onclick="printPage()">Print</button>
                 </div>
 
                 <div class="container mt-3">
@@ -71,7 +71,7 @@
                 <% } else { %>
                     <div class="container p-5">
                         <div>
-                            <h2>Nothing Here..</h2>
+                            <h2>No Order On this Month!</h2>
                         </div>
                     </div>
                     <% } %>

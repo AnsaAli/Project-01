@@ -2,10 +2,15 @@
 <body>
     <div class="content">
         <div class="row">
-            <% if (orderPlaced.length > 0) { %>
+            <% if (dailyorders.length > 0) { %>
                 <div class="col-md-12">
                     <div class="card p-5">
-                        <a class="btn btn-secondary ml-3 mt-3" href="/admin/dailysales/download?date=<%= orderDate %>">Download</a>
+                        <form action="/admin/dailysales/download" method="get">
+                            <input type="hidden" id="downloadDate" name="date" value="<%= orderDate %>">
+                            <button type="submit" name="format" value="excel" style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download Excel</button>
+                            <button type="submit" name="format" value="pdf" style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download PDF</button>
+                        </form>
+                        <!-- <a class="btn btn-secondary ml-3 mt-3" href="/admin/dailysales/download?date=<%= orderDate %>">Download</a> -->
                 <button class="btn btn-success ml-3 mt-3" onclick="printPage()">Print</button>
                     </div>
                 </div>
@@ -26,7 +31,7 @@
                                         <th>Status</th>
                                     </thead>
                                     <tbody>
-                                        <% orderPlaced.forEach(order => { %>
+                                        <% dailyorders.forEach(order => { %>
                                             <tr>
                                                 <td><%= order.orderDate.toDateString().substring(0, 10) %></td>
                                                 <td><%= order.shippingAddress.address_customer_name %></td>

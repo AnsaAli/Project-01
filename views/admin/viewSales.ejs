@@ -1,80 +1,44 @@
 <%- include('../layout/adminHeader.ejs') %>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" >
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous"></script>
+</head>
 <body>
     <div class="content">
         <div class="row">
-            <% if (orderPlaced.length > 0) { %> <!-- Ensure this condition checks the correct variable -->
+            <% if (message.length > 0) { %>
                 <div class="col-md-12">
                     <div class="card p-5">
-                        <form action="" style="margin-top: 10px;">
-                            <label for="from" style="color: black; font-weight: bold; margin: 5px; ">From</label>
+                        <form action="/admin/sales" method="get" style="margin-top: 10px;">
+                            <label for="fromDate" style="color: black; font-weight: bold; margin: 5px;">From</label>
                             <input type="date" name="from" style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);" id="fromDate">
-                
-                            <label for="to" style="color: black; font-weight: bold; margin: 5px;">To</label>
+                            <label for="toDate" style="color: black; font-weight: bold; margin: 5px;">To</label>
                             <input type="date" name="to" style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);" id="toDate">
-                
-                            <input type="submit" value="Filter" style="background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">
-                          </form>
-                
-                          <div class="sales-report-form">
-                            <form action="/admin/dailyReport" method="post">
-                              <label for="daily" style="color: black; font-weight: bold; margin: 5px;">Daily sales</label>
-                              <input type="date" name="daily" id="daily">
-                              <button class="sales-report-button" type="submit" style="margin: 5px; background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">View</button>
-                            </form>
-                          </div>
-                
-                          <div class="sales-report-form">
-                            <form action="/admin/monthlyReport" method="post">
-                              <label for="monthly" style="color: black; font-weight: bold; margin: 5px;">Monthly sales</label>
-                              <input type="month" name="month" id="month">
-                              <button class="sales-report-button" type="submit" style="margin: 5px; background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">View</button>
-                            </form>
-                          </div>
-                
-                          <div class="sales-report-form">
-                            <form action="/admin/yearlyReport" method="post">
-                              <label for="yearly" style="color: black; font-weight: bold; margin: 5px;">Yearly sales</label>
-                              <input type="number" name="yearly" id="yearly" min="2022" max="2024" value="2023">
-                              <button class="sales-report-button" type="submit" style="margin: 5px; background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">View</button>
-                            </form>
-                          </div>
+                            <input type="submit" value="Filter" style="background-color: rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">
+                        </form>
 
-                           <!-- Report selection form -->
-                        <!-- <div class="sales-report-form">
-                            <form id="reportForm" action="" method="post">
+                        <div class="sales-report-form">
+                            <form id="reportForm" method="post">
                                 <label for="reportType" style="color: black; font-weight: bold; margin: 5px;">Select Report Type</label>
-                                <select id="reportType" name="reportType" style="background-color: rgb(255, 255, 255); color: black; margin: 5px;">
-                                    <option value="daily">Daily sales</option>
-                                    <option value="monthly">Monthly sales</option>
-                                    <option value="yearly">Yearly sales</option>
+                                <select id="reportType" name="reportType" class="form-select" style="margin: 5px;" onchange="updateFormAction()">
+                                    <option value="" selected disabled>Select report type</option>
+                                    <option value="daily">Daily Sales</option>
+                                    <option value="monthly">Monthly Sales</option>
+                                    <option value="yearly">Yearly Sales</option>
                                 </select>
-
-                             
-                                <div id="dailyInput" class="report-input">
-                                    <label for="daily" style="color: black; font-weight: bold; margin: 5px;">Select Date</label>
-                                    <input type="date" name="daily" id="daily">
-                                </div>
-
-                              
-                                <div id="monthlyInput" class="report-input" style="display: none;">
-                                    <label for="month" style="color: black; font-weight: bold; margin: 5px;">Select Month</label>
-                                    <input type="month" name="month" id="month">
-                                </div>
-
-                              
-                                <div id="yearlyInput" class="report-input" style="display: none;">
-                                    <label for="yearly" style="color: black; font-weight: bold; margin: 5px;">Select Year</label>
-                                    <input type="number" name="yearly" id="yearly" min="2022" max="2024" value="2023">
-                                </div>
-
-                                <button class="sales-report-button" type="submit" style="margin: 5px; background-color:rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">View</button>
+                                <div id="inputContainer" style="margin: 5px;"></div>
+                                <button type="submit" class="btn btn-primary" style="margin: 5px;">View</button>
                             </form>
-                        </div> -->
-                
-                          <form action="/admin/sales/download" method="get">
-                            <button type="submit" name="format" value="excel" style="background-color: rgb(15, 191, 182);border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download Excel</button>
-                            <button type="submit" name="format" value="pdf" style="background-color: rgb(15, 191, 182);border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download PDF</button>
-                          </form>
+                        </div>
+
+                        <form action="/admin/sales/download" method="get">
+                            <button type="submit" name="format" value="excel" style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download Excel</button>
+                            <button type="submit" name="format" value="pdf" style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download PDF</button>
+                        </form>
                     </div>
                 </div>
                 <div class="col-md-12">
@@ -89,7 +53,7 @@
                                         <th>Date</th>
                                         <th>Name</th>
                                         <th>Products</th>
-                                        <th>Payment <br> Method</th>
+                                        <th>Payment Method</th>
                                         <th>Total Bill</th>
                                         <th>Status</th>
                                     </thead>
@@ -102,7 +66,7 @@
                                                     <% order.orderItems.forEach(orderItem => { %>
                                                         <% if (orderItem.orderedWeight) { %>
                                                             <% orderItem.orderedWeight.forEach(pdt => { %>
-                                                                <%= pdt.name %>: 
+                                                                <%= pdt.name %>:
                                                                 <% if (pdt.weight >= 1000) { %>
                                                                     <%= Math.floor(pdt.weight / 1000) %>kg
                                                                     <% let remainingGrams = pdt.weight % 1000; %>
@@ -110,77 +74,39 @@
                                                                         <%= remainingGrams %>g
                                                                     <% } %><br>
                                                                 <% } else { %>
-                                                                    <%= pdt.weight %>g <br>
+                                                                    <%= pdt.weight %>g<br>
                                                                 <% } %>
                                                             <% }); %>
                                                         <% } %>
                                                     <% }); %>
                                                 </td>
-                                                <td><%= order.user_id.email %></td>
                                                 <td><%= order.paymentMethod %></td>
+                                                <td><%= order.finalPrice %></td>
                                                 <td id="orderStatus_<%= order._id %>"><%= order.orderStatus %></td>
                                             </tr>
                                         <% }); %>
                                     </tbody>
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', function () {
-                                          // Get the current date in the format "YYYY-MM-DD"
-                                          var currentDate = new Date().toISOString().split('T')[0];
-        
-                                          // Set the max attribute for the "From" input to prevent future dates
-                                          var fromDateInput = document.getElementById('fromDate');
-                                          if (fromDateInput) {
-                                            fromDateInput.max = currentDate;
-                                          } else {
-                                            console.error('Element with id "fromDate" not found.');
-                                          }
-        
-                                          // Set the max attribute for the "To" input to prevent future dates
-                                          var toDateInput = document.getElementById('toDate');
-                                          if (toDateInput) {
-                                            toDateInput.max = currentDate;
-                                          } else {
-                                            console.error('Element with id "toDate" not found.');
-                                          }
-        
-                                          toDateInput.addEventListener('change', function () {
-                                            if (fromDateInput.value > toDateInput.value) {
-                                              alert('To date cannot be earlier than From date. Please select a valid range.');
-                                              toDateInput.value = fromDateInput.value;
-                                            }
-                                          });
-                                        });
-                                      </script>
                                 </table>
                             </div>
                             <nav aria-label="navigation">
                                 <ul class="pagination justify-content-end mt-50">
                                     <% if (currentPage > 1) { %>
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=<%= currentPage - 1 %>"
-                                                style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
-                                                background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; 
-                                                cursor: pointer; text-decoration: none;">
+                                            <a class="page-link" href="?page=<%= currentPage - 1 %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
                                                 Prev
                                             </a>
                                         </li>
                                     <% } %>
                                     <% for (let j = 1; j <= totalPages; j++) { %>
                                         <li class="page-item <% if (j === currentPage) { %>active<% } %>">
-                                            <a class="page-link" href="?page=<%= j %>"
-                                                style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
-                                                background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px;
-                                                cursor: pointer; text-decoration: none;">
+                                            <a class="page-link" href="?page=<%= j %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
                                                 <%= j %>
                                             </a>
                                         </li>
                                     <% } %>
                                     <% if (currentPage < totalPages) { %>
                                         <li class="page-item">
-                                            <a class="page-link" href="?page=<%= currentPage + 1 %>"
-                                                style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
-                                                background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; 
-                                                cursor: pointer; text-decoration: none;">
+                                            <a class="page-link" href="?page=<%= currentPage + 1 %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
                                                 Next
                                             </a>
                                         </li>
@@ -189,31 +115,54 @@
                             </nav>
                         </div>
                     </div>
-                <% } else { %>
-                    <div class="container p-5">
-                        <h2>No Sales Yet!</h2>
-                    </div>
-                <% } %>
-            </div>
+                    <% } else { %>
+                        <div class="container p-5">
+                            <h2>No Sales Yet!</h2>
+                        </div>
+                    <% } %>
+                </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('in addEventListener===========')
-            var currentDate = new Date().toISOString().split('T')[0];
+        function updateFormAction() {
+            const reportType = document.getElementById('reportType').value;
+            const form = document.getElementById('reportForm');
+            const inputContainer = document.getElementById('inputContainer');
+            inputContainer.innerHTML = '';
 
-            var fromDateInput = document.getElementById('fromDate');
+            switch (reportType) {
+                case 'daily':
+                    form.action = '/admin/dailyReport';
+                    inputContainer.innerHTML = '<input type="date" name="daily" class="form-control">';
+                    break;
+                case 'monthly':
+                    form.action = '/admin/monthlyReport';
+                    inputContainer.innerHTML = '<input type="month" name="month" class="form-control">';
+                    break;
+                case 'yearly':
+                    form.action = '/admin/yearlyReport';
+                    inputContainer.innerHTML = '<input type="number" name="yearly" class="form-control" min="2022" max="2024" value="2023">';
+                    break;
+                default:
+                    form.action = '';
+                    break;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            const fromDateInput = document.getElementById('fromDate');
             if (fromDateInput) {
                 fromDateInput.max = currentDate;
-            } else {
-                console.error('Element with id "fromDate" not found.');
             }
 
-            var toDateInput = document.getElementById('toDate');
+            const toDateInput = document.getElementById('toDate');
             if (toDateInput) {
                 toDateInput.max = currentDate;
-            } else {
-                console.error('Element with id "toDate" not found.');
             }
 
             toDateInput.addEventListener('change', function () {

@@ -2,6 +2,8 @@
 <body>
     <div class="content">
         <div class="container mt-3">
+            <% console.log(yearlyorders); %> <!-- Add this line to debug -->
+            <% if (yearlyorders.length > 0) { %>
             <table class="table">
                 <thead>
                     <tr>
@@ -10,6 +12,7 @@
                         <th scope="col">Total Revenue</th>
                     </tr>
                 </thead>
+                
                 <tbody>
                     <tr>
                         <td><%= yearlyorders.length %></td>
@@ -22,22 +25,28 @@
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col" style="font-size: large;">NAME</th>
+                        <th scope="col" style="font-size: large;">A/c Holder NAME</th>
+                        <th scope="col" style="font-size: large;">Delivered Name</th>
                         <th scope="col" style="font-size: large;">ORDER DATE</th>
                         <!-- <th scope="col">DISCOUNT</th> -->
                         <th scope="col" style="font-size: large;">TOTAL BILL</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% if (yearlyorders) { %>
+                    
                         <% yearlyorders.forEach(order => { %>
                             <tr>
-                                <td><%= order.user %></td>
-                                <td><%= order.date.toISOString().substring(0,10) %></td>
+                                <td><%= order.user_id.name %></td>
+                                <td><%= order.shippingAddress.address_customer_name %></td>
+                                <td><%= order.orderDate.toDateString() %></td>
                                 <!-- <td><%= order.discount %></td> -->
-                                <td><%= order.totalAmount %></td>
+                                <td><%= order.finalPrice %></td>
                             </tr>
                         <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">No orders found for the selected year.</td>
+                        </tr>
                     <% } %>
                 </tbody>
             </table>
@@ -59,7 +68,4 @@
     <script src="lib/tempusdominus/js/moment.min.js"></script>
     <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
 </body>
-
-    
