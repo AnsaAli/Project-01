@@ -52,5 +52,4 @@ const addressSchema= new Schema({
 
 },{timestamps:true})
 
-console.log('Address')
 module.exports= mongoose.model('UserAddress',addressSchema)

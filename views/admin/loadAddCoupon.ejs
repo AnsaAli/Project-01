@@ -2,27 +2,30 @@
 
     <body>
         <div class="container">
-
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="title">Add Coupon</h5>
+                        <h6 class="title" style="text-align: center;">Add Coupon</h6>
                     </div>
                     <div class="card-body">
                         <% if (typeof existingCoupon !=='undefined' && existingCoupon) { %>
                             <div class="alert alert-danger mt-3"
                                 style="color: red; background-color: transparent; border: none;">
                                 Coupon code already exists. Please choose a different code.
+                                <a href="/admin/addcoupon">Add</a>
                             </div>
                             <% } %>
 
+                                <div id="success" style="display: none;"></div>
+                                <div id="error" style="display: none;"></div>
 
-                                <form id="my-form" onsubmit="return validateForm()" method="POST" action="">
+                                <form id="my-form" onsubmit="return validateForm()" method="POST"
+                                    action="/admin/addcoupon" class="container">
                                     <div class="row">
                                         <div class="col-md-8 pr-1">
                                             <div class="form-group">
-                                                <label for="input-1">Coupon Code</label>
-                                                <input type="text" name="code" class="form-control" id="input-1"
+                                                <label for="coupon-code">Coupon Code</label>
+                                                <input type="text" name="code" class="form-control" id="coupon-code"
                                                     placeholder="Enter coupon code" oninput="validateCouponCode(this)">
                                                 <small id="code-validation-message" style="color: red;"></small>
                                             </div>
@@ -31,8 +34,8 @@
                                     <div class="row">
                                         <div class="col-md-5 pr-1">
                                             <div class="form-group">
-                                                <label for="input-1">Select discount Type</label>
-                                                <select name="discountType"
+                                                <label for="discount-type">Select discount Type</label>
+                                                <select name="discountType" id="discount-type"
                                                     style="background-color:rgba(0, 252, 206, 0.425);"
                                                     onchange="updateDiscountFields()">
                                                     <option style="background-color:rgba(0, 252, 206, 0.425);"
@@ -46,10 +49,11 @@
                                     <div class="row">
                                         <div class="col-md-8 pr-1">
                                             <div class="form-group">
-                                                <label for="input-1">Discount</label>
+                                                <label for="discount-amount">Discount</label>
                                                 <input type="number" name="discountAmount" class="form-control"
-                                                    id="input-1" placeholder='Enter discount amount' min="0"
+                                                    id="discount-amount" placeholder='Enter discount amount' min="0"
                                                     oninput="validateDiscountAmount(this)">
+                                                <small id="discountAmountError" style="color: red;"></small>
                                                 <div id="negativeAmountWarning" class="alert alert-warning text-danger"
                                                     role="alert" style="margin-top: 5px; display: none;">
                                                     Please fill with a positive number below 99
@@ -57,13 +61,12 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-md-8 pr-1">
                                             <div class="form-group" id="maxDsc" style="display: none;">
-                                                <label for="input-1">Max discount amount</label>
-                                                <input type="number" name="amount" class="form-control" id="input-1"
-                                                    placeholder="Enter Max discount amount"
+                                                <label for="max-discount-amount">Max discount amount</label>
+                                                <input type="number" name="amount" class="form-control"
+                                                    id="max-discount-amount" placeholder="Enter Max discount amount"
                                                     oninput="validateMaxDiscountAmount(this)">
                                                 <div id="negativeMaxAmountWarning"
                                                     class="alert alert-warning text-danger" role="alert"
@@ -73,24 +76,21 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-md-8 pr-1">
                                             <div class="form-group">
-                                                <label for="input-1">Min cart amount</label>
-                                                <input type="number" name="cartamount" class="form-control" id="input-1"
-                                                    placeholder="Enter Min cart amount"
+                                                <label for="min-cart-amount">Min cart amount</label>
+                                                <input type="number" name="cartamount" class="form-control"
+                                                    id="min-cart-amount" placeholder="Enter Min cart amount"
                                                     oninput="validateMaxCartAmount(this)">
                                                 <div id="negativeMaxCartWarning" class="alert alert-warning text-danger"
                                                     role="alert" style="margin-top: 5px; display: none;">
                                                     Please fill with a positive number greater than discount amount and
-                                                    max discount
-                                                    amount.
+                                                    max discount amount.
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-md-8 pr-1">
                                             <div class="form-group">
@@ -107,36 +107,12 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <script>
-                                        // Get the current date in the format yyyy-mm-dd
-                                        function getCurrentDate() {
-                                            var today = new Date();
-                                            var dd = today.getDate();
-                                            var mm = today.getMonth() + 1; // January is 0!
-                                            var yyyy = today.getFullYear();
-
-                                            if (dd < 10) {
-                                                dd = '0' + dd;
-                                            }
-
-                                            if (mm < 10) {
-                                                mm = '0' + mm;
-                                            }
-
-                                            return yyyy + '-' + mm + '-' + dd;
-                                        }
-
-                                        // Set the minimum date for the input field
-                                        document.getElementById('expiry-date-input').min = getCurrentDate();
-                                    </script>
-
                                     <div class="row">
                                         <div class="col-md-8 pr-1">
                                             <div class="form-group">
-                                                <label for="input-1">Max coupons</label>
+                                                <label for="max-coupons">Max coupons</label>
                                                 <input type="number" name="couponcount" class="form-control"
-                                                    id="input-1" placeholder="Enter count of coupons"
+                                                    id="max-coupons" placeholder="Enter count of coupons"
                                                     oninput="validateMaxCoupon(this)">
                                                 <div id="negativeCouponWarning" class="alert alert-warning text-danger"
                                                     role="alert" style="margin-top: 5px; display: none;">
@@ -145,9 +121,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-
-
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
@@ -160,245 +133,178 @@
                                     </div>
                                 </form>
 
-                                <% if (typeof message !=='undefined' ) { %>
-                                    <% if (message.amountOkey) { %>
-                                        <div class="alert alert-success mt-3">
-                                            Coupon added successfully! Discount Amount: <%= message.disAmount %>, Total
-                                                Amount after
-                                                Discount:
-                                                <%= message.disTotal %>
-
-                                        </div>
-                                        <% } else if (message.warning) { %>
-                                            <div class="alert alert-warning mt-3">
-                                                <%= message.warning %>
-
-                                            </div>
-                                            <% } else { %>
-                                                <div class="alert alert-danger mt-3">
-                                                    <%= message %>
-
-                                                </div>
-                                                <% } %>
-                                                    <% } %>
-
+                               
                     </div>
                 </div>
             </div>
-
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <style>
-
-        </style>
         <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('my-form').addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    // Set the minimum date for the input field
+                    document.getElementById('expiry-date-input').min = getCurrentDate();
+
+                    function getCurrentDate() {
+                        var today = new Date();
+                        var dd = String(today.getDate()).padStart(2, '0');
+                        var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+                        var yyyy = today.getFullYear();
+                        return yyyy + '-' + mm + '-' + dd;
+                    }
+
+
+                    if (validateForm()) {
+                        const formData = new FormData(this);
+                        fetch('/admin/addcoupon', {
+                            method: 'POST',
+                            body: new URLSearchParams(formData)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    console.log('Success')
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then(() => {
+                                window.location.href = '/admin/coupon'; 
+                            });
+                                } else {
+                                    console.log('error inside data')
+                                    Swal.fire({
+                                        title: 'Error!',
+                                        text: data.message,
+                                        icon: 'error',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error in catch:', error);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'An unexpected error occurred.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            });
+                    }
+                });
+            });
+
+
+            function validateForm() {
+                var isValid = true;
+                isValid = validateCouponCode(document.getElementById('coupon-code')) && isValid;
+                isValid = validateDiscountAmount(document.getElementById('discount-amount')) && isValid;
+                isValid = validateMaxDiscountAmount(document.getElementById('max-discount-amount')) && isValid;
+                isValid = validateMaxCartAmount(document.getElementById('min-cart-amount')) && isValid;
+                isValid = validateExpiryDate(document.getElementById('expiry-date-input')) && isValid;
+                isValid = validateMaxCoupon(document.getElementById('max-coupons')) && isValid;
+                return isValid;
+            }
 
             function validateCouponCode(input) {
                 var code = input.value.trim();
-                console.log('=====================================validateCouponCode ,code: ', code);
+                var codeValidationMessage = document.getElementById('code-validation-message');
 
                 if (code === "") {
-                    document.getElementById('code-validation-message').innerText = 'Code cannot be blank.';
-                    input.setCustomValidity('');
-                    return { value: false };
+                    codeValidationMessage.textContent = 'Coupon code is required.';
+                    return false;
+                } else if (code.length < 6) {
+                    codeValidationMessage.textContent = 'Code length must be a minimum of 6.';
+                    return false;
+                } else if (!/^\d+$/.test(code)) {
+                    codeValidationMessage.textContent = 'Please enter a valid code with only numbers.';
+                    return false;
                 }
 
-                if (!/^\d+$/.test(code)) {
-                    document.getElementById('code-validation-message').innerText = 'Please enter a valid code with only numbers.';
-                    input.setCustomValidity('');
-                    return { value: false };
-                }
-
-                document.getElementById('code-validation-message').innerText = '';
-                input.setCustomValidity('');
-                return { value: true };
+                // Clear the error message if the code is valid
+                codeValidationMessage.textContent = '';
+                return true;
             }
 
-            function updateDiscountFields() {
-                console.log('=====================================updateDiscountFields')
-
-                var discountType = document.getElementsByName("discountType")[0].value;
-                var discountAmountInput = document.getElementsByName("discountAmount")[0];
-                var maxDiscount = document.getElementById('maxDsc');
-
-                console.log('discountType: ', discountType, 'discountAmountInput: ', discountAmountInput, 'maxDiscount: ', maxDiscount)
-
-                if (discountType === "percentage") {
-                    // Set max attribute to 90 for Percentage discount type
-                    discountAmountInput.max = 90;
-                    maxDiscount.style.display = 'block';
-                } else {
-                    // Remove max attribute for other discount types
-                    discountAmountInput.removeAttribute('max');
-                    maxDiscount.style.display = 'none';
-                }
-            }
 
             function validateDiscountAmount(input) {
-                console.log('=====================================validateDiscountAmount')
+                var discountAmountError = document.getElementById('discountAmountError');
                 var discountType = document.getElementsByName("discountType")[0].value;
-                var value = input.value;
-                var warningDiv = document.getElementById("negativeAmountWarning");
-                console.log('discountType: ', discountType, 'value: ', value, 'warningDiv: ', warningDiv)
-
-                // if (discountType === "percentage") {
-                //     if (value < 0 || value > 90) {
-                //         warningDiv.style.display = "block";
-                //     } else {
-                //         warningDiv.style.display = "none";
-                //     }
-                // }
-                if (discountType === "percentage") {
-                    if (value < 0 || value > 90) {
-                        warningDiv.style.display = "block";
-                        return { value: false };
-                    } else {
-                        warningDiv.style.display = "none";
-                        return { value: true };
-                    }
+                var discountAmountInput = document.getElementsByName("discountAmount")[0];
+                if (input.value <= 0 || input.value >= 99) {
+                    discountAmountError.textContent = 'Discount amount should be between 1 and 99.';
+                    return false;
+                } else {
+                    discountAmountError.textContent = '';
+                    return true;
                 }
-
-                return { value: true };
             }
 
             function validateMaxDiscountAmount(input) {
-                console.log('=====================================validateMaxDiscountAmount')
-                var maxDiscountAmount = input.value.trim(); // Remove leading and trailing white spaces
-                console.log('=====================================validateMaxDiscountAmount, maxDiscountAmount: ', maxDiscountAmount)
-
-                // // Validation: Check if the max discount amount is negative or blank
-                // if (maxDiscountAmount === '' || parseInt(maxDiscountAmount) <= 0) {
-
-                //     document.getElementById('negativeMaxAmountWarning').style.display = 'block';
-                // } else {
-                //     document.getElementById('negativeMaxAmountWarning').style.display = 'none';
-                // }
-                if (maxDiscountAmount === '' || parseInt(maxDiscountAmount) <= 0) {
-                    document.getElementById('negativeMaxAmountWarning').style.display = 'block';
-                    return { value: false };
+                var value = input.value;
+                var negativeMaxAmountWarning = document.getElementById('negativeMaxAmountWarning');
+                if (value < 0) {
+                    negativeMaxAmountWarning.style.display = 'block';
+                    return false;
                 } else {
-                    document.getElementById('negativeMaxAmountWarning').style.display = 'none';
-                    return { value: true };
-                }
-            }
-
-            // minimum cart amount validation
-            function validateMaxCartAmount(input) {
-                console.log('=====================================validateMaxCartAmount')
-                var maxCartAmount = input.value.trim(); // Remove leading and trailing white spaces
-                var discountAmount = parseFloat(document.querySelector('input[name="discountAmount"]').value.trim());
-                var maxDiscountAmount = parseFloat(document.querySelector('input[name="amount"]').value.trim());
-                console.log('maxCartAmount: ', maxCartAmount, 'discountAmount: ', discountAmount, 'maxDiscountAmount: ', maxDiscountAmount);
-
-                // // Validation: Check if the max discount amount is negative or blank
-                // if (maxCartAmount === '' || parseInt(maxCartAmount) <= 0 || parseFloat(maxCartAmount) < discountAmount || parseFloat(maxCartAmount) < maxDiscountAmount) {
-                //     document.getElementById('negativeMaxCartWarning').style.display = 'block';
-                //     return false; // Return false if the input is invalid
-
-                // } else {
-                //     document.getElementById('negativeMaxCartWarning').style.display = 'none';
-                //     return true; // Return false if the input is valid
-
-                // }
-                if (maxCartAmount === '' || parseInt(maxCartAmount) <= 0 || parseFloat(maxCartAmount) < discountAmount || parseFloat(maxCartAmount) < maxDiscountAmount) {
-                    document.getElementById('negativeMaxCartWarning').style.display = 'block';
-                    return { value: false };
-                } else {
-                    document.getElementById('negativeMaxCartWarning').style.display = 'none';
-                    return { value: true };
-                }
-            }
-
-            // Expiry date field validation
-            function validateExpiryDate(input) {
-                console.log('=====================================validateExpiryDate')
-                const currentDate = new Date();
-                const selectedDate = new Date(input.value);
-                console.log('currentDate: ', currentDate, 'selectedDate: ', selectedDate);
-
-                // Check if the selected date is in the future
-                if (selectedDate < currentDate) {
-                    document.getElementById('expirydate-validation-message').textContent = '';
-                    document.getElementById('negativeExpiryDateWarning').style.display = 'block';
-                    input.setCustomValidity('');
-                    return { value: false };
-
-                } else {
-                    document.getElementById('expirydate-validation-message').textContent = '';
-                    document.getElementById('negativeExpiryDateWarning').style.display = 'none';
-                    input.setCustomValidity('');
-                    return { value: true };
-                }
-            }
-
-            // maximum coupon validation
-            function validateMaxCoupon(input) {
-                console.log('=====================================validateMaxCoupon')
-
-                var maxCoupon = input.value.trim(); // Remove leading and trailing white spaces
-                console.log('=====================================maxCoupon: ', maxCoupon)
-
-                if (maxCoupon === '' || parseInt(maxCoupon) < 0) {
-                    document.getElementById('negativeCouponWarning').style.display = 'block';
-                    return { value: false };
-                } else {
-                    document.getElementById('negativeCouponWarning').style.display = 'none';
-                    return { value: true };
-                }
-            }
-
-            // Function to validate the entire form
-            const form = document.getElementById('my-form')
-
-            function validateForm() {
-                console.log('in validateForm========================300')
-                //Call individual validation functions and store the results
-                const isValidCouponCode = validateCouponCode(document.querySelector('input[name="code"]'));
-                const isValidDiscountAmount = validateDiscountAmount(document.querySelector('input[name="discountAmount"]'));
-                const isValidMaxDiscountAmount = validateMaxDiscountAmount(document.querySelector('input[name="amount"]'));
-                const isValidMaxCartAmount = validateMaxCartAmount(document.querySelector('input[name="cartamount"]'));
-                const isValidExpiryDate = validateExpiryDate(document.querySelector('input[name="expirydate"]'));
-                const isValidMaxCoupon = validateMaxCoupon(document.querySelector('input[name="couponcount"]'));
-
-                console.log('isValidCouponCode: ', isValidCouponCode);
-                console.log('isValidDiscountAmount: ', isValidDiscountAmount);
-                console.log('isValidMaxDiscountAmount: ', isValidMaxDiscountAmount);
-                console.log('isValidMaxCartAmount: ', isValidMaxCartAmount);
-                console.log('isValidExpiryDate: ', isValidExpiryDate);
-                console.log('isValidMaxCoupon: ', isValidMaxCoupon);
-
-
-                if (isValidCouponCode.value && isValidDiscountAmount.value && isValidMaxDiscountAmount.value &&
-                    isValidMaxCartAmount.value && isValidExpiryDate.value && isValidMaxCoupon.value) {
-
-                    const formData = new FormData(document.querySelector('form'));
-                    console.log('=================346');
-                    fetch('admin/addcoupon', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            // Add any headers you need, like content-type or authorization
-                        },
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            // Process the response data if needed
-                            console.log('data: ==============', data);
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-
+                    negativeMaxAmountWarning.style.display = 'none';
                     return true;
-
-
-                } else {
-                    document.getElementById('submitButton').disabled = true;
-                    return false
-
                 }
             }
 
-        </script>
+            function validateMaxCartAmount(input) {
+                var value = input.value;
+                var discountAmount = document.getElementsByName('discountAmount')[0].value;
+                var maxDiscountAmount = document.getElementsByName('amount')[0].value;
+                var negativeMaxCartWarning = document.getElementById('negativeMaxCartWarning');
+                if (value < 0 || value <= Math.max(discountAmount, maxDiscountAmount)) {
+                    negativeMaxCartWarning.style.display = 'block';
+                    return false;
+                } else {
+                    negativeMaxCartWarning.style.display = 'none';
+                    return true;
+                }
+            }
 
+            function validateExpiryDate(input) {
+                var expirydateValidationMessage = document.getElementById('expirydate-validation-message');
+                var today = new Date();
+                var selectedDate = new Date(input.value);
+                if (selectedDate <= today) {
+                    expirydateValidationMessage.textContent = 'Please select a future date.';
+                    return false;
+                } else {
+                    expirydateValidationMessage.textContent = '';
+                    return true;
+                }
+            }
+
+            function validateMaxCoupon(input) {
+                var negativeCouponWarning = document.getElementById('negativeCouponWarning');
+                if (input.value <= 0) {
+                    negativeCouponWarning.style.display = 'block';
+                    return false;
+                } else {
+                    negativeCouponWarning.style.display = 'none';
+                    return true;
+                }
+            }
+
+            function updateDiscountFields() {
+                var discountType = document.getElementById('discount-type').value;
+                var maxDsc = document.getElementById('maxDsc');
+                if (discountType === 'percentage') {
+                    maxDsc.style.display = 'block';
+                } else {
+                    maxDsc.style.display = 'none';
+                }
+            }
+        </script>
     </body>
+
+    <%- include('../layout/adminFooter.ejs') %>

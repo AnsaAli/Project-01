@@ -63,69 +63,123 @@
                                     </div>
                                 </div>
                                 <div class="col-md-8">
+                                    <div class=" col-lg-6 mb-10 ">
+                                        <div class="card" style="padding: 15px;">
+                                            <p style="font-weight: bold; text-align: center;">Your Referral Code</p>
+                                            <% if (userData.referralCode) { %>
+                                                <p id="referralCode" style="font-weight: 700; color: green; text-align: center;">
+                                                   
+                                                    <%= userData.referralCode %>
+                                                    <p style="font-size: 14px; font-weight: bold;">Share this code to your friends to get <strong style="color: red;">100</strong>  rupees on your wallet.</p>
+                                                    
+                                                </p>
+                                                <div style="text-align: center;">
+                                                    <button onclick="copyReferralCode('<%= userData.referralCode %>')" class="btn btn-small btn-primary" style="justify-content: center;">Copy</button>
+                                                </div>
+                                            <% } else { %>
+                                                <p style="text-align: center;">Sorry, not available!</p>
+                                            <% } %>
+                                        </div>
+                                        
+
+                                    </div>
                                     <div class="col-lg-6">
                                         <div class="card mb-3 mb-lg-0">
                                             <div class="card-header">
                                                 <h5 class="mb-0">My profile</h5>
                                                 <% if(userData) { %>
-                                                    <% if(userData.address && userData.address[0] && userData.address[0].mobile_num) { %>
+                                                    <% if(userData.address && userData.address[0] &&
+                                                        userData.address[0].mobile_num) { %>
                                                         <p>
                                                             <%= userData.address[0].address_type %>
                                                         </p>
-                                                    </div>
-                                                    <div class="card-body" style="display: flex; justify-content: space-between;">
-                                                        <div>
-                                                            <p>
-                                                                <%= userData.name %>
-                                                            </p>
-                                                            <p>
-                                                                <%= userData.email %>
-                                                            </p>
-                                                            <p>
-                                                                <%= userData.address[0].mobile_num %>
-                                                            </p>
-                                                        </div>
-                                                        <div style="font-size: small;">
-                                                            <a href="/changeMyProfile?name=<%= userData.name %>&mobile=<%= userData.address[0].mobile_num %>">Edit</a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <p>
-                                                            <%= userData.address[0].house_num %>
-                                                        </p>
-                                                        <p>
-                                                            <%= userData.address[0].apartment_name %>
-                                                        </p>
-                                                        <p>
-                                                            <%= userData.address[0].city %>
-                                                        </p>
-                                                        <p>
-                                                            <%= userData.address[0].district %>
-                                                        </p>
-                                                        <p>Pincode:
-                                                            <%= userData.address[0].pincode %>
-                                                        </p>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <p>Not Yet Added!</p>
-                                                    <% } %>
-                                                <% } else { %>
-                                                    <p>
-                                                        No data available, please complete your profile!
-                                                        <a href="/addData">click here</a>
-                                                    </p>
-                                                <% } %>
                                             </div>
+                                            <div class="card-body"
+                                                style="display: flex; justify-content: space-between;">
+                                                <div>
+                                                    <p>
+                                                        <%= userData.name %>
+                                                    </p>
+                                                    <p>
+                                                        <%= userData.email %>
+                                                    </p>
+                                                    <p>
+                                                        <%= userData.address[0].mobile_num %>
+                                                    </p>
+                                                </div>
+                                                <div style="font-size: small;">
+                                                    <a
+                                                        href="/changeMyProfile?name=<%= userData.name %>&mobile=<%= userData.address[0].mobile_num %>">Edit</a>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>
+                                                    <%= userData.address[0].house_num %>
+                                                </p>
+                                                <p>
+                                                    <%= userData.address[0].apartment_name %>
+                                                </p>
+                                                <p>
+                                                    <%= userData.address[0].city %>
+                                                </p>
+                                                <p>
+                                                    <%= userData.address[0].district %>
+                                                </p>
+                                                <p>Pincode:
+                                                    <%= userData.address[0].pincode %>
+                                                </p>
+                                            </div>
+                                            <% } else { %>
+                                                <p>Not Yet Added!</p>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <p>
+                                                            No data available, please complete your profile!
+                                                            <a href="/addData">click here</a>
+                                                        </p>
+                                                        <% } %>
                                         </div>
                                     </div>
-                                    
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+                </div>
             </section>
 
         </main>
+        <script>
+             function copyReferralCode(referralCode) {
+        navigator.clipboard.writeText(referralCode).then(() => {
+            alert('Referral code copied to clipboard');
+        }).catch(err => {
+            console.error('Failed to copy referral code: ', err);
+        });
+    }
+            // function useReferralCode(userId) {
+            //     fetch('/addReferralRupees', {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json'
+            //         },
+            //         body: JSON.stringify({ userId: userId })
+            //     })
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         if(data.errormessage){
+            //             alert(data.errormessage); 
+            //         }else{
+            //             alert(data.message); 
+            //         }
+                    
+            //     })
+            //     .catch(error => {
+            //         console.error('Error:', error);
+            //     });
+            // }
+        </script>
+        
     </body>
     <%- include('../layout/footer.ejs') %>

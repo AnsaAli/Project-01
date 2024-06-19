@@ -1,7 +1,4 @@
-
 const { Category, Product } = require('../models/categoryModel');
-const Review = require('../models/reviewModel');
-const Address = require('../models/addressModel');
 const Cart = require('../models/cartModel');
 const CartItem = require('../models/cartItemModel');
 const User = require('../models/userAuthenticationModel');
@@ -9,7 +6,9 @@ const shortid = require('shortid');
 const { ObjectId } = require('mongodb');
 const Order = require('../models/orderModel');
 const OrderItem = require('../models/orderItemModel');
-const PDFDocument = require('pdfkit');
+const path = require('path');
+const pdfMakePrinter = require('pdfmake/src/printer');
+const cloudinary = require('cloudinary').v2;
 
 const Razorpay = require('razorpay');
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
@@ -297,8 +296,10 @@ const placeOrder = async (req, res) => {
 
                 order.paymentStatus = 'Wallet Payment';
                 order.paymentMethod = 'Wallet'
-                order.orderStatus = 'Confirmed'
+                order.orderStatus = 'Placed'
                 console.log('=================================111 wallet')
+                // Save the updated order
+                await order.save();
 
                 await CartItem.deleteMany({ userId: userId })
                 console.log('CartItem deleted================================91 wallet')
@@ -340,7 +341,7 @@ const paymentSuccess = async (req, res) => {
         if (hash === signature) {
             await Order.updateOne(
                 { order_id: customerOrderId },
-                { $set: { orderStatus: "Success", paymentStatus: "Paid By Razor Pay" } }
+                { $set: { orderStatus: "Placed", paymentStatus: "Paid By Online" } }
             );
 
             res.status(200).json({ success: true, message: "Payment successful" });
@@ -375,7 +376,7 @@ const retryPayment = async (req, res) => {
     try {
         const { orderId, finalPrice } = req.body;
         console.log('orderId: ', orderId);
-      
+
         console.log('finalPrice: ', finalPrice);
 
         var options = {
@@ -383,13 +384,13 @@ const retryPayment = async (req, res) => {
             currency: "INR",
             receipt: "" + orderId
         }
-      
+
         razorpayinstance.orders.create(options, function (err, order) {
             if (err) {
                 console.error('Error creating Razorpay order:', err);
                 return res.json({ success: false, error: 'Failed to create Razorpay order' });
             }
-         
+
             console.error('order:', order);
             res.json({ success: true, order });
         });
@@ -425,7 +426,7 @@ const loadViewOrderDetails = async (req, res) => {
         const order_id = req.query.orderId;
 
         let user_name = '';
-        let loggedIn = false;
+
         if (user_id) {
             const user = await User.findById(user_id);
             if (user) {
@@ -446,6 +447,7 @@ const loadViewOrderDetails = async (req, res) => {
 
         // Save order details in session
         req.session.Orderdtls = [{
+            id: orderPlaced._id,
             order_id: orderPlaced.order_id,
             user_id: orderPlaced.user_id,
             orderDate: orderPlaced.orderDate,
@@ -467,88 +469,207 @@ const loadViewOrderDetails = async (req, res) => {
     }
 }
 
+const fonts = {
+    Roboto: {
+        normal: path.join(__dirname, '..', 'font', 'Roboto-Regular.ttf'),
+        bold: path.join(__dirname, '..', 'font', 'Roboto-Medium.ttf'),
+        italics: path.join(__dirname, '..', 'font', 'Roboto-Italic.ttf'),
+        bolditalics: path.join(__dirname, '..', 'font', 'Roboto-MediumItalic.ttf')
+    }
+};
+
+const printer = new pdfMakePrinter(fonts);
+
 const invoiceDownload = async (req, res) => {
     try {
         console.log('inside invoice download');
         const { Orderdtls } = req.session;
         console.log('Orderdtls: ', Orderdtls);
-
-        const doc = new PDFDocument({ margin: 50 });
-        const fileName = 'invoice.pdf';
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-        doc.pipe(res);
-
-        // Document Title
-        doc.fontSize(20).text('Invoice', { align: 'center' });
-        doc.moveDown(2);
-
-        // Company Info
-        doc.fontSize(12).text('GoEasy Shopping', { align: 'right' });
-        doc.fontSize(12).text('SVRA', { align: 'right' });
-        doc.fontSize(12).text('Ernakulam, Kerala, 1234', { align: 'right' });
-        doc.fontSize(12).text('(000) 000-0000', { align: 'right' });
-        doc.fontSize(12).text('goeasy@example.com', { align: 'right' });
-        doc.moveDown(2);
-
-        // Customer Info
-        doc.fontSize(12).text(`Customer: ${Orderdtls[0].shippingAddress.address_customer_name}`, { align: 'left' });
-        doc.fontSize(12).text(`Address: ${Orderdtls[0].shippingAddress.apartment_name}`, { align: 'left' });
-        doc.fontSize(12).text(`${Orderdtls[0].shippingAddress.city}, ${Orderdtls[0].shippingAddress.district}`, { align: 'left' });
-        doc.fontSize(12).text(`Phone: ${Orderdtls[0].shippingAddress.mobile_num}`, { align: 'left' });
-        doc.moveDown(2);
-
-        // Add a line under the headers
-        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-        doc.moveDown(0.5);
-        // Add a line under the headers
-        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-        doc.moveDown(2);
-
-        // Iterate through the orders
-        for (const order of Orderdtls) {
-            const user = await User.findById(order.user_id).select('name');
-            const orderItems = order.orderItems;
-
-            const productDetails = orderItems.map(item => item.orderedWeight.map(pdt => {
-                let weightText = `${pdt.weight}g`;
-                if (pdt.weight >= 1000) {
-                    const kg = Math.floor(pdt.weight / 1000);
-                    const grams = pdt.weight % 1000;
-                    weightText = `${kg}kg${grams > 0 ? ` ${grams}g` : ''}`;
+        const id = ObjectId.createFromHexString(Orderdtls[0].id.trim())
+        const order = await Order.findById(id)
+            .populate({
+                path: 'orderItems',
+                populate: {
+                    path: 'product_id',
+                    model: 'Product' // Ensure 'Product' model is correctly defined
                 }
-                return `${pdt.name}: ${weightText}`;
-            }).join('\n')).join('\n');
+            })
+            .populate('shippingAddress')
+            .exec();
 
-            const address = `${order.shippingAddress.address_customer_name}\n${order.shippingAddress.mobile_num}\n${order.shippingAddress.apartment_name}\n${order.shippingAddress.city}`;
-
-            // Order details
-            doc.fontSize(14).text('Order No:  ', { continued: true }).font('Helvetica-Bold').text(order.order_id);
-            doc.font('Helvetica').fontSize(12).text('Date:  ', { continued: true }).font('Helvetica-Bold').text(new Date(order.orderDate).toLocaleDateString());
-            doc.moveDown(0.5);
-
-            // Product Details
-            doc.font('Helvetica').fontSize(14).text('Product Details:  ').font('Helvetica-Bold');
-            doc.font('Helvetica').fontSize(12).text(productDetails);
-            doc.moveDown(2);
-
-            // Amount
-            doc.font('Helvetica').fontSize(12).text('Amount:', { continued: true }).font('Helvetica-Bold').text(`₹${order.finalPrice}Rs`);
-            doc.moveDown(2);
-
-            // Status
-            doc.font('Helvetica').fontSize(12).text('Order Status:  ', { continued: true }).font('Helvetica-Bold').text(order.orderStatus);
-            doc.moveDown(2);
-
-
+        if (!order) {
+            return res.status(404).send('Order not found');
         }
+        console.log('=============== 505')
 
-        doc.end();
+        const productDetails = order.orderItems.map(item => item.orderedWeight.map(pdt => {
+            let weightText = `${pdt.weight}g`;
+            if (pdt.weight >= 1000) {
+                const kg = Math.floor(pdt.weight / 1000);
+                const grams = pdt.weight % 1000;
+                weightText = `${kg}kg${grams > 0 ? ` ${grams}g` : ''}`;
+            }
+            return `${pdt.name}: ${weightText}`;
+        }).join('\n')).join('\n');
+        console.log('=============== productDetails: ', productDetails);
+
+        const tableBody = [
+            [
+                { text: 'Product Name', style: 'tableHeader' },
+                { text: 'Weight', style: 'tableHeader' },
+                { text: '' },
+                { text: 'Total', style: 'tableHeader' }
+            ],
+            ...order.orderItems.map(item => [
+                item.orderedWeight.map(pdt => pdt.name).join('\n'),
+                item.orderedWeight.map(pdt => `${pdt.weight >= 1000 ? `${Math.floor(pdt.weight / 1000)}kg ${pdt.weight % 1000 > 0 ? `${pdt.weight % 1000}g` : ''}` : `${pdt.weight}g`}`).join('\n'),
+                '',
+                item.orderedWeight.map(pdt => `₹${Math.ceil(pdt.price)}`)
+            ]),
+            ['', '', '', `Subtotal: ₹${order.finalPrice}`],
+            [`Paid Through: ${order.paymentMethod}`, '', '', '']
+        ];
+
+        var dd = {
+            content: [
+                { text: 'INVOICE', style: 'header', alignment: 'center' },
+                { text: 'GoEasy Shopping', style: 'subheadername', alignment: 'right' },
+                { text: 'Ernakulam, Kerala, 1234', style: 'subheader', alignment: 'right' },
+                { text: '(000) 000-0000', style: 'subheader', alignment: 'right' },
+                { text: 'goeasy@example.com', style: 'subheader', alignment: 'right' },
+                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 595 - 2 * 40, y2: 0, lineWidth: 1 }] },
+                { text: ` ${order.shippingAddress.address_customer_name}`, style: 'userAddressBold', alignment: 'left' },
+                { text: ` ${order.shippingAddress.apartment_name}`, style: 'userAddress', alignment: 'left' },
+                { text: `${order.shippingAddress.city}, ${order.shippingAddress.district}`, style: 'userAddress', alignment: 'left' },
+                { text: `Phone: ${order.shippingAddress.mobile_num}`, style: 'userAddress', alignment: 'left' },
+                { text: `Order No: ${order.order_id}`, style: 'userAddress', alignment: 'right' },
+                { text: `Date: ${new Date(order.orderDate).toLocaleDateString()}`, style: 'userAddress', alignment: 'right' },
+                { text: '\n\n' },
+                {
+                    layout: 'lightHorizontalLines',
+                    table: {
+                        headerRows: 1,
+                        widths: ['*', 'auto', '*', 'auto'],
+                        body: tableBody
+                    }
+                }
+            ],
+            styles: {
+                header: {
+                    fontSize: 22,
+                    bold: true
+                },
+                subheadername: {
+                    bold: true,
+                    fontSize: 12,
+                    margin: [0, 2, 0, 2]
+                },
+                subheader: {
+                    fontSize: 10,
+                    margin: [0, 2, 0, 2]
+                },
+                userAddressBold: {
+                    fontSize: 12,
+                    bold: true,
+                    margin: [0, 2, 0, 2]
+                },
+                userAddress: {
+                    fontSize: 10,
+                    margin: [0, 2, 0, 2]
+                },
+                tableHeader: {
+                    bold: true,
+                    fontSize: 12,
+                    color: 'black'
+                }
+            }
+        };
+
+
+
+        const pdfDoc = printer.createPdfKitDocument(dd);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
+        pdfDoc.pipe(res);
+        pdfDoc.end();
 
     } catch (error) {
         console.log('Error in invoiceDownload:', error);
+        res.status(500).send('Server error');
     }
 };
+
+const returnProduct = async (req, res) => {
+    try {
+        console.log('in returnProduct==============')
+        const orderId = req.query.orderId;
+        const orderDbId = req.query.orderDbId;
+        const orderDetails = await Order.findById(orderDbId).populate('orderItems')
+        console.log('orderDetails.orderItems.length', orderDetails.orderItems.length)
+        console.log('orderId: ', orderId)
+        console.log('orderDbId: ', orderDbId)
+        res.render('return-product', { orderId, orderDetails })
+    } catch (error) {
+        console.log('Error in returnProduct', error)
+    }
+}
+
+const confirmReturnProduct = async (req, res) => {
+    try {
+        console.log('in confirmReturnProduct==============')
+        const { returnItems, returnReasons } = req.body;
+        const orderId = req.query.orderId;
+        console.log('orderId:', orderId);
+        console.log('returnItems:', returnItems);
+        console.log('returnReasons:', returnReasons);
+
+        const images = req.files;
+        const uploadedImages = [];
+        for (const image of images) {
+            try {
+                const result = await cloudinary.uploader.upload(image.path);
+
+                uploadedImages.push({
+                    url: result.url,
+                    public_id: result.public_id,
+                });
+            } catch (error) {
+                console.error('Error uploading image to Cloudinary:', error);
+                return res
+                    .status(500)
+                    .json({ error: 'UploadFailed', message: 'Failed to upload image to Cloudinary' });
+            }
+        }
+        console.log('uploadedImages:', uploadedImages);
+
+        // Update each OrderItem with return information
+        for (let i = 0; i < returnItems.length; i++) {
+            const itemId = returnItems[i];
+            const returnReason = returnReasons[i]; // Get the reason for this item
+
+            const orderItem = await OrderItem.findById(itemId);
+            if (orderItem) {
+                // Update OrderItem details
+                orderItem.return_query = true;
+                orderItem.return_reason = returnReason;
+                orderItem.return_image.push(uploadedImages[i]); // Assuming images are uploaded in order
+                await orderItem.save();
+            }
+
+        }
+
+        // Update order status
+        await Order.findOneAndUpdate({order_id: orderId}, {
+            orderStatus: 'Requesting for return'
+        });
+        res.json({ success: true, message: 'Return processed successfully' });
+
+    } catch (error) {
+        console.log('Error in confirmReturnProduct', error);
+        res.status(500).json({ success: false, message: 'Failed to process return' });
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 module.exports = {
     loadUserOrder,
@@ -560,7 +681,9 @@ module.exports = {
     invoiceDownload,
     paymentFailed,
     retryPayment,
-    verifyPaymentRetry
+    verifyPaymentRetry,
+    returnProduct,
+    confirmReturnProduct
 
 
 }

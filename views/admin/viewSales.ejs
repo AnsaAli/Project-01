@@ -1,176 +1,237 @@
 <%- include('../layout/adminHeader.ejs') %>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" >
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" ></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous"></script>
-</head>
-<body>
-    <div class="content">
-        <div class="row">
-            <% if (message.length > 0) { %>
-                <div class="col-md-12">
-                    <div class="card p-5">
-                        <form action="/admin/sales" method="get" style="margin-top: 10px;">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
+            integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
+            crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        <div class="content">
+            <div class="row">
+                <% if (message.length> 0) { %>
+                    <div class="col-md-12">
+                        <div class="card p-5">
+                            <!-- <form action="/admin/sales" method="get" style="margin-top: 10px;">
                             <label for="fromDate" style="color: black; font-weight: bold; margin: 5px;">From</label>
                             <input type="date" name="from" style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);" id="fromDate">
                             <label for="toDate" style="color: black; font-weight: bold; margin: 5px;">To</label>
                             <input type="date" name="to" style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);" id="toDate">
                             <input type="submit" value="Filter" style="background-color: rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">
-                        </form>
+                            
+                        </form> -->
 
-                        <div class="sales-report-form">
-                            <form id="reportForm" method="post">
-                                <label for="reportType" style="color: black; font-weight: bold; margin: 5px;">Select Report Type</label>
-                                <select id="reportType" name="reportType" class="form-select" style="margin: 5px;" onchange="updateFormAction()">
-                                    <option value="" selected disabled>Select report type</option>
-                                    <option value="daily">Daily Sales</option>
-                                    <option value="monthly">Monthly Sales</option>
-                                    <option value="yearly">Yearly Sales</option>
-                                </select>
-                                <div id="inputContainer" style="margin: 5px;"></div>
-                                <button type="submit" class="btn btn-primary" style="margin: 5px;">View</button>
+
+
+                            <div class="sales-report-form">
+                                <form id="reportForm" method="post">
+                                    <label for="reportType" style="color: black; font-weight: bold; margin: 5px;">Select
+                                        Report Type</label>
+                                    <select id="reportType" name="reportType" class="form-select" style="margin: 5px;"
+                                        onchange="updateFormAction()">
+                                        <option value="" selected disabled>Select report type</option>
+                                        <option value="daily">Daily Sales</option>
+                                        <option value="monthly">Monthly Sales</option>
+                                        <option value="yearly">Yearly Sales</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                    <div id="inputContainer" style="margin: 5px;"></div>
+                                    <button type="submit" class="btn btn-primary" style="margin: 5px;">View</button>
+                                </form>
+                            </div>
+
+                            <div id="customDateFilter" class="hidden"> <!-- Hidden by default -->
+                                <form action="/admin/sales" method="get" style="margin-top: 10px;">
+                                    <label for="fromDate"
+                                        style="color: black; font-weight: bold; margin: 5px;">From</label>
+                                    <input type="date" name="from"
+                                        style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);"
+                                        id="fromDate">
+                                    <label for="toDate" style="color: black; font-weight: bold; margin: 5px;">To</label>
+                                    <input type="date" name="to"
+                                        style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);" id="toDate">
+                                    <input type="submit" value="Filter"
+                                        style="background-color: rgb(255, 255, 255); color: black; border-radius: 5px; padding: 2px; font-size: small;">
+                                </form>
+                            </div>
+
+                            <form action="/admin/sales/download" method="get">
+                                <button type="submit" name="format" value="excel"
+                                    style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download
+                                    Excel</button>
+                                <button type="submit" name="format" value="pdf"
+                                    style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download
+                                    PDF</button>
                             </form>
                         </div>
-
-                        <form action="/admin/sales/download" method="get">
-                            <button type="submit" name="format" value="excel" style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download Excel</button>
-                            <button type="submit" name="format" value="pdf" style="background-color: rgb(15, 191, 182); border-radius: 5px; color: rgb(255, 255, 255); margin-top: 8px;">Download PDF</button>
-                        </form>
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Sales Reports</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table" id="orderTable">
-                                    <thead class="text-primary" style="font-size: small;">
-                                        <th>Date</th>
-                                        <th>Name</th>
-                                        <th>Products</th>
-                                        <th>Payment Method</th>
-                                        <th>Total Bill</th>
-                                        <th>Status</th>
-                                    </thead>
-                                    <tbody>
-                                        <% orderPlaced.forEach(order => { %>
-                                            <tr>
-                                                <td><%= order.orderDate.toDateString().substring(0, 10) %></td>
-                                                <td><%= order.shippingAddress.address_customer_name %></td>
-                                                <td>
-                                                    <% order.orderItems.forEach(orderItem => { %>
-                                                        <% if (orderItem.orderedWeight) { %>
-                                                            <% orderItem.orderedWeight.forEach(pdt => { %>
-                                                                <%= pdt.name %>:
-                                                                <% if (pdt.weight >= 1000) { %>
-                                                                    <%= Math.floor(pdt.weight / 1000) %>kg
-                                                                    <% let remainingGrams = pdt.weight % 1000; %>
-                                                                    <% if (remainingGrams > 0) { %>
-                                                                        <%= remainingGrams %>g
-                                                                    <% } %><br>
-                                                                <% } else { %>
-                                                                    <%= pdt.weight %>g<br>
-                                                                <% } %>
-                                                            <% }); %>
-                                                        <% } %>
-                                                    <% }); %>
-                                                </td>
-                                                <td><%= order.paymentMethod %></td>
-                                                <td><%= order.finalPrice %></td>
-                                                <td id="orderStatus_<%= order._id %>"><%= order.orderStatus %></td>
-                                            </tr>
-                                        <% }); %>
-                                    </tbody>
-                                </table>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Sales Reports</h4>
                             </div>
-                            <nav aria-label="navigation">
-                                <ul class="pagination justify-content-end mt-50">
-                                    <% if (currentPage > 1) { %>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page=<%= currentPage - 1 %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
-                                                Prev
-                                            </a>
-                                        </li>
-                                    <% } %>
-                                    <% for (let j = 1; j <= totalPages; j++) { %>
-                                        <li class="page-item <% if (j === currentPage) { %>active<% } %>">
-                                            <a class="page-link" href="?page=<%= j %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
-                                                <%= j %>
-                                            </a>
-                                        </li>
-                                    <% } %>
-                                    <% if (currentPage < totalPages) { %>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page=<%= currentPage + 1 %>" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
-                                                Next
-                                            </a>
-                                        </li>
-                                    <% } %>
-                                </ul>
-                            </nav>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="orderTable">
+                                        <thead class="text-primary" style="font-size: small;">
+                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Products</th>
+                                            <th>Payment Method</th>
+                                            <th>Total Bill</th>
+                                            <th>Order Status</th>
+                                        </thead>
+                                        <tbody>
+                                           
+                                            <% message.forEach(order=> { %> 
+                                                <tr>
+                                                    
+                                                    <td>
+                                                        <%= order.orderDate.toDateString().substring(0, 10) %>
+                                                    </td>
+                                                   
+                                                        <td><%= order.shippingAddress.address_customer_name %></td>
+                                                   
+                                                    <td>
+                                                        <% order.orderItems.forEach(orderItem=> { %>
+                                                            <% if (orderItem.orderedWeight) { %>
+                                                                <% orderItem.orderedWeight.forEach(pdt=> { %>
+                                                                    <%= pdt.name %>:
+                                                                        <% if (pdt.weight>= 1000) { %>
+                                                                            <%= Math.floor(pdt.weight / 1000) %>kg
+                                                                                <% let remainingGrams=pdt.weight % 1000;
+                                                                                    %>
+                                                                                    <% if (remainingGrams> 0) { %>
+                                                                                        <%= remainingGrams %>g
+                                                                                            <% } %><br>
+                                                                                                <% } else { %>
+                                                                                                    <%= pdt.weight %>
+                                                                                                        g<br>
+                                                                                                        <% } %>
+                                                                                                            <% }); %>
+                                                                                                                <% } %>
+                                                                                                                    <% });
+                                                                                                                        %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.paymentMethod %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.finalPrice %>
+                                                    </td>
+                                                    <td id="orderStatus_<%= order._id %>">
+                                                        <%= order.orderStatus %>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <nav aria-label="navigation">
+                                    <ul class="pagination justify-content-end mt-50">
+                                        <% if (currentPage> 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<%= currentPage - 1 %>"
+                                                    style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
+                                                    Prev
+                                                </a>
+                                            </li>
+                                            <% } %>
+                                                <% for (let j=1; j <=totalPages; j++) { %>
+                                                    <li class="page-item <% if (j === currentPage) { %>active<% } %>">
+                                                        <a class="page-link" href="?page=<%= j %>"
+                                                            style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
+                                                            <%= j %>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=<%= currentPage + 1 %>"
+                                                                    style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color:#563f03; color: #fff; text-align: center; margin: 5px; border-radius: 5px; cursor: pointer; text-decoration: none;">
+                                                                    Next
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
+                        <% } else { %>
+                            <div class="container p-5">
+                                <h2>No Sales Yet!</h2>
+                                <a href="/admin/sales" style="color: red; text-decoration: none;">Back To Sales Page</a>
+                            </div>
+                            <% } %>
                     </div>
-                    <% } else { %>
-                        <div class="container p-5">
-                            <h2>No Sales Yet!</h2>
-                        </div>
-                    <% } %>
-                </div>
+            </div>
         </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        function updateFormAction() {
-            const reportType = document.getElementById('reportType').value;
-            const form = document.getElementById('reportForm');
-            const inputContainer = document.getElementById('inputContainer');
-            inputContainer.innerHTML = '';
-
-            switch (reportType) {
-                case 'daily':
-                    form.action = '/admin/dailyReport';
-                    inputContainer.innerHTML = '<input type="date" name="daily" class="form-control">';
-                    break;
-                case 'monthly':
-                    form.action = '/admin/monthlyReport';
-                    inputContainer.innerHTML = '<input type="month" name="month" class="form-control">';
-                    break;
-                case 'yearly':
-                    form.action = '/admin/yearlyReport';
-                    inputContainer.innerHTML = '<input type="number" name="yearly" class="form-control" min="2022" max="2024" value="2023">';
-                    break;
-                default:
-                    form.action = '';
-                    break;
+        <style>
+            .hidden {
+                display: none;
             }
-        }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const currentDate = new Date().toISOString().split('T')[0];
+            function updateFormAction() {
+                const reportType = document.getElementById('reportType').value;
+                const form = document.getElementById('reportForm');
+                const inputContainer = document.getElementById('inputContainer');
+                var customDateFilter = document.getElementById('customDateFilter');
+                inputContainer.innerHTML = '';
 
-            const fromDateInput = document.getElementById('fromDate');
-            if (fromDateInput) {
-                fromDateInput.max = currentDate;
-            }
-
-            const toDateInput = document.getElementById('toDate');
-            if (toDateInput) {
-                toDateInput.max = currentDate;
-            }
-
-            toDateInput.addEventListener('change', function () {
-                if (fromDateInput.value > toDateInput.value) {
-                    alert('To date cannot be earlier than From date. Please select a valid range.');
-                    toDateInput.value = fromDateInput.value;
+                if (reportType === 'custom') {
+                    customDateFilter.classList.remove('hidden');
+                } else {
+                    customDateFilter.classList.add('hidden');
                 }
+
+                switch (reportType) {
+                    case 'daily':
+                        form.action = '/admin/dailyReport';
+                        inputContainer.innerHTML = '<input type="date" name="daily" class="form-control">';
+                        break;
+                    case 'monthly':
+                        form.action = '/admin/monthlyReport';
+                        inputContainer.innerHTML = '<input type="month" name="month" class="form-control">';
+                        break;
+                    case 'yearly':
+                        form.action = '/admin/yearlyReport';
+                        inputContainer.innerHTML = '<input type="number" name="yearly" class="form-control" min="2022" max="2024" value="2023">';
+                        break;
+                    default:
+                        form.action = '';
+                        break;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const currentDate = new Date().toISOString().split('T')[0];
+
+                const fromDateInput = document.getElementById('fromDate');
+                if (fromDateInput) {
+                    fromDateInput.max = currentDate;
+                }
+
+                const toDateInput = document.getElementById('toDate');
+                if (toDateInput) {
+                    toDateInput.max = currentDate;
+                }
+
+                toDateInput.addEventListener('change', function () {
+                    if (fromDateInput.value > toDateInput.value) {
+                        alert('To date cannot be earlier than From date. Please select a valid range.');
+                        toDateInput.value = fromDateInput.value;
+                    }
+                });
             });
-        });
-    </script>
-</body>
+        </script>
+    </body>

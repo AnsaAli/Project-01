@@ -1,5 +1,6 @@
 const express= require('express');
 const dbConnect = require('./config/dbConnect');
+const cors = require('cors');
 const app=express();
 // const fileUpload = require('express-fileupload');
 const morgan = require('morgan')
@@ -8,7 +9,7 @@ const PORT=process.env.PORT || 3000
 dbConnect();
 
 //  app.use(fileUpload());
-
+app.use(cors());
 app.use(morgan('dev'));
 
 const user_route=require('./routes/userRoute')

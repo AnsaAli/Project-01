@@ -38,6 +38,19 @@ function validateProductName(productName, existingNames) {
     return regexPattern.test(productName);
 }
 
+function validateProductNameAlone(productName) {
+    const regexPattern = /^[a-zA-Z\s]+$/;
+
+
+    // Check if the name meets the length requirement
+    if (trimmedName.length < 3 || trimmedName.length > 50) {
+        return false;
+    }
+
+    // Check if the name matches the regex pattern
+    return regexPattern.test(productName);
+}
+
 
 //////////////////////admin login logout\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -98,7 +111,7 @@ const loadDashboard = async (req, res) => {
         const total = await Order.aggregate([
             {
                 $match: {
-                    orderStatus: { $nin: ["cancelled", "returned"] } // Exclude "cancelled" and "returned" statuses
+                    orderStatus: { $nin: ["cancelled", "Return Approved"] } // Exclude "cancelled" and "returned" statuses
                 }
             },
             {
@@ -113,6 +126,9 @@ const loadDashboard = async (req, res) => {
         const user_count = await User.find({ is_admin: 0 }).count();
         const order_count = await Order.find({}).count();
         const product_count = await Product.find({}).count();
+        const category_count = await Category.find({}).count();
+        const return_count = await Order.find({ orderStatus: 'Return Approved' }).count();
+        console.log('return_count: ', return_count);
 
         const payment = await Order.aggregate([
             {
@@ -133,7 +149,7 @@ const loadDashboard = async (req, res) => {
             {
                 $match: {
                     orderDate: { $gte: startOfYear },
-                    orderStatus: { $nin: ["cancelled", "returned"] }
+                    orderStatus: { $nin: ["cancelled", "Return Approved"] }
                 }
             },
             {
@@ -170,7 +186,7 @@ const loadDashboard = async (req, res) => {
             {
                 $match: {
                     orderDate: { $gte: startOfMonth },
-                    orderStatus: { $nin: ["cancelled", "returned"] }
+                    orderStatus: { $nin: ["cancelled", "Return Approved"] }
                 }
             },
             {
@@ -202,12 +218,104 @@ const loadDashboard = async (req, res) => {
         }
 
         let dailySalesData = dailySales.map(sale => sale.total);
-        console.log('dailySalesData: ', dailySalesData);
-        console.log('total: ', total);
-        console.log('payment: ', payment);
-        console.log('salesData: ', salesData);
-        console.log('dailySalesData: ', dailySalesData);
-        res.render('dashboard', { admin: userData, total, user_count, order_count, product_count, payment, month: salesData, daily: dailySalesData });
+
+        //top selling products
+        const topProducts = await Order.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderItemDetails'
+                }
+            },
+            { $unwind: "$orderItemDetails" },
+            { $unwind: "$orderItemDetails.orderedWeight" },
+            {
+                $group: {
+                    _id: "$orderItemDetails.product_id",
+                    count: { $sum: "$orderItemDetails.orderedWeight.weight" }
+                }
+            },
+            { $sort: { count: -1 } },
+
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'productDetails.category',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            { $unwind: "$categoryDetails" }
+        ]);
+
+        //top selling categories
+        const topCategories = await Order.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderItemDetails'
+                }
+            },
+            { $unwind: "$orderItemDetails" },
+            { $unwind: "$orderItemDetails.orderedWeight" }, // Unwind the orderedWeight array
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderItemDetails.product_id',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            { $unwind: "$product" },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'product.category',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            { $unwind: "$category" },
+            {
+                $group: {
+                    _id: '$category._id',
+                    name: { $first: '$category.name' },
+                    totalQuantityOrdered: { $sum: "$orderItemDetails.orderedWeight.weight" } // Sum weights
+                }
+            },
+            { $sort: { totalQuantityOrdered: -1 } },
+
+        ]);
+
+        res.render('dashboard', {
+            admin: userData,
+            total,
+            user_count,
+            order_count,
+            product_count,
+            return_count,
+            category_count,
+            payment,
+            month: salesData,
+            daily: dailySalesData,
+            topProducts,
+            topCategories
+        });
 
     } catch (error) {
         console.log('inside load dashboard error page', error.message);
@@ -375,7 +483,7 @@ const getTopCategory = async (req, res) => {
             { $skip: skip },
             { $limit: pageSize }
         ]);
-console.log('topCategories.totalQuantityOrdered: ',topCategories.totalQuantityOrdered)
+        console.log('topCategories.totalQuantityOrdered: ', topCategories.totalQuantityOrdered)
         res.render('topCategories', {
             categories: topCategories,
             currentPage: page,
@@ -476,22 +584,6 @@ const softDeleteCategory = async (req, res) => {
 
 ////////////////////////////products\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-const cropImage = async (imagePath, width, height) => {
-    try {
-        // Construct the output path for the cropped image
-        const outputPath = `${imagePath}-cropped`;
-
-        // Crop the image using Sharp
-        await sharp(imagePath)
-            .resize(width, height, { fit: 'cover' })
-            .toFile(outputPath);
-
-        console.log('Image cropped successfully:', outputPath);
-        return outputPath;
-    } catch (error) {
-        console.log('Error while cropping the images', error.message)
-    }
-}
 
 const getTopOrderedProducts = async (req, res) => {
     try {
@@ -583,6 +675,8 @@ const loadAddProducts = async (req, res) => {
         const id = req.query._id;
         const products = await Product.find({})
         const categories = await Category.find({})
+
+
         res.render('addProducts', { products: products, categories: categories })
     } catch (error) {
         console.log('Error while loading add product page', error.message)
@@ -590,28 +684,27 @@ const loadAddProducts = async (req, res) => {
 }
 
 const addProducts = async (req, res) => {
-
     try {
-        console.log('inside the add pro')
+        console.log('inside the addProducts===============');
         const files = req.files;
-        console.log(files, 'fies')
 
         const uploadedImages = [];
 
         for (const file of files) {
             try {
-                // console.log('inside file loop')
                 const result = await cloudinary.uploader.upload(file.path);
-                console.log(result, 'is the result ')
+                console.log(result, 'is the result');
                 uploadedImages.push({
                     url: result.url,
                     public_id: result.public_id
                 });
             } catch (error) {
                 console.error('Error uploading image to Cloudinary:', error);
+                return res.status(500).json({ error: 'UploadFailed', message: 'Failed to upload image to Cloudinary' });
             }
         }
-        console.log(uploadedImages, 'images ================================250 A addProducts')
+        console.log('images ================================250 A addProducts', uploadedImages);
+
         const {
             productName,
             category,
@@ -623,82 +716,24 @@ const addProducts = async (req, res) => {
             offerPrice,
             nutritionalInfo,
             recipies
-
         } = req.body;
 
-        console.log(' ================================311')
-
-        // Validate productName
-        const existingProducts = await Product.find({}, 'productName');
-        const existingNames = existingProducts.map(product => product.productName);
-        if (!validateProductName(productName, existingNames)) {
-            return res.render('addProducts', { errorMessage: 'Please add a valid product name!' });
+        const existingProduct = await Product.findOne({ productName: { $regex: new RegExp(`^${productName}$`, 'i') } });
+        if (existingProduct) {
+            return res.status(400).json({ error: 'ProductAlreadyExists', message: 'Product name already exists' });
         }
 
-        console.log(' ================================315')
-
-        if (totalQuantity < 0) {
-            return res.render('addProducts', { errorMessage: 'Quantity must be greater than 0!' });
-
-        }
-        console.log(' ================================328')
-
-        if (pricePer100g < 0) {
-            return res.render('addProducts', { errorMessage: 'Price must be greater than 0!' });
-        }
-        console.log(' ================================323')
-
-        if (offerPercentage < 0) {
-            return res.render('addProducts', { errorMessage: 'Offer percentage must be greater than 0!' });
-        }
-        console.log(' ================================338')
-
-        if (offerPercentage > 80) {
-            return res.render('addProducts', { errorMessage: "Offer percentage can't be be greater than 80%!" });
-        }
-        console.log(' ================================343')
-
-        if (offerPrice > totalPrice) {
-            return res.render('addProducts', { errorMessage: "Offer price allways lesser than total price!" });
-
-        }
-
-        console.log('================================350 B addProducts')
 
         let price1g = (pricePer100g / 100);
-        console.log('price1g : ', price1g)
         let price100g = (price1g * 100);
-        console.log('price100g : ', price100g)
         let price250 = (price1g * 250);
-        console.log('price250 : ', price250)
         let price500 = (price1g * 500);
-        console.log('price500 : ', price500)
         let price1Kg = (price1g * 1000);
-        console.log('price1Kg : ', price1Kg)
 
         let offerprice100 = price100g - (price100g * offerPercentage / 100);
-        console.log('offerprice100 : ', offerprice100)
         let offerprice250 = price250 - (price250 * offerPercentage / 100);
-        console.log('offerprice250 : ', offerprice250)
         let offerprice500 = price500 - (price500 * offerPercentage / 100);
-        console.log('offerprice500 : ', offerprice500)
         let offerprice1kg = price1Kg - (price1Kg * offerPercentage / 100);
-        console.log('offerprice1kg : ', offerprice1kg)
-
-
-        console.log('================================890 C addProducts')
-
-        //if product is exist
-        const existingProduct = await Product.findOne({ productName })
-        if (existingProduct) {
-            return res.render('addProducts', {
-                errorMessage: 'Product with the same name already exists',
-
-            })
-        }
-        console.log('================================893 D addProducts')
-
-
 
         // Save the product to the database
         const newProduct = new Product({
@@ -713,38 +748,40 @@ const addProducts = async (req, res) => {
             images: uploadedImages,
             nutritionalInfo: nutritionalInfo,
             recipies: recipies,
-            weightOptions: [{
-                weight: 100,
-                weightPrice: pricePer100g,
-                priceAfterDiscount: offerprice100
-            },
-            {
-                weight: 250,
-                weightPrice: price250,
-                priceAfterDiscount: offerprice250
-            },
-            {
-                weight: 500,
-                weightPrice: price500,
-                priceAfterDiscount: offerprice500
-            },
-            {
-                weight: 1000,
-                weightPrice: price1Kg,
-                priceAfterDiscount: offerprice1kg
-            }
+            weightOptions: [
+                {
+                    weight: 100,
+                    weightPrice: pricePer100g,
+                    priceAfterDiscount: offerprice100
+                },
+                {
+                    weight: 250,
+                    weightPrice: price250,
+                    priceAfterDiscount: offerprice250
+                },
+                {
+                    weight: 500,
+                    weightPrice: price500,
+                    priceAfterDiscount: offerprice500
+                },
+                {
+                    weight: 1000,
+                    weightPrice: price1Kg,
+                    priceAfterDiscount: offerprice1kg
+                }
             ]
         });
-        console.log('================================296 D addProducts')
         await newProduct.save();
-        req.session.uploadedImages = uploadedImages
-        console.log('================================299 E addProducts')
-        return res.status(200).json({ success: true, redirectTo: '/admin/viewProducts' });
+
+        return res.status(200).json({ success: true, message: 'Product added successfully.' });
+
     } catch (error) {
         console.log('Error, in the catch addProducts=====302 :', error);
-        res.status(500).json({ errorMessage: 'Error adding product' })
+
+        return res.status(400).json({ error: 'NotAddedProduct', message: 'Not able to add this now! Try again later' });
     }
-}
+};
+
 
 const loadViewProducts = async (req, res) => {
     try {
@@ -890,17 +927,28 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        const product_id = req.params.id;
+        console.log('deleteProduct ==============')
+        const product_id = req.body.proId;
+        console.log('product_id', product_id)
         const product = await Product.findById(product_id)
+        console.log(' product.productName: ', product.productName)
         if (!product) {
             return res.status(404).send('Product not found')
         }
-        //soft delete
-        product.is_deleted = true;
-        await product.save()
-        res.redirect('/admin/viewProducts')
+        console.log('=====================841')
+        try {
+            console.log('before product.is_deleted', product.is_deleted)
+            //soft delete
+            product.is_deleted = true;
+            console.log('after product.is_deleted', product.is_deleted)
+            const pr = await product.save()
+            console.log('after saved to the db product.is_deleted', pr.is_deleted)
+            res.redirect('/admin/viewProducts')
+        } catch (error) {
+            console.log('not able to deleteProduct')
+        }
     } catch (error) {
-        console.log('Error while deleting the product', error.message)
+        console.log('Error while deleting the product', error)
     }
 }
 
@@ -1008,15 +1056,113 @@ const cancelOrder = async (req, res) => {
 const loadSingleOrderDetails = async (req, res) => {
     try {
         const orderId = req.query._id;
+        console.log(orderId, '==========orderId loadSingleOrderDetails');
 
-        console.log(orderId, '==========orderId loadSingleOrderDetails')
+        const orderDetails = await Order.findById({ _id: orderId })
+            .populate('shippingAddress')
+            .populate({
+                path: 'orderItems',
+                populate: {
+                    path: 'product_id',
+                    model: 'Product'
+                }
+            })
+            .populate('user_id');
 
-        const orderDetails = await Order.findById({ _id: orderId }).populate('shippingAddress').populate('orderItems').populate('user_id');
-        // .populate('user_id shippingAddress')
-        // .exec();
-        res.render('singleOrderDetails', { orderDetails })
+        res.render('singleOrderDetails', { orderDetails });
     } catch (error) {
-        console.log('Error occure while loading loadSingleOrderDetails', error)
+        console.log('Error occurred while loading loadSingleOrderDetails', error);
+    }
+}
+
+const loadreturnProducts = async (req, res) => {
+    try {
+        console.log('in loadreturnProducts===========');
+        const orderId = req.query.orderId;
+        console.log('orderId: ', orderId);
+        const items = await Order.findOne({ order_id: orderId }).populate('orderItems');
+        console.log('items.id: ', items._id);
+        // Filter orderItems with return_query
+        const returnItems = items.orderItems.filter(item => item.return_query);
+
+        res.render('return-product', { items: { ...items.toObject(), orderItems: returnItems } });
+
+    } catch (error) {
+        console.log('Error in loadreturnProducts', error)
+    }
+}
+
+const approveReturn = async (req, res) => {
+    try {
+        console.log('in approveReturn===========');
+        const { orderId, itemId } = req.body;
+        console.log('orderId: ', orderId);
+        console.log('itemId: ', itemId);
+
+        // Find the order
+        const returnProduct = await Order.findOne({ order_id: orderId }).populate('user_id').populate('orderItems');
+
+        if (!returnProduct) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Find the specific OrderItem
+        const item = await OrderItems.findById(itemId);
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Item not found' });
+        }
+
+        // Update item status
+        item.is_returned = true;
+        await item.save();
+
+        // Update user's wallet and history
+        const amount = item.orderedWeight[0].price;
+        const user = returnProduct.user_id;
+
+        user.wallet += amount;
+        user.history.push({
+            amount: amount,
+            status: 'Return amount',
+            timestamp: new Date()
+        });
+
+        // Deduct the amount from the order
+        returnProduct.finalPrice -= amount;
+
+        // Check if all items are returned
+        const allReturned = returnProduct.orderItems.every(item => item.is_returned);
+        if (allReturned) {
+            returnProduct.orderStatus = 'Return Approved';
+        } else {
+            returnProduct.orderStatus = 'Partial Return Approved';
+        }
+
+        await user.save();
+        await returnProduct.save();
+
+        res.json({ success: true, message: 'Return approved successfully' });
+    } catch (error) {
+        console.log('Error in approveReturn', error);
+        res.status(500).json({ success: false, message: 'Failed to approve return' });
+    }
+};
+
+
+const approveOrder = async (req, res) => {
+    try {
+        console.log('inside approveOrder=============')
+        const orderId = req.body.orderId;
+        console.log('orderId: ', orderId);
+
+        await Order.findByIdAndUpdate(orderId, {
+            orderStatus: 'Confirmed'
+        });
+
+        res.redirect('/admin/orders');
+    } catch (error) {
+        console.log('Error in approveOrder', error);
+        res.status(500).send('An error occurred while approving the order.');
     }
 }
 
@@ -1063,52 +1209,45 @@ const loadaddCoupons = async (req, res) => {
 
 const addCoupons = async (req, res) => {
     try {
-        console.log('=================================addCoupons')
+        console.log('==============================addCoupon');
+        const { code, discountType, discountAmount, amount, cartamount, expirydate, couponcount } = req.body;
 
-        // Check if the coupon code already exists
-        const existingCoupon = await couponModel.findOne({ code: req.body.code.trim() });
-        console.log('=================================existingCoupon: ', existingCoupon);
+        console.log('Coupon code:', code);
+        console.log('Coupon req.body.discountType:', discountType);
+        console.log('Coupon req.body.discountAmount,:', discountAmount);
+        console.log('Coupon req.body.amount:', amount);
+        console.log('Coupon req.body.cartamount:', cartamount);
+        console.log('Coupon req.body.expirydate:', expirydate);
+        console.log('Coupon req.body.couponcount:', couponcount);
 
+        const existingCoupon = await couponModel.findOne({ code });
         if (existingCoupon) {
-            return res.status(400).render('loadAddCoupon', { existingCoupon });
+            console.log('coupon exist');
+            return res.status(400).json({ success: false, message: 'Coupon code exists!' });
         }
-        if ((req.body.code).length < 6) {
-            return res.status(400).send('Coupon Code must be minimum of 6 length.')
-        }
-        // Client-side validation: Ensure required fields are not empty
-        if (!req.body.code || !req.body.discountType || !req.body.discountAmount || !req.body.cartamount || !req.body.expirydate || !req.body.couponcount) {
-            return res.status(400).send("All fields are required. Please fill in all the details");
-        }
-        console.log('req.body.code: ', req.body.code)
-        console.log('req.body.discountType: ', req.body.discountType)
-        console.log('req.body.discountAmount: ', req.body.discountAmount)
-        console.log('req.body.cartamount: ', req.body.cartamount)
-        console.log('req.body.expirydate: ', req.body.expirydate)
-        console.log(' req.body.couponcount: ', req.body.couponcount)
 
         const newCoupon = new couponModel({
-            code: req.body.code,
-            discountType: req.body.discountType,
-            discountAmount: req.body.discountAmount,
-            maxDiscountAmount: req.body.amount,
-            minCartAmount: req.body.cartamount,
-            expiryDate: req.body.expirydate,
-            maxUsers: req.body.couponcount
+            code,
+            discountType,
+            discountAmount,
+            maxDiscountAmount: amount,
+            minCartAmount: cartamount,
+            expiryDate: expirydate,
+            maxUsers: couponcount
         });
-        console.log('===================================756');
-        console.log(' newCoupon: ', newCoupon);
+
         const couponData = await newCoupon.save();
         if (couponData) {
-            console.log('couponData is true==============')
-            res.redirect('/admin/coupon');
+            return res.json({ success: true, message: 'Coupon added successfully!' });
         } else {
-            console.log('couponData is false==============')
-            res.redirect('/admin/addcoupon');
+            return res.json({ success: false, message: 'Failed to add coupon!' });
         }
     } catch (error) {
-        console.log('Error while adding coupons addCoupons', error);
+        console.error('Error while adding coupon:', error);
+        res.render('page-error-404');
     }
-}
+};
+
 
 const deleteCoupon = async (req, res) => {
     try {
@@ -1117,7 +1256,8 @@ const deleteCoupon = async (req, res) => {
         await couponModel.deleteOne({ _id: id });
         res.redirect('/admin/coupon');
     } catch (error) {
-        console.log('Error while loading deleteCoupon', error)
+        console.log('Error while loading deleteCoupon', error);
+        res.render('page-error-404')
     }
 }
 
@@ -1129,47 +1269,58 @@ const loadeditCoupon = async (req, res) => {
         console.log(couponData);
         res.render("editCoupon", { couponData })
     } catch (error) {
-        console.log('Error while editing the coupon editCoupon', error)
+        console.log('Error while editing the coupon editCoupon', error);
+        res.render('page-error-404')
     }
 }
 
 const editCoupon = async (req, res) => {
     try {
-        console.log('in editCoupon =================');
         const id = req.body.id;
+        const couponData = await couponModel.findById({ _id: id })
+        console.log(couponData);
+        console.log('in editCoupon =================');
 
-        // Client-side validation: Ensure required fields are not empty
-        if (!req.body.code || !req.body.discountType || !req.body.discountAmount || !req.body.amount || !req.body.cartamount || !req.body.expirydate || !req.body.couponcount) {
-            return res.status(400).send("All fields are required. Please fill in all the details.");
+        console.log('req.body.discountType: ', req.body.discountType)
+        if (req.body.discountType === 'fixed') {
+            await couponModel.updateMany({ _id: id }, {
+                $set: {
+                    code: req.body.code,
+                    discountType: req.body.discountType,
+                    discountAmount: req.body.discountAmount,
+                    maxCartAmount: req.body.cartamount,
+                    expiryDate: req.body.expirydate,
+                    maxUsers: req.body.couponcount
+                }
+
+            });
+
+        } else {
+            await couponModel.updateMany({ _id: id }, {
+                $set: {
+                    code: req.body.code,
+                    discountType: req.body.discountType,
+                    discountAmount: req.body.discountAmount,
+                    maxDiscountAmount: req.body.amount,
+                    maxCartAmount: req.body.cartamount,
+                    expiryDate: req.body.expirydate,
+                    maxUsers: req.body.couponcount
+                }
+
+            });
         }
 
-        await couponModel.updateMany({ _id: id }, {
-            $set: {
-                code: req.body.code,
-                discountType: req.body.discountType,
-                discountAmount: req.body.discountAmount,
-                maxDiscountAmount: req.body.amount,
-                maxCartAmount: req.body.cartamount,
-                expiryDate: req.body.expirydate,
-                maxUsers: req.body.couponcount
-            }
-
-        });
 
         res.redirect('/admin/coupon');
 
     } catch (error) {
-        console.log('Error while editing coupons in editCoupon', error)
+        console.log('Error while editing coupons in editCoupon', error);
+        res.render('page-error-404')
+
     }
 }
 /////////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
-const viewWallet = async (req, res) => {
-    try {
-        res.render('viewWallet')
-    } catch (error) {
-        console.log('Error while loading wallet page')
-    }
-}
+
 ////////////////////////////exports\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -1194,14 +1345,15 @@ module.exports = {
     loadEditProduct,
     updateProduct,
     deleteProduct,
-    cropImage,
     loadOrderDetails,
+    approveReturn,
     deleteImages,
     cancelOrder,
+    approveOrder,
     loadViewSingleProducts,
     loadSingleOrderDetails,
+    loadreturnProducts,
     loadCoupons,
-    viewWallet,
     loadaddCoupons,
     addCoupons,
     deleteCoupon,

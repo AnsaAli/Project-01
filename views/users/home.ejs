@@ -41,13 +41,17 @@
                 </div>
                 <div class="slider-arrow hero-slider-1-arrow"></div>
             </section>
-
+            <% if(typeof successMessage !='undefined' ){ %>
+                <p style="color: green;">
+                    <%= successMessage %>
+                </p>
+                <% } %>
             <% Object.keys(categorizedProducts).forEach(category=> { %>
                 <section class="product-tabs section-padding position-relative wow fadeIn animated product">
                     <div class="bg-square"></div>
                     <div class="container">
                         <div class="tab-header">
-
+                          
                         </div>
                         <!--End nav-tabs-->
                         <div class="tab-content wow fadeIn animated" id="myTabContent">
@@ -182,7 +186,9 @@
                     </style>
         </main>
 
-
+<script>
+ 
+</script>
     </body>
 
 

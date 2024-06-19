@@ -104,11 +104,11 @@
                                                                         <button type="button"
                                                                             class="btn btn-outline-info"
                                                                             onclick="confirmDelete('<%= message[i]._id %>')"
-                                                                            style="color: rgb(251, 8, 8);">delete</button>
+                                                                            style="color: rgb(251, 8, 8);">Delete</button>
                                                                         <button type="button"
                                                                             class="btn btn-outline-info"><a
                                                                                 href="/admin/edit?id=<%= message[i]._id%>"
-                                                                                style="color: darkgreen;">edit</a></button>
+                                                                                style="color: darkgreen;">Edit</a></button>
                                                                     </td>
                                                                 </tr>
                                                                 <% } %>
@@ -180,15 +180,24 @@
 
             }
         </style>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script>
             function confirmDelete(couponId) {
-                if (confirm('Are you sure you want to delete this coupon code?')) {
-
-                    window.location.href = "/admin/coupon/delete?id=" + couponId;
-                }
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You won\'t be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/admin/coupon/delete?id=" + couponId;
+                    }
+                });
             }
-
         </script>
     </body>
 

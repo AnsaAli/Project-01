@@ -1,0 +1,311 @@
+<%- include('../layout/header.ejs') %>
+
+    <head>
+        <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css" />
+        <script src="https://unpkg.com/cropperjs"></script>
+    </head>
+
+    <body>
+        <section class="pt-150 pb-150">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="dashboard-menu">
+                                    <ul class="nav flex-column" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="dashboard-tab" data-bs-toggle="tab"
+                                                href="/myProfile" role="tab" aria-controls="dashboard"
+                                                aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
+                                                Profile</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="orders-tab" data-bs-toggle="tab"
+                                                href="/order" role="tab" aria-controls="orders" aria-selected="false"><i
+                                                    class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
+                                                href="/wallet" role="tab" aria-controls="track-orders"
+                                                aria-selected="false"><i
+                                                    class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="address-tab" data-bs-toggle="tab"
+                                                href="/userProfile" role="tab" aria-controls="address"
+                                                aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="change-password-tab" data-bs-toggle="tab"
+                                                href="/changePassword" role="tab" aria-controls="change-password"
+                                                aria-selected="true"><i class="fi-rs-user mr-10"></i>Change Password</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Order details -->
+                            <div class="col-md-9">
+                                <div class="tab-content dashboard-content">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0" style="text-align: center; font-size: larger;">Items for
+                                                Return:</h5>
+                                            <h6 style="text-align: center; font-size: small; margin-top: 2px;">Order
+                                                Number: <%= orderId %>
+                                            </h6>
+                                            <p style="text-align: center; font-size: small;">Please select items to
+                                                return.</p>
+                                        </div>
+                                        <form id="returnForm" action="/return_product?orderId=<%= orderId %>"
+                                            method="POST" enctype="multipart/form-data">
+                                            <div class="card-container">
+                                                <% orderDetails.orderItems.forEach((item, index)=> { %>
+                                                    <div class="card mb-3">
+                                                        <div class="card-body">
+                                                            <% item.orderedWeight.forEach((weight)=> { %>
+                                                                <div class="checkbox-group">
+                                                                    <input type="checkbox" id="item<%= index %>"
+                                                                        name="returnItems[]" value="<%= item._id %>">
+                                                                    <label for="item<%= index %>">
+                                                                        Product Name: <%= weight.name %> <br>
+                                                                            Product Weight: <%= weight.weight %>g <br>
+                                                                                Price: <%= weight.price %>
+                                                                    </label>
+                                                                </div>
+                                                                <% }); %>
+                                                                    <select id="returnReason<%= index %>"
+                                                                        name="returnReasons[]" class="select-reason">
+                                                                        <option value="">Please let us know the reason.
+                                                                        </option>
+                                                                        <option value="Product Damaged">Product Damaged
+                                                                        </option>
+                                                                        <option value="Package broken.">Package broken.
+                                                                        </option>
+                                                                        <option value="Expiry date over.">Expiry date
+                                                                            over.</option>
+                                                                    </select>
+                                                                    <input type="file" id="imageInput<%= index %>"
+                                                                        name="image" accept="image/*"
+                                                                        class="file-input">
+                                                                    <div id="imagePreview<%= index %>"></div>
+                                                                    <!-- Modal for cropping image -->
+                                                                    <div id="cropModal<%= index %>"
+                                                                        style="display: none;">
+                                                                        <div>
+                                                                            <div>
+                                                                                <img id="cropImage<%= index %>" src=""
+                                                                                    alt="Image for cropping">
+                                                                            </div>
+                                                                            <button type="button"
+                                                                                id="cropButton<%= index %>"
+                                                                                class="btn btn-small">Crop</button>
+                                                                        </div>
+                                                                    </div>
+                                                        </div>
+                                                    </div>
+                                                    <% }); %>
+                                            </div>
+                                            <button type="submit" class="btn" style="margin-top: 15px;">Return</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            .card-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .card {
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 15px;
+                width: 100%;
+            }
+
+            .card-body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .checkbox-group {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            .checkbox-group input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                transform: scale(0.75);
+                margin-right: 10px;
+            }
+
+            .select-reason {
+                margin-top: 10px;
+                padding: 5px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+
+            .file-input {
+                margin-top: 10px;
+            }
+
+            .btn {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .btn:hover {
+                background-color: #0056b3;
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('input[type="file"]').forEach((fileInput, index) => {
+                    const imageInput = document.getElementById(`imageInput${index}`);
+                    const imagePreview = document.getElementById(`imagePreview${index}`);
+                    const cropModal = document.getElementById(`cropModal${index}`);
+                    const cropImage = document.getElementById(`cropImage${index}`);
+                    const cropButton = document.getElementById(`cropButton${index}`);
+                    let cropper;
+
+                    imageInput.addEventListener('change', function (event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                cropImage.src = e.target.result;
+                                cropModal.style.display = 'flex';
+                                cropper = new Cropper(cropImage, {
+                                    aspectRatio: 1,
+                                    viewMode: 1,
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    cropButton.addEventListener('click', function () {
+                        if (cropper) {
+                            const canvas = cropper.getCroppedCanvas();
+                            cropModal.style.display = 'none';
+                            cropper.destroy();
+                            cropper = null;
+
+                            const img = document.createElement('img');
+                            img.src = canvas.toDataURL();
+                            img.width = 200;
+                            img.height = 200;
+                            img.style.marginBottom = '5px';
+
+                            const container = document.createElement('div');
+                            container.classList.add('me-3', 'mb-3');
+                            container.appendChild(img);
+
+                            const deleteButton = document.createElement('button');
+                            deleteButton.textContent = 'Delete';
+                            deleteButton.classList.add('btn', 'btn-danger', 'ms-2');
+                            deleteButton.addEventListener('click', function () {
+                                container.remove();
+                            });
+                            container.appendChild(deleteButton);
+
+                            imagePreview.appendChild(container);
+                            canvas.toBlob(function (blob) {
+                                formData.append('croppedImages', blob, `cropped-${currentFileIndex}.png`);
+                            }, 'image/png');
+
+                        }
+                    });
+
+                    window.addEventListener('click', function (event) {
+                        if (event.target === cropModal) {
+                            cropModal.style.display = 'none';
+                            if (cropper) {
+                                cropper.destroy();
+                                cropper = null;
+                            }
+                        }
+                    });
+                });
+
+                // Add form submission handling
+                const returnForm = document.getElementById('returnForm');
+                returnForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+
+                    // Check if at least one checkbox is selected
+                    const checkedCheckboxes = document.querySelectorAll('input[name="returnItems[]"]:checked');
+                    if (checkedCheckboxes.length === 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'No items selected',
+                            text: 'Please select at least one item to return.',
+                        });
+                        return;
+                    }
+                    // Check if reasons are selected for all selected items
+                    const returnReasons = document.querySelectorAll('select[name="returnReasons[]"]');
+                    for (let i = 0; i < checkedCheckboxes.length; i++) {
+                        const reasonSelect = returnReasons[i];
+                        if (!reasonSelect.value) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Reason not selected',
+                                text: 'Please select a reason for each item you want to return.',
+                            });
+                            return;
+                        }
+                    }
+
+                    // Create a new FormData object
+                    const formData = new FormData(returnForm);
+
+                    try {
+                        const response = await fetch(returnForm.action, {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Return Request Submitted',
+                                text: 'Your return request has been submitted successfully.',
+                            }).then(() => {
+                                window.location.href = '/order';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message || 'An error occurred while submitting your return request. Please try again.',
+                            });
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while submitting your return request. Please try again.',
+                        });
+                    }
+                });
+            });
+
+        </script>
+    </body>

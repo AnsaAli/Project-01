@@ -6,14 +6,23 @@
                 <div class="col-md-9">
                     <div class="tab-content dashboard-content ">
                         <div class="mt-5 d-flex">
-                            <button class="btn btn-success ml-3 m-3" onclick="printPage()" style="background-color: rgb(255, 255, 255); color: black;">Print</button>
-                            <form action="/invoiceDownload" method="get">
-                                <button class="btn btn-success ml-3 m-3"  style="background-color: rgb(255, 255, 255); color: black;">Download
-                                    Invoice</button>
-                            </form>
-                         
+                            
+
+                            <% if (orderPlaced.paymentStatus === 'COD') { %>
+                                <p style="font-weight: bold; margin-bottom: 20px;">You can download your invoice after completing the payment!</p>
+                                <a href="/order">Back to order.</a>
+                            <% } else if (orderPlaced.orderStatus === 'Cancelled' || orderPlaced.orderStatus === 'Requesting for return') { %>
+                                <a href="/order">Back to order.</a>
+                            <% } else { %>
+                                <button class="btn btn-success ml-3 m-3" onclick="printPage()" style="background-color: rgb(255, 255, 255); color: black;">Print</button>
+                                <form action="/invoiceDownload" method="get">
+                                    <button class="btn btn-success ml-3 m-3" style="background-color: rgb(255, 255, 255); color: black;">Download Invoice</button>
+                                </form>
+                                <a href="/order">Back to order.</a>
+                            <% } %>
+                            
                         </div>
-                        
+
                         <div class="card">
                             <div class="card-header" style="text-align: center;">
                                 <h5 class="mb-0"> Order Details</h5>
@@ -25,54 +34,64 @@
                                             <tr>
                                                 <th>Order No:</th>
                                                 <th>Date</th>
-                                                <th>Product Details</th>
+                                                <th>Product <br> Name</th>
+                                                <th>Product <br> Weight</th>
                                                 <th>Amount</th>
-                                                <th>Status</th>
+                                                <th>Paid Through</th>
+                                                <th>Order Status</th>
                                                 <th>Address</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td> <%= orderPlaced.order_id %></td> 
-                                                <td> <%= orderPlaced.orderDate.toDateString() %> </td>
-                                                <td> 
+                                                <td>
+                                                    <%= orderPlaced.order_id %>
+                                                </td>
+                                                <td>
+                                                    <%= orderPlaced.orderDate.toDateString() %>
+                                                </td>
+                                                <td>
+                                                    <!-- Product Names -->
                                                     <% orderPlaced.orderItems.forEach(orderItem=> { %>
                                                         <% if (orderItem.orderedWeight) { %>
                                                             <% orderItem.orderedWeight.forEach(pdt=> { %>
-                                                                <%= pdt.name %>:
-                                                                    <% if (pdt.weight>= 1000) { %>
-                                                                        <%= Math.floor(pdt.weight / 1000) %>
-                                                                            kg
-                                                                            <% let remainingGrams=pdt.weight
-                                                                                % 1000; %>
-                                                                                <% if (remainingGrams> 0) {
-                                                                                    %>
-                                                                                    <%= remainingGrams %>g
-                                                                                        <% } %><br>
-                                                                                            <% } else { %>
-                                                                                                <%= pdt.weight
-                                                                                                    %>g <br>
-                                                                                                    <% } %>
-
-                                                                                                        <% });
-                                                                                                            %>
-                                                                                                            <% }
-                                                                                                                %>
-                                                                                                                <% });
-                                                                                                                    %>
-
+                                                                <%= pdt.name %><br>
+                                                                    <% }); %>
+                                                                        <% } %>
+                                                                            <% }); %>
                                                 </td>
                                                 <td>
-                                                    ₹<%= orderPlaced.finalPrice %> 
+                                                    <!-- Corresponding Weights -->
+                                                    <% orderPlaced.orderItems.forEach(orderItem=> { %>
+                                                        <% if (orderItem.orderedWeight) { %>
+                                                            <% orderItem.orderedWeight.forEach(pdt=> { %>
+                                                                <% if (pdt.weight>= 1000) { %>
+                                                                    <%= Math.floor(pdt.weight / 1000) %> kg
+                                                                        <% let remainingGrams=pdt.weight % 1000; %>
+                                                                            <% if (remainingGrams> 0) { %>
+                                                                                <%= remainingGrams %>g
+                                                                                    <% } %>
+                                                                                        <% } else { %>
+                                                                                            <%= pdt.weight %>g
+                                                                                                <% } %><br>
+                                                                                                    <% }); %>
+                                                                                                        <% } %>
+                                                                                                            <% }); %>
+                                                </td>
+                                                <td>
+                                                    ₹<%= orderPlaced.finalPrice %>
+                                                </td>
+                                                <td>
+                                                    <%= orderPlaced.paymentMethod %>
                                                 </td>
                                                 <td>
                                                     <%= orderPlaced.orderStatus %>
                                                 </td>
                                                 <td>
                                                     <%= orderPlaced.shippingAddress.address_customer_name %> <br>
-                                                    <%= orderPlaced.shippingAddress.mobile_num %> <br>
-                                                        <%= orderPlaced.shippingAddress.apartment_name %> <br>
-                                                            <%= orderPlaced.shippingAddress.city %>
+                                                        <%= orderPlaced.shippingAddress.mobile_num %> <br>
+                                                            <%= orderPlaced.shippingAddress.apartment_name %> <br>
+                                                                <%= orderPlaced.shippingAddress.city %>
 
                                                 </td>
                                             </tr>
@@ -96,6 +115,9 @@
             function printPage() {
                 window.print();
             }
+
+         
+
         </script>
 
     </section>

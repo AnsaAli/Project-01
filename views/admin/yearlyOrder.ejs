@@ -28,7 +28,7 @@
                         <th scope="col" style="font-size: large;">A/c Holder NAME</th>
                         <th scope="col" style="font-size: large;">Delivered Name</th>
                         <th scope="col" style="font-size: large;">ORDER DATE</th>
-                        <!-- <th scope="col">DISCOUNT</th> -->
+                        <th scope="col" style="font-size: large;">PRODUCT DETAILS</th>
                         <th scope="col" style="font-size: large;">TOTAL BILL</th>
                     </tr>
                 </thead>
@@ -39,7 +39,24 @@
                                 <td><%= order.user_id.name %></td>
                                 <td><%= order.shippingAddress.address_customer_name %></td>
                                 <td><%= order.orderDate.toDateString() %></td>
-                                <!-- <td><%= order.discount %></td> -->
+                              <td>
+                                <% order.orderItems.forEach(orderItem => { %>
+                                    <% if (orderItem.orderedWeight) { %>
+                                        <% orderItem.orderedWeight.forEach(pdt => { %>
+                                            <%= pdt.name %>: 
+                                            <% if (pdt.weight >= 1000) { %>
+                                                <%= Math.floor(pdt.weight / 1000) %>kg
+                                                <% let remainingGrams = pdt.weight % 1000; %>
+                                                <% if (remainingGrams > 0) { %>
+                                                    <%= remainingGrams %>g
+                                                <% } %><br>
+                                            <% } else { %>
+                                                <%= pdt.weight %>g <br>
+                                            <% } %>
+                                        <% }); %>
+                                    <% } %>
+                                <% }); %>
+                              </td>
                                 <td><%= order.finalPrice %></td>
                             </tr>
                         <% }); %>

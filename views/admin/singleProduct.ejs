@@ -4,14 +4,14 @@
 
         <div class="containerProduct">
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-5 d-flex">
                     <form action="/admin/editProduct" method="GET" class="mb-3">
                         <input type="hidden" name="_id" value="<%= products._id %>">
                         <button type="submit" class="btn btn-primary">Edit</button>
                     </form>
-                    <form action="/admin/viewProducts/<%= products._id %>/deleteProduct" method="post">
-                        <input type="hidden" name="_id" value="<%= products._id %>">
-                        <button type="submit" class="btn btn-primary" onclick="confirmDelete()">Delete</button>
+                    <form action="/admin/deleteProduct" method="post" id="deleteForm" class="mb-3 ml-5">
+                        <input type="hidden" name="proId" value="<%= products._id %>">
+                        <button type="button" class="btn btn-primary" onclick="confirmDelete()">Delete</button>
                     </form>
                 </div>
             </div>
@@ -154,12 +154,25 @@
 
             }
         </style>
-
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             function confirmDelete() {
-                if (confirm("Are you sure you want to delete this product?")) {
-                    document.getElementById('deleteForm').submit();
-                }
+
+              
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        console.log('result is true')
+                        document.getElementById('deleteForm').submit();
+                    }
+                });
             }
         </script>
 

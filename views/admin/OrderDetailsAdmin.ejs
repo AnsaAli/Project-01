@@ -1,10 +1,10 @@
 <%- include('../layout/adminHeader.ejs') %>
 
-<!-- Add these links to your head section -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" charset="utf8"
-  src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+  <!-- Add these links to your head section -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
 
 
@@ -17,19 +17,20 @@
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table" id="orderTable">
-                <thead class=" text-primary" style="font-size: small;">
-                  <th>Date</th>
-                  <th>Id</th>
-                  <th>Products</th>
-                  <th>User email</th>
-                  <th>Pay-method</th>
-                  <th>Status</th>
-                  <th>Action</th>
+              <table class="table" id="orderTable" style="text-align: center;">
+                <thead class=" text-primary">
+                  <th style="font-size: large; text-align: center;">Date</th>
+                  <th style="font-size: large; text-align: center;">Id</th>
+                  <th style="font-size: large; text-align: center;">Product <br> Name</th>
+                  <th style="font-size: large; text-align: center; ">Product <br> weight</th>
+                  <th style="font-size: large; text-align: center;">User <br> email</th>
+                  <th style="font-size: large; text-align: center;">Paid <br> Through</th>
+                  <th style="font-size: large; text-align: center;">Status</th>
+                  <th style="font-size: large; text-align: center;">Action</th>
 
 
                 </thead>
-                <tbody>
+                <tbody style="font-size: 16px; text-align: center;">
                   <% orderPlaced.forEach(order=> { %>
                     <tr>
                       <td>
@@ -40,23 +41,31 @@
                       </td>
                       <td>
                         <% order.orderItems.forEach(orderItem=> { %>
-                          <% if (orderItem.orderedWeight) { %>
-                            <% orderItem.orderedWeight.forEach(pdt=> { %>
-                              <%= pdt.name %>:
-                                <% if (pdt.weight>= 1000) { %>
-                                  <%= Math.floor(pdt.weight / 1000) %>kg
-                                    <% let remainingGrams=pdt.weight % 1000; %>
-                                      <% if (remainingGrams> 0) { %>
-                                        <%= remainingGrams %>g
-                                          <% } %><br>
-                                            <% } else { %>
-                                              <%= pdt.weight %>g <br>
-                                                <% } %>
-
-                                                  <% }); %>
-                                                    <% } %>
-                                                      <% }); %>
-
+                          <% orderItem.orderedWeight.forEach(pdt=> { %>
+                          
+                              <% if (orderItem.is_returned) { %>
+                            <p style="color: red; font-size: smaller; font-weight: bold;">   <%= pdt.name %> Returned</p>
+                              <% } else { %>
+                                <%= pdt.name %> <br><br>
+                                <% } %>
+                           
+                            <% }); %>
+                              <% }); %>
+                      </td>
+                      <td>
+                        <% order.orderItems.forEach(orderItem=> { %>
+                          <% orderItem.orderedWeight.forEach(pdt=> { %>
+                            <% if (pdt.weight>= 1000) { %>
+                              <%= Math.floor(pdt.weight / 1000) %>kg
+                                <% let remainingGrams=pdt.weight % 1000; %>
+                                  <% if (remainingGrams> 0) { %>
+                                    <%= remainingGrams %>g <br><br>
+                                      <% } %><br><br>
+                                        <% } else { %>
+                                          <%= pdt.weight %>g <br><br>
+                                            <% } %>
+                                              <% }); %>
+                                                <% }); %>
                       </td>
                       <td>
                         <%= order.user_id.email %>
@@ -65,18 +74,31 @@
                         <%= order.paymentMethod %>
                       </td>
                       <td id="orderStatus_<%= order._id %>">
-                        <%= order.orderStatus %>
+                        <% if(order.orderStatus==='Requesting for return' ) {%>
+                          Requested for return <br>
+                          <a href="/admin/review_return?orderId=<%= order.order_id %>" style="color: red;">Review</a>
+                          <% } else {%>
+                            <%= order.orderStatus %>
+                              <%} %>
+
                       </td>
-                      <!-- <td><a href="/admin/cancelOrder/<%= order._id %>">Cancel</a></td> -->
+
                       <td class="order">
-                        <button class="cancelOrderBtn btn-small d-block btn btn-danger btn-fill-out btn-block hover-up"
-                          data-order-id="<%= order._id %>" type="submit" onclick="confirmCancel()">Cancel
-                          Order</button>
-                          <form action="/admin/viewOrderDetails" method="GET" class="mb-3">
+                        <% if(order.orderStatus !='Return Approved' ) {%>
+                        <form id="cancelForm_<%= order._id %>" action="/admin/cancelOrder" method="POST" >
                           <input type="hidden" name="_id" value="<%= order._id %>">
-                          <button type="submit" class="btn btn-primary">View Details</button>
+                          <button class="cancelOrderBtn btn-small" data-order-id="<%= order._id %>" type="button"
+                            style="color: red; font-weight: bold; border: none;"
+                            onclick="confirmCancel('<%= order._id %>')">Cancel Order</button>
                         </form>
-                    
+                        <form action="/admin/viewOrderDetails" method="GET" class="mb-3">
+                          <input type="hidden" name="_id" value="<%= order._id %>">
+                          <button type="submit" class="btn btn-primary"
+                            style="color: rgb(0, 0, 0); font-weight: bold;">View Details</button>
+                        </form>
+                        <% } else {%>
+                         <p style="font-weight: bold; font-size: small; color: red;"> Return Approved</p>
+                            <%} %>
                       </td>
                     </tr>
                     <% }); %>
@@ -96,10 +118,10 @@
   </div>
   </div>
   <style>
-        
-.card{
-  margin-top: 100px;
-}
+    .card {
+      margin-top: 100px;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
@@ -136,52 +158,66 @@
       font-size: 12px;
     }
   </style>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-   $(document).ready(function () {
-        $('#orderTable').DataTable({
-          "bInfo": false  
-        });
+    $(document).ready(function () {
+      $('#orderTable').DataTable({
+        "bInfo": false
       });
+    });
 
-    function confirmCancel() {
-      if (confirm("Are you sure you want to cancel this order?")) {
-        document.getElementById('deleteForm').submit();
-      }
+    function confirmCancel(orderId, btn) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, cancel it!'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const response = await fetch(`/admin/cancelOrder/${orderId}`, {
+              method: 'DELETE',
+            });
+
+            if (response.ok) {
+              // Update the UI to reflect the cancelled order
+              const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
+              orderStatusCell.textContent = 'Cancelled';
+
+              btn.textContent = 'Order Cancelled'; // Change the button text
+              btn.disabled = true;
+
+              Swal.fire(
+                'Cancelled!',
+                'The order has been cancelled.',
+                'success'
+              );
+            } else {
+              throw new Error('Failed to cancel order');
+            }
+          } catch (error) {
+            console.error('Error cancelling order:', error);
+            Swal.fire(
+              'Error!',
+              'Failed to cancel order. Please try again.',
+              'error'
+            );
+          }
+        }
+      });
     }
 
     // Add event listener to all cancel order buttons
     document.querySelectorAll('.cancelOrderBtn').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const orderId = btn.dataset.orderId;
-        console.log(orderId, 'orderId===========in OrderDetails')
-        // Send a DELETE request to cancel the order
-        try {
-          const response = await fetch(`/admin/cancelOrder/${orderId}`,
-            {
-              method: 'DELETE',
-            });
-          console.log(response.ok, '=========response')
-
-          if (response.ok) {
-            // Update the UI to reflect the cancelled order
-            const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
-            orderStatusCell.textContent = 'Cancelled';
-
-            btn.textContent = 'Order Cancelled' //chnage the buttn
-            btn.disabled = true;
-
-          } else {
-            throw new Error('Failed to cancel order');
-          }
-
-
-        } catch (error) {
-          console.error('Error cancelling order:', error);
-          alert('Failed to cancel order. Please try again.');
-        }
+        confirmCancel(orderId, btn);
       });
     });
+
 
   </script>
   </body>

@@ -4,7 +4,7 @@
   <div class="content">
     <div class="row">
       <div class="col-md-12">
-      
+
         <div class="card">
           <div class="card-header">
             <h4 class="card-title"> Category List</h4>
@@ -12,17 +12,16 @@
               <div class="row ">
                 <div class="col-md-5">
                   <label for="searchQuery"></label>
-                  <input type="text" class="form-control" id="searchQuery" name="searchQuery"
-                    placeholder="Search ">
+                  <input type="text" class="form-control" id="searchQuery" name="searchQuery" placeholder="Search ">
                 </div>
                 <div class="col-md-1">
                   <button type="submit" class="btn btn-primary" style="border-radius: 10px; margin-left: 0px;"><i
                       class="fa fa-search"></i></button>
                 </div>
               </div>
-             
+
             </form>
-           
+
           </div>
           <div class="card-header">
             <h6 class="card-title"> <a href="/admin/addCategory">Add Category</a></h6>
@@ -31,64 +30,69 @@
             <h6 class="card-title"> <a href="/admin/findTopCategory">Top Selling Categories</a></h6>
           </div>
           <div class="card-body">
-          
+
             <div class="table-responsive">
               <table class="table">
                 <% if(typeof successMessage !='undefined' ){ %>
                   <p style="color: green;">
-                      <%= successMessage %>
+                    <%= successMessage %>
                   </p>
                   <% } %>
-                      <% if(typeof errorMessage !='undefined' ){ %>
-                          <p style="color: red;">
-                              <%= errorMessage %>
-                          </p>
-                          <% } %>
-              
-                <thead class=" text-primary" style="font-size: small;">
-                  <th>
-                    ID
-                  </th>
+                    <% if(typeof errorMessage !='undefined' ){ %>
+                      <p style="color: red;">
+                        <%= errorMessage %>
+                      </p>
+                      <% } %>
 
-                  <th>
-                    Category Name
-                  </th>
-                  <th>
-                    Description
-                  </th>
-                  <th>
-                    Action
-                  </th>
-                </thead>
-                <tbody>
-                  <% categories.forEach(category=> { %>
-                    <tr>
-                      <td>
-                        <%= category._id %>
-                      </td>
+                        <thead class=" text-primary" style="font-size: small;">
+                          <th>
+                            ID
+                          </th>
 
-                      <td>
-                        <%= category.name %>
-                      </td>
-                      <td>
-                        <%= category.description %>
-                      </td>
-                      <td>
-                        <button class="btn btn-fill-out btn-block hover-up mb-2" style="background-color: rgb(8, 205, 37);"><a
-                            href="/admin/editCategory?_id=<%= category._id %> "  class="btnCate" >Edit</a></button>
-                            <form action="/admin/category/<%= category._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');">
-                              <button type="submit" class="btn btn-fill-out btn-block hover-up" style="background-color: rgb(244, 15, 15);">Delete</button>
-                            </form>
-                      </td>
-                    </tr>
-                    <% }); %>
-                </tbody>
-              </table>    
+                          <th>
+                            Category Name
+                          </th>
+                          <th>
+                            Description
+                          </th>
+                          <th>
+                            Action
+                          </th>
+                        </thead>
+                        <tbody>
+                          <% categories.forEach(category=> { %>
+                            <tr>
+                              <td>
+                                <%= category._id %>
+                              </td>
+
+                              <td>
+                                <%= category.name %>
+                              </td>
+                              <td>
+                                <%= category.description %>
+                              </td>
+                              <td>
+                                <button class="btn btn-fill-out btn-block hover-up mb-2"
+                                  style="background-color: rgb(8, 205, 37);"><a
+                                    href="/admin/editCategory?_id=<%= category._id %> "
+                                    class="btnCate">Edit</a></button>
+
+                                <form action="/admin/category/<%= category._id %>/delete" method="POST" class="delete-form">
+                                  <button type="button" class="btn btn-fill-out btn-block hover-up delete-btn"
+                                          style="background-color: rgb(244, 15, 15);">Delete
+                                  </button>
+                              </form>
+                              </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
-      
+
     </div>
   </div>
 
@@ -97,14 +101,43 @@
 
 
   <style>
-    .card{
+    .card {
       margin-top: 100px;
     }
+
     .btnCate {
       text-decoration: none;
       color: rgb(255, 255, 255);
     }
   </style>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function confirmDelete(form) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 
-<%- include('../layout/adminfooter.ejs') %>
- 
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the form from submitting automatically
+                const form = this.closest('form');
+                confirmDelete(form);
+            });
+        });
+    });
+  </script>
+
+  <%- include('../layout/adminfooter.ejs') %>

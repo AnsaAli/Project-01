@@ -34,7 +34,7 @@ admin_route.post('/addProducts',uploadMiddleware,adminController.addProducts);
 admin_route.get('/viewProducts',authMiddleware.is_login,adminController.loadViewProducts)
 admin_route.get('/editProduct',authMiddleware.is_login,adminController.loadEditProduct)
 admin_route.post('/editProduct',uploadMiddleware,adminController.updateProduct)
-admin_route.post('/viewProducts/:id/deleteProduct',authMiddleware.is_login,adminController.deleteProduct)
+admin_route.post('/deleteProduct',authMiddleware.is_login,adminController.deleteProduct)
 admin_route.get('/viewSingleProduct',authMiddleware.is_login,adminController.loadViewSingleProducts)
 admin_route.post("/deleteImage/:productId/:imageId",authMiddleware.is_login, adminController.deleteImages);
 admin_route.get('/findTop',authMiddleware.is_login,adminController.getTopOrderedProducts);
@@ -42,6 +42,10 @@ admin_route.get('/findTop',authMiddleware.is_login,adminController.getTopOrdered
 admin_route.get('/orders',authMiddleware.is_login,adminController.loadOrderDetails)
 admin_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, adminController.cancelOrder)
 admin_route.get('/viewOrderDetails',authMiddleware.is_login,adminController.loadSingleOrderDetails)
+admin_route.get('/review_return',authMiddleware.is_login,adminController.loadreturnProducts);
+admin_route.post('/approve_return',authMiddleware.is_login,adminController.approveReturn);
+admin_route.post('/approve_Order',authMiddleware.is_login,adminController.approveOrder);
+
 
 /////coupons
 admin_route.get('/coupon',authMiddleware.is_login,adminController.loadCoupons);
@@ -50,9 +54,6 @@ admin_route.get('/edit', authMiddleware.is_login, adminController.loadeditCoupon
 admin_route.post('/edit', authMiddleware.is_login, adminController.editCoupon);
 admin_route.get('/addcoupon',authMiddleware.is_login,adminController.loadaddCoupons)
 admin_route.post('/addcoupon',authMiddleware.is_login,adminController.addCoupons);
-
-//wallet
-admin_route.get('/viewWallet',authMiddleware.is_login,adminController.viewWallet)
 
 //salesController
 admin_route.get('/sales',authMiddleware.is_login,salesController.loadSales);

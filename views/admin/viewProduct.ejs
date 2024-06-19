@@ -21,7 +21,7 @@
 
             <div class="card-header">
               <div class="row container m-5 ">
-                <a href="/admin/findTop">Top Selling Products</a>
+                <a href="/admin/findTop"  style="font-weight: bold;">Top Selling Products</a>
               </div>
             </div>
 
@@ -40,51 +40,55 @@
                   </thead>
                   <tbody>
                     <% products.forEach(product=> { %>
-                      <%= product.image %>
-                        <tr>
-                          <td>
-                            <img src="<%= product.images[0].url %>" alt="Product Image"
-                              class="img-fluid mx-auto d-block" alt="Product Image" style="width:200px; height: 200px;">
 
-                          </td>
-                          <td>
-                            <%= product.productName %>
-                          </td>
-                          <td>
-                            <%= product.category && product.category.name ? product.category.name
-                              : 'No category assigned' %>
-                          </td>
-                          <td>
-                            <%= product.totalQuantity %>kg
-                          </td>
-                          <td>
-                            <% if (product.totalQuantity <=0) { %>
-                              <p style="color: red;">Not in stock.
-                              </p>
-                              <!-- Quantity: <%= product.totalQuantity %> -->
-                              <% } else { %>
-                                <p>In Stock</p>
-                                <% } %>
-                          </td>
-                          <td>
-                            <%= product.offerPercentage %>%
-                          </td>
-                          <td>
-                            <form action="/admin/viewSingleProduct" method="GET" class="mb-3">
-                              <input type="hidden" name="_id" value="<%= product._id %>">
-                              <button type="submit" class="btn btn-primary">View</button>
-                            </form>
-                            <form action="/admin/editProduct" method="GET" class="mb-3">
-                              <input type="hidden" name="_id" value="<%= product._id %>">
-                              <button type="submit" class="btn btn-primary">Edit</button>
-                            </form>
-                            <form action="/admin/viewProducts/<%= product._id %>/deleteProduct" method="post">
-                              <input type="hidden" name="_id" value="<%= product._id %>">
-                              <button type="submit" class="btn btn-primary" onclick="confirmDelete()">Delete</button>
-                            </form>
-                          </td>
-                        </tr>
-                        <% }); %>
+                      <tr>
+                        <td>
+                          <% if (product.images && product.images.length> 0) { %>
+                            <img src="<%= product.images[0].url %>" alt="Product Image"
+                              class="img-fluid mx-auto d-block" style="width:200px; height: 200px;">
+                            <% } else { %>
+                              <p>No Image Available</p>
+                              <% } %>
+                        </td>
+                        <td>
+                          <%= product.productName %>
+                        </td>
+                        <td>
+                          <%= product.category && product.category.name ? product.category.name : 'No category assigned'
+                            %>
+                        </td>
+                        <td>
+                          <%= product.totalQuantity %>kg
+                        </td>
+                        <td>
+                          <% if (product.totalQuantity <=0) { %>
+                            <p style="color: red;">Not in stock.
+                            </p>
+                            <!-- Quantity: <%= product.totalQuantity %> -->
+                            <% } else { %>
+                              <p>In Stock</p>
+                              <% } %>
+                        </td>
+                        <td>
+                          <%= product.offerPercentage %>%
+                        </td>
+                        <td>
+                          <form action="/admin/viewSingleProduct" method="GET" class="mb-3">
+                            <input type="hidden" name="_id" value="<%= product._id %>">
+                            <button type="submit" class="btn btn-primary">View</button>
+                          </form>
+                          <form action="/admin/editProduct" method="GET" class="mb-3">
+                            <input type="hidden" name="_id" value="<%= product._id %>">
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                          </form>
+                          <form action="/admin/deleteProduct" method="post" class="delete-form"
+                            id="deleteForm-<%= product._id %>">
+                            <input type="hidden" name="proId" value="<%= product._id %>" class="proId">
+                            <button type="button" class="btn btn-primary delete-btn">Delete</button>
+                          </form>
+                        </td>
+                      </tr>
+                      <% }); %>
                   </tbody>
                 </table>
               </div>
@@ -135,19 +139,40 @@
         opacity: 0.7;
       }
     </style>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-      function confirmDelete() {
-        if (confirm("Are you sure you want to delete this product?")) {
-          document.getElementById('deleteForm').submit();
-        }
+      function confirmDelete(form) {
+        const productId = form.querySelector('.proId').value;
+        console.log('Product ID to delete:', productId);
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
       }
 
       $(document).ready(function () {
         $('#productTable').DataTable({
           "bInfo": false
         });
-      });
 
+        // Add event listeners to each delete button
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(btn => {
+          btn.addEventListener('click', function () {
+            const form = this.closest('form');
+            confirmDelete(form);
+          });
+        });
+      });
     </script>
   </body>

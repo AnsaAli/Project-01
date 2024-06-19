@@ -77,6 +77,10 @@
         referralCode: {
            type: String,
            unique: true
+        },
+        is_referralUsed:{
+            type: Boolean,
+            default: false
         }
     },{timestamps: true})
 

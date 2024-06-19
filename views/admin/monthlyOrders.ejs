@@ -4,7 +4,8 @@
         <div class="row">
             <% if (monthlyOrders.length > 0) { %>
                 <div>
-                    <a class="btn btn-secondary ml-3 mt-3" href="/admin/monthlysales/download?month=<%= monthinput %>" >Download</a>
+                    <a class="btn btn-secondary ml-3 mt-3" href="/admin/monthlysales/download?month=<%= monthinput %>&format=pdf">Download</a>
+
                     <button class="btn btn-success ml-3 mt-3" onclick="printPage()">Print</button>
                 </div>
 
@@ -35,7 +36,8 @@
                             <tr>
                                 <th scope="col" style="font-size: large;">Order<br>Id</th>
                                 <th scope="col" style="font-size: large;">Order Date</th>
-                                <th scope="col" style="font-size: large;">Items</th>
+                                <th scope="col" style="font-size: large;">Product Name</th>
+                                <th scope="col" style="font-size: large;">Product Weight</th>
                                 <th scope="col" style="font-size: large;">Payment<br>Method</th>
                                 <th scope="col" style="font-size: large;">Shipping<br>Status</th>
                                 <th scope="col" style="font-size: large;">TOTAL BILL</th>
@@ -50,9 +52,26 @@
                                     <td>
                                         <%= order.orderDate.toDateString().substring(0, 10)  %>
                                     </td>
-                                    <td>
-                                        <%= order.orderItems.length%>
-                                    </td>
+                                    <% order.orderItems.forEach(orderItem => { %>
+                                        <% if (orderItem.orderedWeight) { %>
+                                            <% orderItem.orderedWeight.forEach(pdt => { %>
+                                             
+                                                    <td><%= pdt.name %></td>
+                                                    <td>
+                                                        <% if (pdt.weight >= 1000) { %>
+                                                            <%= Math.floor(pdt.weight / 1000) %>kg
+                                                            <% let remainingGrams = pdt.weight % 1000; %>
+                                                            <% if (remainingGrams > 0) { %>
+                                                                <%= remainingGrams %>g
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            <%= pdt.weight %>g
+                                                        <% } %>
+                                                    </td>
+                                                
+                                            <% }); %>
+                                        <% } %>
+                                    <% }); %>
                                     <td>
                                         <%= order.paymentMethod %>
                                     </td>

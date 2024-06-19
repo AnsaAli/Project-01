@@ -1,0 +1,107 @@
+<%- include('../layout/adminHeader.ejs') %>
+
+<body>
+    <div class="container">
+        <% if (items.orderItems.length > 0) { %>
+            <% items.orderItems.forEach((item) => { %>
+                <% if (item.return_query) { %>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7">
+                            <div class="card">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <img src="<%= item.return_image[0].url %>" alt="" style="height: 200px; width: auto;">
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body">
+                                            <h5 style="font-size: 20px; font-weight: 600;">
+                                                <%= item.orderedWeight[0].name %> Rs.<%= item.orderedWeight[0].price %>
+                                            </h5>
+                                            <p>Reason: <%= item.return_reason %></p>
+                                            <form class="approveForm" action="/admin/approve_return" method="post">
+                                                <input type="hidden" name="orderId" value="<%= items.order_id %>">
+                                                <input type="hidden" name="itemId" value="<%= item._id %>">
+                                                <button type="submit" class="btn" style="background-color: rgb(2, 86, 86); color: aliceblue;">Approve</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            <% }) %>
+        <% } else { %>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <p>No items requested for return.</p>
+                </div>
+            </div>
+        <% } %>
+    </div>
+    
+    
+
+    <style>
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .card-body {
+            text-align: center;
+        }
+      
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.approveForm').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            approveReturn(form);
+        });
+    });
+
+    async function approveReturn(form) {
+        try {
+            const orderId = form.querySelector('input[name="orderId"]').value;
+            const itemId = form.querySelector('input[name="itemId"]').value;
+            console.log('itemId: ', itemId)
+            const response = await fetch(`/admin/approve_return`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId, itemId })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Return Approved!',
+                    text: 'Return request has been approved successfully.'
+                }).then(() => {
+                    window.location.href = '/admin/orders'
+                });
+            } else {
+                throw new Error(data.message || 'Failed to approve return.');
+            }
+        } catch (error) {
+            console.error('Error approving return:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Failed to approve return request.'
+            });
+        }
+    }
+});
+
+
+    </script>
+</body>
+
+<%- include('../layout/adminfooter.ejs') %>

@@ -1,16 +1,7 @@
 <%- include('../layout/header.ejs') %>
-
-
-
-
-<!-- <h1>Resend OTP</h1>
-    <form action="/resendOtp" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <button type="submit">Resend OTP</button>
-    </form> -->
-
-
+<script>
+    console.log('In resendOtp.ejs page=========================')
+</script>
     <div class="container col-lg-6">
         <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
            <div class="padding_eight_all bg-white">
@@ -21,7 +12,7 @@
                     <%
                     if(typeof successMessage !='undefined'){
               %>
-                      <p style="color: green;"><%= successMessage %></p>
+                      <p style="color: green; font-size: small;"><%= successMessage %></p>
               <%
                         } 
               %>

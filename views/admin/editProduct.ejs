@@ -24,6 +24,16 @@
                   </div>
                 </div>
               </div>
+               <!-- Modal for cropping image -->
+               <div id="cropModal" style="display: none;">
+                <div>
+                  <div>
+                    <img id="cropImage" src="" alt="Image for cropping">
+                  </div>
+                  <button id="cropButton" class="btn btn-small">Crop</button>
+                </div>
+              </div>
+
 
               <div class="row">
                 <div class="col-md-5 pr-1">
@@ -150,9 +160,6 @@
               </div>
               <button type="button" class="btn btn-primary" id="calculateOffer" onclick="findOfferPrice()"> Total
                 Price(after offer)</button>
-
-
-
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-group">

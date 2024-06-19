@@ -26,7 +26,7 @@ user_route.use(express.urlencoded({extended:true}))
 user_route.use(nocache());
 
 user_route.use(fetchDataMiddleware)
-
+const uploadMiddleware= require('../middleware/multer');
 //auth
 user_route.get('/auth/google',passport.authenticate('google',{scope: ['email','profile']}))
 //auth call back
@@ -37,10 +37,6 @@ user_route.get('/auth/google/callback', passport.authenticate('google',{
 user_route.get('/verifyGoogle',userAuthenticationController.loadverifyGoogleSignin)
 user_route.get('/register',authMiddleware.is_logout,userAuthenticationController.loadRegister)
 user_route.post('/register',userAuthenticationController.registerUser)
-user_route.get('/existingEmailVerification',userAuthenticationController.loadExistingEmailVerification)
-user_route.post('/existingEmailVerification',userAuthenticationController.existingEmailVerification)
-user_route.get('/existingEmailVerifyOTP',userAuthenticationController.loadexistingEmailVerifyOTP)
-user_route.post('/existingEmailVerifyOTP',userAuthenticationController.existingEmailVerifyOTP)
 user_route.get('/resendOtp', userAuthenticationController.loadresendOTP);
 user_route.post('/resendOtp', userAuthenticationController.resendOTP);
 user_route.post('/resendOtpVerify', userAuthenticationController.sendOtpToEmail);
@@ -91,7 +87,10 @@ user_route.post('/placeOrder',authMiddleware.is_login, orderController.placeOrde
 user_route.delete('/cancelOrder/:orderId',authMiddleware.is_login, orderController.cancelOrder);
 user_route.get('/viewOrderDetails',authMiddleware.is_login, orderController.loadViewOrderDetails);
 user_route.get('/invoiceDownload',authMiddleware.is_login, orderController.invoiceDownload);
+user_route.get('/return_product',authMiddleware.is_login, orderController.returnProduct);
+user_route.post('/return_product',uploadMiddleware, orderController.confirmReturnProduct);
 
+user_route.post('/addReferralRupees',authMiddleware.is_login, userAuthenticationController.addReferralRupees)
 
 user_route.get('/wallet',authMiddleware.is_login, walletController.loadwallet);
 user_route.post('/addMoneyWallet',authMiddleware.is_login, walletController.addMoneyWallet);

@@ -2,337 +2,504 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    .chart-container-1 {
-      background-color: rgba(255, 255, 255, 0.8);
-      /* Adjust the opacity as needed */
-      padding: 10px;
-      border-radius: 10px;
-    }
-  </style>
+    <style>
+        .chart-container-1 {
+            background-color: rgba(255, 255, 255, 0.8);
+            /* Adjust the opacity as needed */
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
 <body>
-  <%- include('../layout/adminHeader.ejs') %>
-    <!-- dashboard -->
-    <div class="content">
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="card mt-3">
-            <div class="card-content">
-              <div class="row row-group m-0">
-                <div class="col-12 col-lg-6 col-xl-3 border-light">
-                  <div class="card-body">
-                    <h5 class="text-white mb-0">
-                      <% if (total.length===0) { %>
-                        ₹ <span style="color: black;">0</span>
-                        <% } else { %>
-                          <span style="color: black;">
-                            ₹<%= total[0].total %>
-                          </span>
-                          <% } %>
-                    </h5>
-                    <div class="progress my-3" style="height:3px;">
-                      <div class="progress-bar" style="width:55%"></div>
-                    </div>
-                    <p class="mb-0 text-black small-font">Total Revenue </span></p>
-                  </div>
-                </div>
+    <%- include('../layout/adminHeader.ejs') %>
+        <!-- dashboard -->
+        <div class="content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card mt-3">
+                        <div class="card-content">
+                            <div class="row row-group m-0 p-5 ">
+                                <div class="col-2">
 
-                <div class="col-12 col-lg-6 col-xl-3 border-light">
-                  <div class="card-body">
-                    <h5 class="text-black mb-0">
-                      <%= user_count %> <span class="float-right"></span>
-                    </h5>
-                    <div class="progress my-3" style="height:3px;">
-                      <div class="progress-bar" style="width:55%"></div>
-                    </div>
-                    <p class="mb-0 text-black small-font">Total Users </span></p>
-                  </div>
-                </div>
+                                    <div class="card-body" style="text-align: center;">
+                                        <div class="d-flex">
+                                            <p class="mt-4 text-black " style="font-weight: bold;">Total
+                                                Revenue </span></p>
 
-                <div class="col-12 col-lg-6 col-xl-3 border-light">
-                  <div class="card-body">
-                    <h5 class="text-black mb-0">
-                      <%= order_count %> <span class="float-right"></span>
-                    </h5>
-                    <div class="progress my-3" style="height:3px;">
-                      <div class="progress-bar" style="width:55%"></div>
-                    </div>
-                    <p class="mb-0 text-black small-font">Total orders </span></p>
-                  </div>
-                </div>
+                                        </div>
+                                        <% if (total.length===0) { %>
 
-                <div class="col-12 col-lg-6 col-xl-3 border-light">
-                  <div class="card-body">
-                    <h5 class="text-black mb-0">
-                      <%= product_count %> <span class="float-right"></span>
-                    </h5>
-                    <div class="progress my-3" style="height:3px;">
-                      <div class="progress-bar" style="width:55%"></div>
-                    </div>
-                    <p class="mb-0 text-black small-font">Total products </span></p>
-                  </div>
-                </div>
+                                            ₹ <span
+                                                style="color: black; font-weight: bold; font-size: xx-large;">0</span>
+                                            <img src="/adinAssets/img/money.png" alt=""
+                                                style="height: 30px; width: auto;">
+                                            <% } else { %>
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                                                <span style="color: black;  font-weight: bold; font-size:  xx-large;">
+                                                    ₹<%= total[0].total %>
+                                                        <img src="/adinAssets/img/money.png" alt=""
+                                                            style="height: 30px; width: auto;">
+                                                </span>
+                                                <% } %>
+                                    </div>
+                                </div>
 
-      <div class="row">
-    <div class="col-lg-12 col-xl-12">
-        <!-- Monthly Report -->
-        <div class="col-12 col-lg-12 col-xl-12">
-            <div class="card">
-                <div class="card-header">Monthly Report
-                    <div class="card-action">
-                        <div class="dropdown">
-                            <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                                <i class="icon-options"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="javascript:void();">Action</a>
-                                <a class="dropdown-item" href="javascript:void();">Another action</a>
-                                <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="javascript:void();">Separated link</a>
+                                <div class="col-2">
+                                    <div class="card-body" style="text-align: center;">
+                                        <div class="d-flex">
+                                            <p class="mt-4 text-black "
+                                                style="font-weight: bold; margin-right: 3px; margin-bottom: 40px;">
+                                                Total Users </span></p>
+                                        </div>
+                                        <span style="color: black; font-weight: bold; font-size: xx-large;">
+                                            <%= user_count %>
+                                                <img src="/adinAssets/img/man.png" alt=""
+                                                    style="height: 30px; width: auto;">
+                                        </span>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="card-body" style="text-align: center;">
+                                        <div class="d-flex">
+                                            <p class="mt-4 text-black "
+                                                style="font-weight: bold; margin-right: 3px; margin-bottom: 40px;">
+                                                Total orders </span></p>
+                                        </div>
+                                        <span style="color: black; font-weight: bold; font-size: xx-large;">
+                                            <%= order_count %>
+                                                <img src="/adinAssets/img/order-now.png" alt=""
+                                                    style="height: 30px; width: auto;">
+                                        </span>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="card-body" style="text-align: center;">
+                                        <div class="d-flex">
+                                            <p class="mt-4 text-black " style="font-weight: bold; margin-right: 3px; ">
+                                                Return Approved </span></p>
+
+                                        </div>
+                                        <span style="color: black; font-weight: bold; font-size: xx-large;">
+                                            <%= return_count %>
+                                                <img src="/adinAssets/img/exchange.png" alt=""
+                                                    style="height: 30px; width: auto;">
+                                        </span>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="card-body" style="text-align: center;">
+                                        <div class="d-flex">
+                                            <p class="mt-4 text-black " style="font-weight: bold; margin-right: 3px;">
+                                                Total Categories </span></p>
+
+                                        </div>
+                                        <span style="color: black; font-weight: bold; font-size: xx-large;">
+                                            <%= category_count %>
+                                                <img src="/adinAssets/img/categories.png" alt=""
+                                                    style="height: 30px; width: auto;">
+                                        </span>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="card-body" style="text-align: center;">
+                                        <div class="d-flex">
+                                            <p class="mt-4 text-black " style="font-weight: bold; margin-right: 3px;">
+                                                Total products </span></p>
+
+                                        </div>
+                                        <span style="color: black; font-weight: bold; font-size: xx-large;">
+                                            <%= product_count %>
+                                                <img src="/adinAssets/img/grocery.png" alt=""
+                                                    style="height: 30px; width: auto;">
+                                        </span>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-inline">
-                        <li class="list-inline-item"><i class="fa fa-circle mr-2 text-white"></i>Revenue</li>
-                        <li class="list-inline-item"></li>
-                    </ul>
-                    <div class="chart-container-1">
-                        <canvas id="monthlySalesChart"></canvas>
+            </div>
+
+            <div class="row">
+                <div class="col-12 d-flex">
+                    <!-- Top products -->
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center; font-weight: bold; margin-bottom: 5px;">Top Selling Products
+                            </div> <hr><hr>
+                            <table class="table" id="productTable"  style="padding: 20px; text-align: center;">
+                                <thead class="text-primary">
+                                   
+                                    <th style="font-weight: bold; font-size: 18px;">Name</th>
+                                    <th style="font-weight: bold; font-size: 18px;">Gross Quantity</th>
+                                    <th style="font-weight: bold; font-size: 18px;">Category</th>
+                                </thead>
+                                <tbody>
+                                    <% topProducts.forEach(product=> { %>
+                                        <tr>
+                                           
+                                            <td>
+                                                <%= product.productDetails.productName %>
+                                            </td>
+                                            <td>
+                                                <%= (product.count / 1000).toFixed(2) %> kg
+                                            </td>
+
+                                            <td>
+                                                <%= product.categoryDetails && product.categoryDetails.name ?
+                                                    product.categoryDetails.name : 'No category assigned' %>
+                                            </td>
+
+                                        </tr>
+                                        <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--categories-->
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center; font-weight: bold;margin-bottom: 5px;">Top Selling
+                                Categories
+                            </div><hr><hr>
+                            <div >
+                                <table class="table" id="" style="padding: 20px; text-align: center;">
+                                    <thead class="text-primary" style="font-size: small;">
+                                        <tr>
+                                            <th style="font-weight: bold; font-size: 18px;">Name</th>
+                                            <th style="font-weight: bold; font-size: 18px;">Gross Quantiy</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% topCategories.forEach(category => { %>
+                                            <tr>
+                                                <td><%= category.name %></td>
+                                                <td><%= (category.totalQuantityOrdered / 1000) %> kg</td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-                <% for (let i=0; i < month.length; i++) { %>
-                    <input type="hidden" id="input<%= i + 1 %>" value="<%= month[i] %>">
-                <% } %>
             </div>
-        </div>
 
-        <!-- Daily Report -->
-        <div class="col-12 col-lg-12 col-xl-12">
-            <div class="card">
-                <div class="card-header">Daily Report</div>
-                <div class="card-body">
-                    <div class="chart-container-1">
-                        <canvas id="dailyOrderChart"></canvas>
+            <div class="row">
+                <div class="col-lg-12 col-xl-12">
+                    <!-- Monthly Report -->
+                    <div class="col-12 col-lg-12 col-xl-12">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center; font-weight: bold;">Monthly Report
+                                <div class="card-action">
+                                    <div class="dropdown">
+                                        <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret"
+                                            data-toggle="dropdown">
+                                            <i class="icon-options"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" href="javascript:void();">Action</a>
+                                            <a class="dropdown-item" href="javascript:void();">Another action</a>
+                                            <a class="dropdown-item" href="javascript:void();">Something else here</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="javascript:void();">Separated link</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-inline">
+                                    <li class="list-inline-item"><i class="fa fa-circle mr-2 text-white"></i>Revenue
+                                    </li>
+                                    <li class="list-inline-item"></li>
+                                </ul>
+                                <div class="chart-container-1">
+                                    <canvas id="monthlySalesChart"></canvas>
+                                </div>
+                            </div>
+                            <% for (let i=0; i < month.length; i++) { %>
+                                <input type="hidden" id="input<%= i + 1 %>" value="<%= month[i] %>">
+                                <% } %>
+                        </div>
                     </div>
+
+                    <!-- Daily Report -->
+                    <div class="col-12 col-lg-12 col-xl-12">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center; font-weight: bold;">Daily Report</div>
+                            <div class="card-body">
+                                <div class="chart-container-1">
+                                    <canvas id="dailyOrderChart"></canvas>
+                                </div>
+                            </div>
+                            <% for (let i=0; i < daily.length; i++) { %>
+                                <input type="hidden" id="dailyInput<%= i %>" value="<%= daily[i] %>">
+                                <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Payment Report -->
+                    <div class="col-12 d-flex">
+                        <div class="card ">
+                            <div class="card-header" style="text-align: center; font-weight: bold;">Payment Methods
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container-2">
+                                    <canvas id="chart2"></canvas>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table bordered-table align-items-center p-10">
+                                        <tbody>
+                                            <tr style="text-align: center;">
+                                                <% payment.forEach((pay)=> { %>
+                                                    <% if (pay._id=='COD' ) { %>
+                                                        <td style="font-weight: bold;">COD: <%= pay.totalPayment %>
+                                                        </td>
+
+                                                        <% } else if (pay._id=='razorpay' ) { %>
+                                                            <td style="font-weight: bold;">Online: <%= pay.totalPayment
+                                                                    %>
+                                                            </td>
+
+                                                            <% } else { %>
+                                                                <td style="font-weight: bold;">Wallet:<%=
+                                                                        pay.totalPayment %>
+                                                                </td>
+
+                                                                <% } %>
+                                                                    <% }) %>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
                 </div>
-                <% for (let i=0; i < daily.length; i++) { %>
-                    <input type="hidden" id="dailyInput<%= i %>" value="<%= daily[i] %>">
-                <% } %>
             </div>
-        </div>
-
-        <!-- Payment Report -->
-        <div class="col-4 col-lg-4 col-xl-4">
-            <div class="card">
-                <div class="card-header">Payment Methods</div>
-                <div class="card-body">
-                    <div class="chart-container-2">
-                        <canvas id="chart2"></canvas>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table align-items-center">
-                            <tbody>
-                                <tr>
-                                    <% payment.forEach((pay)=> { %>
-                                        <% if (pay._id=='COD' ) { %>
-                                            <td><i class="fa fa-circle text-white mr-2"></i>COD</td>
-                                            <td><%= pay.totalPayment %></td>
-                                        <% } else if (pay._id=='razorpay' ) { %>
-                                            <td><i class="fa fa-circle text-light-1 mr-2"></i>Online</td>
-                                            <td><%= pay.totalPayment %></td>
-                                        <% } else { %>
-                                            <td><i class="fa fa-circle text-light-2 mr-2"></i>Wallet Only</td>
-                                            <td><%= pay.totalPayment %></td>
-                                        <% } %>
-                                    <% }) %>
-                                </tr>
-                                <!-- Add additional rows here if needed -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    $(document).ready(function () {
-        // Initialize charts when the document is ready
-        const monthlySalesData = [];
-        for (let i = 1; i <= 12; i++) {
-            monthlySalesData.push(Number(document.getElementById(`input${i}`).value));
-        }
-
-        const dailySalesData = JSON.parse(`<%- JSON.stringify(daily) %>`.replace(/&quot;/g, '"')).map(Number);
-
-        var ctxMonthly = document.getElementById('monthlySalesChart').getContext('2d');
-        var monthlyChart = new Chart(ctxMonthly, {
-            type: 'bar',
-            data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    label: 'Sales',
-                    data: monthlySalesData,
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    borderColor: "transparent",
-                    borderWidth: 3
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#ddd',
-                        boxWidth: 40
-                    }
-                },
-                tooltips: {
-                    displayColors: false
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            fontColor: '#ddd'
-                        },
-                        gridLines: {
-                            display: true,
-                            color: "rgba(221, 221, 221, 0.08)"
-                        },
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            fontColor: '#ddd'
-                        },
-                        gridLines: {
-                            display: true,
-                            color: "rgba(221, 221, 221, 0.08)"
-                        },
-                    }]
+            <style>
+                .bordered-table th,
+                .bordered-table td {
+                    border: 1px solid #178185cd;
+                    /* Light grey border */
+                    padding: 8px;
+                    /* Padding for better spacing */
+                    vertical-align: middle;
+                    /* Center align text vertically */
                 }
-            }
-        });
 
-        var ctxDaily = document.getElementById('dailyOrderChart').getContext('2d');
-        var dailyChart = new Chart(ctxDaily, {
-            type: 'bar',
-            data: {
-                labels: dailySalesData.map((sale, index) => index + 1),
-                datasets: [{
-                    label: 'Daily Sales',
-                    data: dailySalesData,
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    borderColor: "transparent",
-                    borderWidth: 3
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#ddd',
-                        boxWidth: 40
-                    }
-                },
-                tooltips: {
-                    displayColors: false
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            fontColor: '#ddd'
-                        },
-                        gridLines: {
-                            display: true,
-                            color: "rgba(221, 221, 221, 0.08)"
-                        },
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            fontColor: '#ddd'
-                        },
-                        gridLines: {
-                            display: true,
-                            color: "rgba(221, 221, 221, 0.08)"
-                        },
-                    }]
+                .bordered-table {
+                    border-collapse: collapse;
+                    /* Ensures borders do not double */
+                    width: 100%;
+                    /* Full width */
                 }
-            }
-        });
 
-        // Pie chart for Payment Methods
-        const paymentData = JSON.parse(`<%- JSON.stringify(payment) %>`);
-        
-        // Extract relevant payment amounts
-        const codData = paymentData.find(pay => pay._id === 'COD') ? paymentData.find(pay => pay._id === 'COD').totalPayment : 0;
-        const razorpayData = paymentData.find(pay => pay._id === 'razorpay') ? paymentData.find(pay => pay._id === 'razorpay').totalPayment : 0;
-        const walletData = paymentData.find(pay => pay._id !== 'COD' && pay._id !== 'razorpay') ? paymentData.find(pay => pay._id !== 'COD' && pay._id !== 'razorpay').totalPayment : 0;
+                .bordered-table th {
+                    background-color: #f2f2f2;
+                    /* Light grey background for headers */
+                }
 
-        // Initialize the payment chart
-        var ctxPie = document.getElementById('chart2').getContext('2d');
-        var paymentChart = new Chart(ctxPie, {
-            type: 'pie',
-            data: {
-                labels: ['COD', 'Online', 'Wallet Only'],
-                datasets: [{
-                    label: 'Payment Methods',
-                    data: [codData, razorpayData, walletData],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.8)',
-                        'rgba(54, 162, 235, 0.8)',
-                        'rgba(255, 206, 86, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                legend: {
-                    labels: {
-                        fontColor: '#ddd'
+                .bordered-table tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                    /* Light grey background for even rows */
+                }
+
+
+                .col-2:not(:last-child) {
+                    border-right: 1px solid #178185cd;
+                }
+
+                .col-2 {
+                    box-shadow: 1px 0 5px -2px rgba(0, 0, 0, 0.1);
+                }
+            </style>
+
+            <script>
+                $(document).ready(function () {
+                    // Initialize charts when the document is ready
+                    const monthlySalesData = [];
+                    for (let i = 1; i <= 12; i++) {
+                        monthlySalesData.push(Number(document.getElementById(`input${i}`).value));
                     }
-                },
-                tooltips: {
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var label = data.labels[tooltipItem.index];
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            return label + ': ' + value;
+
+                    const dailySalesData = JSON.parse(`<%- JSON.stringify(daily) %>`.replace(/&quot;/g, '"')).map(Number);
+
+                    var ctxMonthly = document.getElementById('monthlySalesChart').getContext('2d');
+                    var monthlyChart = new Chart(ctxMonthly, {
+                        type: 'bar',
+                        data: {
+                            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                            datasets: [{
+                                label: 'Sales',
+                                data: monthlySalesData,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                borderColor: "transparent",
+                                borderWidth: 3
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                    labels: {
+                                        fontColor: '#ddd',
+                                        boxWidth: 40
+                                    }
+                                },
+                                tooltip: {
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        fontColor: '#ddd'
+                                    },
+                                    grid: {
+                                        color: "rgba(221, 221, 221, 0.08)"
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        fontColor: '#ddd'
+                                    },
+                                    grid: {
+                                        color: "rgba(221, 221, 221, 0.08)"
+                                    }
+                                }
+                            }
                         }
-                    }
-                }
-            }
-        });
-    });
-</script>
+                    });
+
+                    var ctxDaily = document.getElementById('dailyOrderChart').getContext('2d');
+                    var dailyChart = new Chart(ctxDaily, {
+                        type: 'bar',
+                        data: {
+                            labels: dailySalesData.map((sale, index) => index + 1),
+                            datasets: [{
+                                label: 'Daily Sales',
+                                data: dailySalesData,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                borderColor: "transparent",
+                                borderWidth: 3
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                    labels: {
+                                        fontColor: '#ddd',
+                                        boxWidth: 40
+                                    }
+                                },
+                                tooltip: {
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        fontColor: '#ddd'
+                                    },
+                                    grid: {
+                                        color: "rgba(221, 221, 221, 0.08)"
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        fontColor: '#ddd'
+                                    },
+                                    grid: {
+                                        color: "rgba(221, 221, 221, 0.08)"
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Pie chart for Payment Methods
+                    const paymentData = JSON.parse(`<%- JSON.stringify(payment) %>`);
+
+                    // Extract relevant payment amounts
+                    const codData = paymentData.find(pay => pay._id === 'COD') ? paymentData.find(pay => pay._id === 'COD').totalPayment : 0;
+                    const razorpayData = paymentData.find(pay => pay._id === 'razorpay') ? paymentData.find(pay => pay._id === 'razorpay').totalPayment : 0;
+                    const walletData = paymentData.find(pay => pay._id !== 'COD' && pay._id !== 'razorpay') ? paymentData.find(pay => pay._id !== 'COD' && pay._id !== 'razorpay').totalPayment : 0;
+
+                    // Initialize the payment chart
+                    var ctxPie = document.getElementById('chart2').getContext('2d');
+                    var paymentChart = new Chart(ctxPie, {
+                        type: 'pie',
+                        data: {
+                            labels: ['COD', 'Online', 'Wallet Only'],
+                            datasets: [{
+                                label: 'Payment Methods',
+                                data: [codData, razorpayData, walletData],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.8)',
+                                    'rgba(54, 162, 235, 0.8)',
+                                    'rgba(255, 206, 86, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        fontColor: '#ddd'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (tooltipItem, data) {
+                                            var label = data.labels[tooltipItem.index];
+                                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                            return label + ': ' + value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+
 
 </body>
 
