@@ -1,10 +1,9 @@
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
 <%- include('../layout/header.ejs') %>
-    <!-- <%- include('../layout/cartAndwishlist.ejs') %> -->
-
-
-    <body>
-
-
+    <body class="">
         <div class="mobile-header-active mobile-header-wrapper-style">
             <div class="mobile-header-wrapper-inner">
                 <div class="mobile-header-top">
@@ -14,33 +13,42 @@
             </div>
         </div>
         <main class="main">
-            <section class="home-slider position-relative pt-50">
-                <div class="hero-slider-1 dot-style-1 dot-style-1-position-1">
-                    <div class="single-hero-slider single-animation-wrap ">
-                        <div class="container">
-                            <div class="row align-items-center slider-animated-1"
-                                style="border: 1px solid #046963; border-radius: 10px;">
-                                <div class="col-lg-5 col-md-6">
-                                    <div class="hero-slider-content-2 p-4">
-                                        <h4 class="animated">Fresh</h4>
-                                        <h2 class="animated fw-900">Supper value </h2>
-                                        <h1 class="animated fw-900 text-brand">On most of the products</h1>
-                                        <p class="animated">Save more with coupons & up to 20% off</p>
-                                        <!-- <a class="animated btn btn-brush btn-brush-3" href="shop-product-right.html">
-                                            Shop Now </a> -->
-                                    </div>
-                                </div>
-                                <div class="col-lg-7 col-md-6" style="overflow: hidden;">
-                                    <div class="single-slider-img single-slider-img-1">
-                                        <img class="animated slider-1-1" src="assets/imgs/slider/slider-1.png" alt="">
-                                    </div>
-                                </div>
-                            </div>
+            <section class="home-slider position-relative pt-50" style="margin-bottom: 80px;" >
+                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                    </ol>
+                    <div class="carousel-inner">
+                 
+                        <div class="carousel-item active" style="height: 400px;">
+                            <img class="d-block w-100" src="assets/imgs/slider/slider-1.png" alt="">
                         </div>
+                     
+                     
+                        <div class="carousel-item" style="height: 400px;">
+                            <img class="d-block w-100" src="assets/imgs/slider/slider14.jpg" alt="">
+                        </div>
+                    
+                    
+                        <div class="carousel-item"  style="height: 400px;">
+                            <img class="d-block w-100" src="assets/imgs/slider/slider12.jpg" alt="">
+                        </div>
+                     
                     </div>
-                </div>
-                <div class="slider-arrow hero-slider-1-arrow"></div>
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </div>
+                
             </section>
+
             <% if(typeof successMessage !='undefined' ){ %>
                 <p style="color: green;">
                     <%= successMessage %>
@@ -186,9 +194,10 @@
                     </style>
         </main>
 
-<script>
- 
-</script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
     </body>
 
 
