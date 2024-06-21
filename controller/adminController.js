@@ -5,7 +5,7 @@ const uniqueId = shortid.generate();
 const UserAddress = require('../models/addressModel');
 const adminModel = require('../models/userAuthenticationModel');
 const { Category, Product } = require('../models/categoryModel');
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const sharp = require('sharp');
 const Order = require('../models/orderModel');
 const OrderItems = require('../models/orderItemModel');
@@ -40,8 +40,6 @@ function validateProductName(productName, existingNames) {
 
 function validateProductNameAlone(productName) {
     const regexPattern = /^[a-zA-Z\s]+$/;
-
-
     // Check if the name meets the length requirement
     if (trimmedName.length < 3 || trimmedName.length > 50) {
         return false;
@@ -121,8 +119,6 @@ const loadDashboard = async (req, res) => {
                 }
             }
         ]);
-        console.log('total: ', total);
-
         const user_count = await User.find({ is_admin: 0 }).count();
         const order_count = await Order.find({}).count();
         const product_count = await Product.find({}).count();
@@ -703,7 +699,6 @@ const addProducts = async (req, res) => {
                 return res.status(500).json({ error: 'UploadFailed', message: 'Failed to upload image to Cloudinary' });
             }
         }
-        console.log('images ================================250 A addProducts', uploadedImages);
 
         const {
             productName,
@@ -989,8 +984,6 @@ const deleteImages = async (req, res) => {
         console.log(productId.length, 'length of product id=====')
         console.log(productId.length, 'length of product id=====')
         console.log(ObjectId.isValid(productId), 'valid  product id=====')
-
-
         try {
             await Product.updateOne(
                 { _id: ObjectId.createFromHexString(productId) },

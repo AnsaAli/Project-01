@@ -3,12 +3,13 @@ const CartItem = require('../models/cartItemModel')
 const User = require('../models/userAuthenticationModel')
 const { Category, Product } = require('../models/categoryModel')
 const UserAddress = require('../models/addressModel')
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 const nodemailer = require('nodemailer');
 const couponModel = require('../models/couponModel')
 const { ObjectId } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
 const schedule = require('node-schedule');
+require('dotenv').config();
 
 const seccurePassword = async (password) => {
     try {
@@ -24,35 +25,41 @@ const seccurePassword = async (password) => {
 /////////////OTP/////////
 
 function generateOTP() {
-    console.log('======================in generateOTP')
+   
     // Generate a random 6-digit OTP
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 const sendOtp = async (email, otp) => {
     try {
-        console.log('======================in sendOtp')
-        const email = req.body.email;
-        const newOtp = generateOTP();
-        await sendOtp(email, newOtp);
-        // Calculate OTP expiration time
-        const otpValidityPeriod = 1 * 60; // 5 minutes in seconds
-        const expiresAt = new Date(Date.now() + otpValidityPeriod * 1000);
-        // Save OTP to database with expiration time
-        await saveOtp(email, newOtp, expiresAt);
-        res.json({
-            success: true,
-            successMessage: "Please verify your Email to complete the registration within 1 minutes"
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            requireTLS: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
         });
-    } catch (error) {
-        throw new Error("Error sending OTP to database" + error.message)
 
+        const mailoptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'OTP for Email Verification',
+            text: `Your OTP is: ${otp}, OTP is valid only for 1 minute`
+        };
+
+        await transporter.sendMail(mailoptions);
+    } catch (error) {
+        console.log('Error in sendOtp:', error);
+        throw new Error('Error sending OTP. Please try again.');
     }
-}
+};
 
 const saveOtp = async (email, otp, expiresAt) => {
     try {
-        console.log('======================in saveOtp')
+     
         const user = await User.findOne({ email: email });
         if (!user) {
             throw new Error('User not found');
@@ -141,13 +148,13 @@ const sendOtpAgain = async (email, otp) => {
             secure: false,
             requireTLS: true,
             auth: {
-                user: 'chinjuinbelfast@gmail.com',
-                pass: 'pkprjnrryzjzfijw'
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
 
         const mailoptions = {
-            from: 'chinjuinbelfast@gmail.com',
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'OTP for Email Verification',
             text: `Your OTP is: ${otp}, OTP is valid only for 5 minutes`
@@ -254,7 +261,7 @@ const registerUser = async (req, res) => {
         //regular expression for to check the inputs
         const nameRegex = /^[A-Za-z]+(?: [A-Za-z]+)?$/;
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
         const referrral = req.body.referral;
         req.session.refferal = referrral;
@@ -267,7 +274,7 @@ const registerUser = async (req, res) => {
             return res.render('register', { errorMessage: 'Password must be minimum of 6 charactors.' })
         }
         if (!passwordRegex.test(req.body.password)) {
-            return res.render('register', { errorMessage: 'Password must be minimum of 8 characters,one capital letter and atleast one special charactor.' });
+            return res.render('register', { errorMessage: 'Password must be minimum of 6 characters,one capital letter and atleast one special charactor.' });
         }
         if (!nameRegex.test(req.body.name)) {
             return res.render('register', { errorMessage: 'Name may not include numbers or special characters.' });
@@ -285,27 +292,30 @@ const registerUser = async (req, res) => {
         if (existingUser) {
             return res.render('register', { errorMessage: 'Email already registered,Please verify your email by clicking resend OTP' })
         }
-        let code = generateShortUUID();
-        console.log('code========================: ', code)
+        let referralCode = generateShortUUID();
+        
         const user = new User({
             name: req.body.name,
             email: req.body.email,
             password: spassword,
             is_admin: 0,
-            referralCode: code
+            referralCode: referralCode
         })
         const userData = await user.save();
 
         if (userData) {
             const otp = generateOTP();
             const otpTimestamp = new Date();
-            otpTimestamp.setMinutes(otpTimestamp.getMinutes() + 5)
+            otpTimestamp.setMinutes(otpTimestamp.getMinutes() + 1)
             await saveOtp(req.body.email, otp, otpTimestamp);
 
-            //to make otp null after 5 minutes
+            //to make otp null after 1 minutes
             setTimeout(async () => {
                 await expireOtp(req.body.email)
-            }, 1 * 60 * 1000)
+            }, 1 * 60 * 1000);
+
+            //to send otp to mail
+            await sendOtp(req.body.email, otp); 
 
             return res.render('veryfyOtp', {
                 userData,
@@ -347,7 +357,7 @@ const verifyLogin = async (req, res) => {
         //console.log('email and password'+email +password)
         const userdata = await User.findOne({ email })
         const referral = req.session.refferal;
-        console.log('referral from the user, in verify login: ',referral)
+        console.log('referral from the user, in verify login: ', referral)
         //console.log(userdata._id,userdata.email,userdata.password +'is the id')
         if (userdata) {
             if (!userdata.is_blocked) {
@@ -386,7 +396,7 @@ const verifyLogin = async (req, res) => {
                                     is_referralUsed: true
                                 });
                             }
-                           res.render('home', { successMessage: '100 rupees added to your wallet!' })
+                            res.render('home', { successMessage: '100 rupees added to your wallet!' })
                         }
                         res.redirect('/home');
                     }

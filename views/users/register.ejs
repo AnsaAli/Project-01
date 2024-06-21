@@ -5,69 +5,144 @@
             <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
                 <div class="padding_eight_all bg-white">
                     <div class="heading_s1">
-                        <h3 class="mb-30">Create an Account</h3>
+                        <h3 class="mb-30" style="text-align: center;">Create Account</h3>
                     </div>
                     <div id="form">
-                        <% if(typeof successMessage !='undefined' ){ %>
+                        <% if (typeof successMessage !='undefined' ) { %>
                             <p style="color: green;">
                                 <%= successMessage %>
                             </p>
                             <% } %>
-                                <% if(typeof errorMessage !='undefined' ){ %>
+                                <% if (typeof errorMessage !='undefined' ) { %>
                                     <p style="color: red;">
                                         <%= errorMessage %>
                                     </p>
                                     <% } %>
-                                        <form method="post" action='/register'>
-                                            <div class="form-group ">
-                                                <input type="text" required name="name" placeholder="Username">
-                                                <!-- <br><small id="name-error" class="error-msg"></small> -->
-                                            </div>
-                                            <div class="form-group ">
-                                                <input type="text" required name="email" placeholder="Email">
-                                                <!-- <br><small id="email-error" class="error-msg"></small> -->
-                                            </div>
-
-
+                                        <form method="post" id="registerForm" action='/register'>
                                             <div class="form-group">
-                                                <input required minlength="6" type="password" name="password"
-                                                    placeholder="Password">
-                                                <!-- <br><small id="password-error" class="error-msg"></small> -->
+                                                <input type="text" id="uname" name="name"
+                                                    placeholder="Please Enter Your Name" oninput="validateName(this)">
                                             </div>
-                                            <div class="form-group ">
-                                                <input required="" type="password" name="confirmpassword"
-                                                    placeholder="Confirm password">
-                                                <!-- <br><small id="confirmpassword-error" class="error-msg"></small> -->
+                                            <small id="nameValidation" style="color: red;"></small>
+                                            <div class="form-group">
+                                                <input type="email" id="email" name="email" placeholder="Email"
+                                                    oninput="validateEmail(this)">
+
                                             </div>
-                                            <div class="form-group ">
+                                            <small id="emailValidation" style="color: red;"></small>
+                                            <div class="form-group">
+                                                <input type="password" id="password" name="password"
+                                                    placeholder="Password" oninput="validatePassword()">
+
+                                            </div>
+                                            <small id="passwordValidation" style="color: red;"></small>
+                                            <div class="form-group">
+                                                <input type="password" id="confirmpassword" name="confirmpassword"
+                                                    placeholder="Confirm password" oninput="validatePassword()">
+
+                                            </div>
+                                            <small id="confirmpasswordValidation" style="color: red;"></small>
+                                            <div class="form-group">
                                                 <input type="text" name="referral"
                                                     placeholder="Add referral code (Optional)">
-                                                <!-- <br><small id="confirmpassword-error" class="error-msg"></small> -->
                                             </div>
-
                                             <div class="form-group">
                                                 <button type="submit" class="btn btn-fill-out btn-block hover-up"
                                                     name="login">Verify &amp; Submit</button>
-                                                <!-- <a href="/resendOtp" class="form-group text-right m-2">Resend OTP</a> -->
-                                                <a href="/resendOtp" class="form-group text-right m-2">verify
-                                                    email?</a>
-
+                                                <a href="/resendOtp" class="form-group text-right m-2">verify email?</a>
                                             </div>
                                         </form>
                     </div>
-                    
                     <div class="text-muted text-center">Already have an account? <a href="/login">Login in now</a></div>
                 </div>
-
-
             </div>
         </div>
-<style>
-    body{
-        margin: 0;
-        height: auto;
-    }
-</style>
+        <style>
+            body {
+                margin: 0;
+                height: auto;
+            }
+        </style>
+        <script>
+
+
+            function validateForm() {
+                console.log('inside validate form')
+                var isValid = true;
+                isValid = validateName(document.getElementById('uname')) && isValid;
+                isValid = validateEmail(document.getElementById('email')) && isValid;
+                isValid = validatePassword() && isValid;
+                return isValid;
+            }
+
+            function validateName(input) {
+                var name = input.value.trim();
+                var validationMessage = document.getElementById('nameValidation');
+                validationMessage.innerHTML = 'testing';
+                const nameRegex = /^[A-Za-z]+(?: [A-Za-z]+)?$/;
+
+                if (name === "") {
+                    validationMessage.textContent = 'Name field is required.';
+                    return false;
+                } else if (!nameRegex.test(name)) {
+                    validationMessage.textContent = 'Name may not include numbers or special characters.';
+                    return false;
+                }
+
+                validationMessage.textContent = '';
+                return true;
+            }
+
+            function validateEmail(input) {
+                var email = input.value.trim();
+                var validationMessage = document.getElementById('emailValidation');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (email === "") {
+                    validationMessage.textContent = 'Email field is required.';
+                    return false;
+                } else if (!emailRegex.test(email)) {
+                    validationMessage.textContent = 'Please enter a valid email address.';
+                    return false;
+                }
+
+                validationMessage.textContent = '';
+                return true;
+            }
+
+            function validatePassword() {
+                var password = document.getElementById('password').value.trim();
+                var confirmPassword = document.getElementById('confirmpassword').value.trim();
+                var passwordValidationMessage = document.getElementById('passwordValidation');
+                var confirmPasswordValidationMessage = document.getElementById('confirmpasswordValidation');
+                const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+                var isValid = true;
+
+                if (password === "") {
+                    passwordValidationMessage.textContent = 'Password field is required.';
+                    isValid = false;
+                } else if (!passwordRegex.test(password)) {
+                    passwordValidationMessage.textContent = 'Password must be a minimum of 6 characters, one capital letter, one digit, and at least one special character.';
+                    isValid = false;
+                } else {
+                    passwordValidationMessage.textContent = '';
+                }
+
+                if (confirmPassword === "") {
+                    confirmPasswordValidationMessage.textContent = 'Confirm password field is required.';
+                    isValid = false;
+                } else if (password !== confirmPassword) {
+                    confirmPasswordValidationMessage.textContent = 'Passwords do not match.';
+                    isValid = false;
+                } else {
+                    confirmPasswordValidationMessage.textContent = '';
+                }
+
+                return isValid;
+            }
+
+        </script>
     </body>
 
     <%- include('../layout/footer.ejs') %>
