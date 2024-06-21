@@ -1314,6 +1314,13 @@ const editCoupon = async (req, res) => {
 }
 /////////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\
 
+const loadAbout= async(req,res)=>{
+    try {
+        res.render('aboutPage')
+    } catch (error) {
+        console.log('Error while loading loadAbout',error)
+    }
+}
 ////////////////////////////exports\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -1352,5 +1359,6 @@ module.exports = {
     deleteCoupon,
     loadeditCoupon,
     editCoupon,
+    loadAbout
 
 }

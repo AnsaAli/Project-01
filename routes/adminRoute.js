@@ -65,7 +65,7 @@ admin_route.get('/monthlysales/download',authMiddleware.is_login, salesControlle
 admin_route.post('/yearlyReport',authMiddleware.is_login, salesController.yearlyreport);
 
 
-
+admin_route.get('/about', adminController.loadAbout); 
 
 ////////////////////////////////////////\\\\\\\\\\\\\\\\\\\
 
