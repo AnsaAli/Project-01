@@ -423,6 +423,7 @@ const loadverifyGoogleSignin = async (req, res) => {
         if (profile.email_verified) {
             //req.session.user_id=profile.sub;
             const userData = await User.findOne({ email });
+            let referralCode = generateShortUUID();
             if (!userData) {
                 const user = new User({
                     name: profile.name,
@@ -431,7 +432,8 @@ const loadverifyGoogleSignin = async (req, res) => {
                     is_admin: 0,
                     is_blocked: false,
                     is_verified: profile.email_verified,
-                    is_deleted: false
+                    is_deleted: false,
+                    referralCode:referralCode
                 })
                 await user.save();
                 req.session.user_id = user._id
