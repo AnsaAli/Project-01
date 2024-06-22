@@ -129,6 +129,11 @@ const placeOrder = async (req, res) => {
             orderStatus = "Pending"
         } else if (payment_option === 'wallet') {
             orderStatus = "Pending"
+            const availableWalletBalance= await User.findById(userId).populate('wallet');
+            if(availableWalletBalance.wallet === 0 || availableWalletBalance.wallet < totalAmount){
+               return  res.json({ error: 'There is not enough amount in the wallet, Please add money to the wallet!' });
+            }
+           
         } else {
             if (totalAmount >= 1000) {
                 return res.json({ errorMessage: 'Sorry, you cannot choose COD on and above 1000rs!' });

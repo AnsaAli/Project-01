@@ -7,42 +7,51 @@
             <section class="pt-150 pb-150">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-10 m-auto">
-                            <div class="row">
-                                <div class="col-md-4">
+                        <div class="col-lg-12 m-auto">
+                            <div class="row" >
+                                <div class="col-md-3"  >
 
                                     <div class="dashboard-menu">
-                                        <ul class="nav flex-column" role="tablist">
+                                        <ul class="nav flex-column " role="tablist">
                                             <li class="nav-item">
-                                                <a class="nav-link  active" id="dashboard-tab" data-bs-toggle="tab"
-                                                    href="/myProfile" role="tab" aria-controls="dashboard"
-                                                    aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>My
-                                                    Profile</a>
+                                                <form action="/myProfile" method="GET">
+                                                    <button type="submit" 
+                                                        style="background-color: #01524c; color: #ffffff; border: none;  cursor: pointer; width: 100%;">My
+                                                        Profile</button>
+                                                </form>
+                                              
                                             </li>
                                            
                                             <li class="nav-item">
-                                                <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="/order"
-                                                    role="tab" aria-controls="orders" aria-selected="false"><i
-                                                        class="fi-rs-shopping-bag mr-10"></i>Orders</a>
+                                                <form action="/order" method="GET">
+                                                    <button type="submit" 
+                                                        style="background-color: #ffffff; color: #000000; border: none;  cursor: pointer; width: 100%;">Orders</button>
+                                                </form>
+                                                
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab"
-                                                    href="/wallet" role="tab" aria-controls="track-orders"
-                                                    aria-selected="false"><i
-                                                        class="fi-rs-shopping-cart-check mr-10"></i>Wallet</a>
+                                                <form action="/wallet" method="GET">
+                                                    <button type="submit"
+                                                        style="background-color: #ffffff; color: #000000; border: none;  cursor: pointer; width: 100%;">Wallet</button>
+                                                </form>
+                                               
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link " id="address-tab" data-bs-toggle="tab"
-                                                    href="/userProfile" role="tab" aria-controls="address"
-                                                    aria-selected="true"><i class="fi-rs-marker mr-10"></i>My
-                                                    Address</a>
+                                                <form action="/userProfile" method="GET">
+                                                    <button type="submit"
+                                                        style="background-color: #ffffff; color: #000000; border: none;  cursor: pointer; width: 100%;">My
+                                                        Address</button>
+                                                </form>
+                                              
                                             </li>
                                             
                                             <li class="nav-item">
-                                                <a class="nav-link " id="change-password-tab" data-bs-toggle="tab"
-                                                    href="/changePassword" role="tab" aria-controls="change-password"
-                                                    aria-selected="true"><i class="fi-rs-user mr-10"></i>Change
-                                                    Password</a>
+                                                <form action="/changePassword" method="GET">
+                                                    <button type="submit"
+                                                        style="background-color: #ffffff; color: #000000; border: none;  cursor: pointer; width: 100%;">Change
+                                                        Password</button>
+                                                </form>
+                                                
                                             </li>
                                             <!-- <li class="nav-item">
                                             <a class="nav-link" href="/logout"><i
@@ -52,9 +61,9 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-9">
                                     <div class=" col-lg-6 mb-10 ">
-                                        <div class="card" style="padding: 15px;">
+                                        <div class="card" style="padding: 25px;">
                                             <p style="font-weight: bold; text-align: center;">Your Referral Code</p>
                                             <% if (userData.referralCode) { %>
                                                 <p id="referralCode" style="font-weight: 700; color: green; text-align: center;">
@@ -64,7 +73,7 @@
                                                     
                                                 </p>
                                                 <div style="text-align: center;">
-                                                    <button onclick="copyReferralCode('<%= userData.referralCode %>')" class="btn btn-small btn-primary" style="justify-content: center;">Copy</button>
+                                                    <button onclick="copyReferralCode('<%= userData.referralCode %>')" class="btn btn-small  " style="justify-content: center; background-color: #01524c; color: #ffffff;">Copy</button>
                                                 </div>
                                             <% } else { %>
                                                 <p style="text-align: center;">Sorry, not available!</p>
@@ -76,7 +85,7 @@
                                     <div class="col-lg-6">
                                         <div class="card mb-3 mb-lg-0">
                                             <div class="card-header">
-                                                <h5 class="mb-0">My profile</h5>
+                                                <h5 class="mb-0" style="text-align: center;">My profile</h5>
                                                 <% if(userData) { %>
                                                     <% if(userData.address && userData.address[0] &&
                                                         userData.address[0].mobile_num) { %>

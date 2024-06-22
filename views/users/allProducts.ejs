@@ -2,10 +2,15 @@
   <!-- <%- include('../layout/cartAndwishlist.ejs') %> -->
 
   <body>
-    <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
+    <section class="product-tabs pt-25 pb-20 wow fadeIn animated" style="margin-top: 100px;">
       <div class="container">
         <div class="row">
           <div class="col-lg-3">
+            <div class="mb-5">
+              <ul class="categories">
+                <li> <a href="/allProducts" style="color: #0a5853; font-weight: bold;">Clear Filter</a></li>
+              </ul>
+            </div>
             <div class="widget-category mb-30">
               <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
               <ul class="categories">
@@ -14,11 +19,7 @@
                 <li><a href="#" onclick="updateUrlParam('sortby', 'higherPrice')">Price: High to Low</a></li>
               </ul>
             </div>
-            <div class="m-5">
-              <ul class="categories">
-                <li> <a href="/allProducts" style="border-radius: 5px;">Clear Filter</a></li>
-              </ul>
-            </div>
+           
             <div class="widget-category mb-30">
               <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
               <ul class="categories">
@@ -34,18 +35,18 @@
 
           <!-- search -->
           <div class="col-lg-9">
-            <div class="tab-header mb-15">
-              <div class="row product-grid-4">
+            <div class="tab-header mb-30">
+              <div class="row ">
                 <div class="col-lg-12 col-md-8 col-12 col-sm-6">
                   <form action="/allProducts" method="GET" class="d-flex">
                     <label for="searchQuery"></label>
-                    <input type="text" class="  mr-2 " id="searchQuery" name="searchQuery" placeholder="Search ">
-                    <button type="submit" class="btn btn-primary btn-sm" style="border-radius: 5px;"><i
-                        class="fa fa-search"></i>Search</button>
+                    <input type="text" id="searchQuery" name="searchQuery" placeholder="Search " style="width: 500px;">
+                    <button type="submit" class="btn btn-primary btn-sm" style="border-radius:0 0 4 0;">Search</button>
                   </form>
                 </div>
               </div>
             </div>
+           
             <!--End nav-tabs-->
             <div class="tab-content wow fadeIn animated " id="myTabContent">
               <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">

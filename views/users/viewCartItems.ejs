@@ -64,7 +64,7 @@
                                                             alt="Product Image" style="width:100%">
                                                     </td>
                                                     <td class="product-des product-name">
-                                                        <h5 class="product-name"><a href="shop-product-right.html">
+                                                        <h5 class="product-name"><a style="color: #005a27; font-size: 18px; font-weight: bold;">
                                                                 <%= cartItem.productId.productName %>
                                                             </a></h5>
                                                     </td>
@@ -86,9 +86,9 @@
                                             </td> -->
 
                                                     <td class="text-center" data-title="Quantity">
-                                                        <div class="detail-qty  ">
+                                                        <div class="detail-qty" >
                                                             <span class="num">
-                                                                <a href="#" class="quantity-btn  btn"
+                                                                <a href="#" class="quantity-btn  btn" style="color: #005a27; font-size: larger; font-weight: bold; border: 1px solid;"
                                                                     data-action="decrement"
                                                                     data-product-id="<%= cartItem.productId._id %> "> -
                                                                 </a>
@@ -96,7 +96,7 @@
                                                                 <p class="qty-val">
                                                                     <%= cartItem.quantity %>
                                                                 </p>
-                                                                <a href="#" class="quantity-btn  btn"
+                                                                <a href="#" class="quantity-btn  btn" style="color: #005a27; font-weight: bold; border: 1px solid;"
                                                                     data-action="increment"
                                                                     data-product-id="<%= cartItem.productId._id %>">+
                                                                 </a>
@@ -138,9 +138,9 @@
                                 </table>
                             </div>
                             <div class="cart-action text-end">
-                                <a class="btn " href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue
+                                <a class="btn " style=" background-color: #016f5b; color: #ffffff;  font-weight: bold; border: 1px solid;" href="/home"><i class="fi-rs-shopping-bag mr-10"></i>Continue
                                     Shopping</a>
-                                <a class="btn  mr-10 mb-sm-15" href="/checkOut"><i
+                                <a class="btn  mr-10 mb-sm-15"  style=" background-color: #016f5b; color: #ffffff;  font-weight: bold; border: 1px solid;" href="/checkOut"><i
                                         class="fi-rs-shuffle mr-10"></i>Checkout</a>
                             </div>
                             <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>

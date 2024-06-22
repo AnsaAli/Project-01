@@ -36,7 +36,7 @@
 
                                 <div id="coupon_input" class="collapse">
                                     <input type="text" id="code" placeholder="Enter coupon code">
-                                    <button id="apply_coupon_btn" class="btn btn-fill-out btn-block mt-30"
+                                    <button id="apply_coupon_btn" class="btn  btn-block mt-30"
                                         onclick="applycoupon($('#code').val())">Apply</button> <br>
                                     <a href="#" style="color: red;" onclick="removeCoupon()">Remove
                                         Coupon</a>
@@ -80,11 +80,15 @@
                                             </div>
                                             <% }); %>
                                                 <div>
-                                                    <p>Add Address <a href="/addData">click here</a></p>
+                                                    <p style="font-size: 16px;">Add New Address <a href="/addData"
+                                                            style="color: #005a27; font-size: 18px; font-weight: bold;">click
+                                                            here</a></p>
                                                 </div>
                                                 <% } else { %>
                                                     <p>No Address found. Add a new Address, <br>
-                                                        Add Address <a href="/addData">click here
+                                                        Add Address <a href="/addData"
+                                                            style="color: #005a27; font-size: 18px; font-weight: bold;">click
+                                                            here</a>
                                                     </p>
                                                     <% } %>
                                 </div>
@@ -110,7 +114,8 @@
                                                                 style="width:100%">
                                                         </td>
                                                         <td>
-                                                            <h5><a href="">
+                                                            <h5><a href=""
+                                                                    style="color: #005a27; font-size: 18px; font-weight: bold;">
                                                                     <%= item.productId.productName %>
                                                                 </a></h5>
                                                             <input type="hidden"
@@ -188,7 +193,9 @@
                                         </div>
                                         <input type="hidden" name="selectedPaymentMethod" id="selectedPaymentMethod">
                                     </div>
-                                    <button class="btn btn-fill-out btn-block mt-30 place-order-btn" disabled>Place
+                                    <button class="btn btn-fill-out btn-block mt-30 place-order-btn"
+                                        style=" background-color: #016f5b; color: #ffffff;  font-weight: bold; border: 1px solid;"
+                                        disabled>Place
                                         Order</button>
                     </form>
                 </div>
@@ -259,13 +266,20 @@
 
                 // Check if a billing address is selected
                 if (!selectedAddress) {
-                    alert("Please select a billing address.");
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'Please select a billing address',
+                        showConfirmButton: true,
+
+                    });
                     return false; // Prevent form submission
                 }
 
                 // Allow form submission
                 return true;
             }
+
 
             $(document).ready(function () {
                 $('input[name="payment_option"]').change(function () {
@@ -345,18 +359,28 @@
                             window.location.href = '/successOrder';
 
                         } else if (response.errorMessage) {
-
-                            alert(response.errorMessage);
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: response.errorMessage,
+                                showConfirmButton: true
+                            });
 
                         } else if (payment === 'wallet' && !response.error) {
 
-                            console.log('Paying using wallet');
+                            // console.log('Paying using wallet');
                             window.location.href = '/successOrder';
 
                         } else if (response.error) {
 
-                            console.log('error message wallet');
-                            alert(response.error);
+                            // console.log('error message wallet');
+                            // alert(response.error);
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: response.error,
+                                showConfirmButton: true
+                            });
 
                         } else if (payment === 'razorpay') {
 
@@ -401,23 +425,23 @@
                                 alert('Payment Failed, please try again in the order page')
                                 console.log('Payment failed:', response);
                                 fetch('/paymentFailed', {
-                                                method: 'post',
-                                                headers: {
-                                                    "Content-Type": "application/json"
-                                                },
-                                                body: JSON.stringify({
-                                                    orderId: customerOrderId,
-                                                    reason: response.error.description
-                                                })
-                                            }).then(response => response.json())
-                                                .then((data) => {
-                                                    if (data.success) {
-                                                        console.log('Order status updated to Failed');
-                                                        window.location.href = '/order'
-                                                    } else {
-                                                        console.error('Failed to update order status:', data.error);
-                                                    }
-                                                })
+                                    method: 'post',
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({
+                                        orderId: customerOrderId,
+                                        reason: response.error.description
+                                    })
+                                }).then(response => response.json())
+                                    .then((data) => {
+                                        if (data.success) {
+                                            console.log('Order status updated to Failed');
+                                            window.location.href = '/order'
+                                        } else {
+                                            console.error('Failed to update order status:', data.error);
+                                        }
+                                    })
 
                             });
 
@@ -443,8 +467,13 @@
                                             window.location.href = '/successOrder'
 
                                         } else {
-                                            console.error('Payment failed:', data.error);
-                                            alert('Payment failed. Please try again later.');
+                                            // console.error('Payment failed:', data.error);
+                                            // alert('Payment failed. Please try again later.');
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: 'Payment failed. Please try again later!'
+                                            });
                                         }
                                     })
                                     .catch(error => {

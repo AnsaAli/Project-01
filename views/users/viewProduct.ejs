@@ -1,10 +1,8 @@
 <%- include('../layout/header.ejs') %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
-    <body>
-
-
-        <div class="containerProduct">
+    <body >
+        <div class="containerProduct ">
             <strong>
                 <%= productData.category.name%>
             </strong>
@@ -61,7 +59,7 @@
                                             <div class=""
                                                 style="border: 1px solid #333; padding: 5px; border-radius: 8px;  margin-bottom: 5px; ">
 
-                                                <a <% if (productData.totalQuantity===0) { %>
+                                                <a style="color: #005a27; font-size: larger; font-weight: bold;" <% if (productData.totalQuantity===0) { %>
                                                     style="pointer-events: none; opacity: 0.5;" <% } %>
                                                         href="#"
                                                         class="p-2 d-flex justify-content-between
@@ -91,7 +89,7 @@
                                             <% }else { %>
                                                 <div class=""
                                                     style="border: 1px solid #333; padding: 5px; border-radius: 8px; margin-bottom: 5px; ">
-                                                    <a <% if (productData.totalQuantity===0) { %>
+                                                    <a style="color: #005a27; font-size: larger; font-weight: bold;" <% if (productData.totalQuantity===0) { %>
                                                         style="pointer-events: none; opacity: 0.5;" <% } %>
                                                             href="#"
                                                             class="p-2 d-flex justify-content-between
@@ -159,7 +157,7 @@
                 background-color: #fff;
                 padding: 30px;
                 border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 0 10px rgba(2, 151, 151, 0.1);
             }
 
             .cartAndWish .button-form {

@@ -1,27 +1,47 @@
 <%- include('../layout/header.ejs') %>
-<body>
-    
-        <div class="container">
-           
-            <div class="blur-background">
-                <div class="success">
-                    <h3>Order confirmed <p><a href="/order">View Order Details</a></p></h3>  
-                    <form action="/home" class="form-group mt-15">
-                        <button class="btn btn-fill-out btn-block hover-up">Continue Shopping</button>
-                    </form>
+
+    <head>
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    </head>
+
+    <body>
+
+
+
+        <div class="blur-background" style="margin-top: 150px; ">
+            <div class="success">
+                <h3>Order confirmed </h3>
+                <div class="lottie-container">
+                    <lottie-player src="https://lottie.host/8e11a55b-1c52-44a2-973f-a2754744e99d/ZVWSiav8pf.json"
+                        background="##2ecc71" speed="1" style="width: 250px; height: 250px;"  autoplay direction="1"
+                        mode="normal"></lottie-player>
+
                 </div>
+
+                <p>
+                    <a href="/order" style="text-decoration: none; color: black; font-weight: bold;">View Order
+                        Details</a>
+                </p>
+
+                <form action="/home" class="form-group mt-15">
+                    <button class="btn btn-fill-out btn-block hover-up"
+                        style="background-color: rgb(8, 126, 103); color: azure; font-size: larger;">Continue
+                        Shopping</button>
+                </form>
             </div>
         </div>
-   
+
+
 
         <style>
-            .container {
-                height: 100%;
+            .lottie-container {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                margin: 20px 0;
+             
             }
-    
+
             .blur-background {
                 position: absolute;
                 top: 0;
@@ -33,22 +53,21 @@
                 justify-content: center;
                 align-items: center;
             }
-    
+
             .success {
-                background-color: rgba(0, 0, 0, 0.8); 
-                padding: 20px;
-                border-radius: 10px;
+                background-color: rgba(228, 206, 2, 0.8);
+                padding: 50px;
+                border-radius: 20px;
                 color: antiquewhite;
                 text-align: center;
-                max-width: 50%; 
+                max-width: 50%;
                 width: 100%;
+                box-shadow: rgb(0, 94, 94);
             }
-    
+
             .success h3 {
-                color: white;
+                color: rgb(0, 0, 0);
+                font-size: xX-large;
             }
         </style>
-</body>
-
-
- 
+    </body>
