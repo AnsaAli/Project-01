@@ -18,8 +18,6 @@ const loadwallet = async (req, res) => {
         const userId = req.session.user_id;
         const user = await User.findById(userId);
         user.history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        console.log('user: ', user.name)
         res.render('loadWallet', { user, req: req })
     } catch (error) {
         console.log('Error while loading loadwallet', error)
@@ -34,8 +32,6 @@ const addMoneyWallet = async (req, res) => {
         // Generate a unique order ID for each transaction
         const orderId = generateUniqueOrderId();
         const generatedOrder = await generateOrderRazorpay(orderId, amount);
-
-        console.log("this is genmatrator the wallet order", generateOrderRazorpay);
         res.json({ razorpayOrder: generatedOrder, status: true, amount: amount });
     } catch (error) {
         console.log(

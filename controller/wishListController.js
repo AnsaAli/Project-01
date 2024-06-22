@@ -45,9 +45,10 @@ const addToWishlist = async (req, res) => {
 
 const viewWishList = async (req, res) => {
     try {
-        const wishListData = await Wishlist.find({});
-        console.log('wishListData: ', wishListData)
+        const userId= req.session.user_id;
 
+        const wishListData = await Wishlist.find({userId});
+       
         // Iterate over each wishlist document and populate its products field
         for (const wishlist of wishListData) {
             await wishlist.populate('products')

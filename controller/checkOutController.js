@@ -16,7 +16,7 @@ const loadcheckOut = async (req, res) => {
         console.log(user_id, '========user_id ');
         const user = await User.findById(user_id);
         // Fetch existing address
-        const existingAddress = await Address.find({});
+        const existingAddress = await Address.find({user_id});
 
         // Fetch cart details and populate cart items with products
         const cart = await Cart.findOne({ userId: ObjectId.createFromHexString(user_id) }).populate({

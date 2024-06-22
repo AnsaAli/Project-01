@@ -1,12 +1,12 @@
 <%- include('../layout/header.ejs') %>
-<script>
-    console.log('In resendOtp.ejs page=========================')
-</script>
-    <div class="container col-lg-6">
-        <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
-           <div class="padding_eight_all bg-white">
+
+
+<body>
+    <div class="container col-lg-6" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="login_wrap widget-taber-content p-30 background-white border-radius-5" style="background-color: rgb(255, 255, 255);">
+           <div style="background-color: rgb(255, 255, 255);">
                 <div class="heading_s1">
-                   <h3 class="mb-30">Resend OTP</h3>
+                   <h3 class="mb-30" style="text-align: center;">Resend OTP</h3>
                 </div>
                 <form action="/resendOtp" method="POST">
                     <%
@@ -27,7 +27,7 @@
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" required>
                         </div>
-                            <input type="submit" class="btn btn-fill-out btn-block hover-up" value="Send OTP">
+                            <input type="submit" class="btn btn-fill-out btn-block hover-up" style="background-color: rgb(1, 67, 63); color: rgb(255, 255, 255);" value="Send OTP">
                     </div>
                 </form>
                    
@@ -35,6 +35,5 @@
             </div>
         </div>
     </div>   
-    <!-- <form action="/veryfyOtp" >
-        <input type="submit" class="btn btn-fill-out btn-block hover-up">
-    </form> -->
+</body>
+<%- include('../layout/footer.ejs') %> 

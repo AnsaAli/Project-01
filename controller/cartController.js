@@ -9,22 +9,21 @@ const addToCart = async (req, res) => {
     try {
         const { productId, weight, price, priceAfterDiscount, productName, pricePer100g, totalQuantity } = req.body;
         const userId = req.session.user_id;
-        // console.log(userId, 'is the userId addToCart');
-        // console.log('productId=========:', productId);
-        // console.log('Weight:', weight); //250
-        // console.log('price:', price);//32.5
-        // console.log('productName:', productName);
+        console.log(userId, 'is the userId addToCart');
+        console.log('productId=========:', productId);
+        console.log('Weight:', weight); //250
+        console.log('price:', price);//32.5
+        console.log('productName:', productName);
         console.log('priceAfterDiscount:', priceAfterDiscount);
-        // console.log('pricePer100g:', pricePer100g); // 100g=12.61 => 1g=12.61/100
-        // console.log('type of pricePer100g:', typeof(pricePer100g));
-        // console.log('totalQuantity:', totalQuantity);
+        console.log('pricePer100g:', pricePer100g); // 100g=12.61 => 1g=12.61/100
+        console.log('type of pricePer100g:', typeof(pricePer100g));
+        console.log('totalQuantity:', totalQuantity);
 
         let priceper1g = (pricePer100g / 100);
         //  console.log('priceper1g:',priceper1g);
         let cart = await Cart.findOne({ userId: userId }).populate('cartItems');
-        // Check if the product already exists in the cart
-        let cartItem = await CartItem.findOne({ productId: productId }).populate('productId');
-
+        // Check if the product already exists in the cart for the user
+        let cartItem = await CartItem.findOne({userId: userId , productId: productId }).populate('productId');
 
         if (cartItem) {
             cartItem.userAddedWeight.push(weight);
@@ -46,10 +45,8 @@ const addToCart = async (req, res) => {
                 quantity: 1
             });
             cartItem.userAddedWeight.push(weight);
-            // cartItem.subtotal = price;//13
-            // console.log('  cartItem.subtotal, if cartItem is false  : ', cartItem.subtotal)
-
-            if (!cartUser) {
+       
+            if (!cartUser) {    
                 cart = new Cart({
                     userId: userId,
                     cartItems: [cartItem._id]
@@ -71,7 +68,6 @@ const addToCart = async (req, res) => {
         });
 
         updatedCart.totalPrice = totalPrice.toFixed();
-        console.log('updatedCart:=========78', updatedCart)
         await updatedCart.save();
 
         res.status(200).json({ message: 'Product added to cart successfully' });
