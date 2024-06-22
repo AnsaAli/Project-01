@@ -88,51 +88,6 @@ const updateWalletField = async (req, res) => {
     }
 }
 
-// const useWalletAmount = async (req, res) => {
-//     try {
-//         const { total, wallet } = req.body;
-//         console.log('total: ', total, 'wallet: ', wallet);
-//         const userId = req.session.user_id;
-
-//         let newTotal;
-//         let remainingWallet;
-
-//         if (total <= wallet) {
-//             console.log('in if case')
-//             // If total amount is less than or equal to wallet amount, use wallet completely
-//             newTotal = 0;
-//             remainingWallet = wallet - total;
-//             console.log('total <= wallet remainingWallet: ',remainingWallet)
-//         } else {
-//             console.log('in else case')
-//             // If total amount is greater than wallet amount, use wallet partially
-//             newTotal = total - wallet;
-//             console.log('newTotal ',newTotal)
-//             remainingWallet = 0; // Wallet amount will be fully used
-//         }
-
-//         // Update user's wallet balance
-//         await User.findByIdAndUpdate(userId, {
-//             wallet: remainingWallet,
-//             $push: {
-//                 history: {
-//                     amount: remainingWallet > 0 ? -total : -wallet, // negative for debit
-//                     status: "debit",
-//                     timestamp: Date.now(),
-//                 },
-//             },
-//         });
-//         console.log('newTotal: ', newTotal)
-//         res.json({
-//             status: true,
-//             sum: newTotal,
-//         });
-
-//     } catch (error) {
-//         console.log('Error in useWalletAmount', error);
-//         res.status(500).json({ status: false, error: "An error occurred while using wallet amount." });
-//     }
-// };
 
 //////////////////////////////\\\\\\\\\\\\\\\\
 

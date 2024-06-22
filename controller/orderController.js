@@ -26,12 +26,12 @@ const loadUserOrder = async (req, res) => {
 
         // Total count of Order
         const count = await Order.countDocuments();
-        const coupons = await Order.find()
+        const coupons = await Order.find({user_id: userId})
             .skip((page - 1) * limit)
             .limit(limit)
             .sort({ createdAt: 1 });  // Sort by descending createdAt
 
-        const orderPlaced = await Order.find({userId}).populate('shippingAddress').populate('orderItems').sort({ orderDate: -1 });
+        const orderPlaced = await Order.find({user_id: userId}).populate('shippingAddress').populate('orderItems').sort({ orderDate: -1 });
         res.render('userOrder',
             {
                 orderPlaced,
@@ -68,7 +68,7 @@ const cancelOrder = async (req, res) => {
                 await product.save();
 
                 // Update user wallet
-                if (order.paymentMethod === 'wallet' || order.paymentMethod === 'razorpay') {
+                if (order.paymentMethod === 'Wallet' || order.paymentMethod === 'razorpay') {
 
                     const user = await User.findById(userId);
                     let existingWalletAmount = user.wallet;

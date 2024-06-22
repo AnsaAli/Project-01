@@ -3,11 +3,11 @@
     <main class="main">
 
 
-        <div class="container col-lg-6">
+        <div class="container col-lg-6" style="margin-top: 50px;">
             <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
                 <div class="padding_eight_all bg-white">
                     <div class="heading_s1">
-                        <h3 class="mb-30">Create an Account</h3>
+                        <h3 class="mb-30" style="text-align: center; font-size: 18px;">Add Address</h3>
                     </div>
                     <!-- <p class="mb-50 font-sm">
                    Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our privacy policy
@@ -15,34 +15,28 @@
               -->
                     <div id="form">
 
-                        <form method="post" action="/addData">
+                        <form method="post" action="/addData" id="updateForm">
 
-                            <div class=" ">
-                                <input type="file" name="user_image">
-                                <!-- <br><small id="name-error" class="error-msg"></small> -->
-                            </div>
+
                             <div class="form-group ">
                                 <input type="string" required name="address_type" placeholder="is it home,office?">
                             </div>
                             <div class="form-group ">
-                                <input type="string" required name="address_customer_name" placeholder="Enter name ">
+                                <input type="string" required name="address_customer_name" placeholder="Enter name " oninput="validateName(this)">
                             </div>
-
+                            <small id="nameValidation"></small>
                             <div class="form-group ">
-                                <input type="string" id="mobile_num" required name="mobile_num" placeholder="Contact number"
-                                pattern='[0-9]{10}'
-                                title="Must be a 10 digit. ">
-                                
-
+                                <input type="string" id="mobile_num" required name="mobile_num"
+                                    placeholder="Contact number" pattern='[0-9]{10}' title="Must be a 10 digit. " oninput="validateNumber(this)">
                             </div>
-
-                            <h3>Address</h3>
+                            <small id="numberValidation"></small>
                             <div class="form-group">
                                 <input required="" type="string" name="house_num" placeholder="House number">
                             </div>
                             <div class="form-group ">
-                                <input required="" type="text" name="apartment_name" placeholder="Apartment name">
+                                <input required="" type="text" name="apartment_name" placeholder="Apartment name" oninput="validateHouseName(this)">
                             </div>
+                            <small id="apratmentValidation"></small>
                             <div class="form-group ">
                                 <input required="" type="text" name="city" placeholder="city">
                             </div>
@@ -53,8 +47,9 @@
                                 <input required="" type="string" name="district" placeholder="District">
                             </div>
                             <div class="form-group ">
-                                <input required="" type="string" name="pincode" placeholder="Pincode">
+                                <input required="" type="string" name="pincode" placeholder="Pincode" oninput="validatePincode(this)">
                             </div>
+                            <small id="pincodeValidate"></small>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-fill-out btn-block hover-up"
                                     name="login">Add</button>
@@ -88,36 +83,55 @@
         </div>
 
         <script>
-           
-                const phoneInput = document.getElementById(mobile_num);
-                function isValidMobileNumber(mobile_num) {
-                    const phoneNumer= phoneInput.value;
-                const mobileNumberRegex = /^[0-9]{10}$/; // Matches 10 digits only
-                if(!mobileNumberRegex.test(phoneNumer)){
-                    alert('Please enter a valid 10-digit number')
-                    phoneInput.focus();
-                    return false
+            function validateNumber(input) {
+                const number = input.value.trim();
+                const validationMessage = document.getElementById('numberValidation');
+                const numberRegex = /^[0-9]{10}$/;
+        
+                if (number === "") {
+                    validationMessage.textContent = 'Contact number is required.';
+                    validationMessage.style.color = 'red';
+                    return false;
+                } else if (!numberRegex.test(number)) {
+                    validationMessage.textContent = 'Please enter a valid 10-digit contact number.';
+                    validationMessage.style.color = 'red';
+                    return false;
                 }
-                return true
-                
+        
+                validationMessage.textContent = '';
+                return true;
             }
-            function confirmDelete(addressId) {
-
-                if (confirm("Are you sure you want to delete this address?")) {
-
-                    document.getElementById("deleteForm_" + addressId).submit();
-                    console.log(addressId, 'is the id address')
+            
+            function validateName(input) {
+                const name = input.value.trim();
+                const validationMessage = document.getElementById('nameValidation');
+               
+        
+                if (name === "") {
+                    validationMessage.textContent = 'Name is required.';
+                    validationMessage.style.color = 'red';
+                    return false;
+                } else if(name.length < 2){
+                    validationMessage.textContent = 'Name must be minimum of 3 letters.';
+                    validationMessage.style.color = 'red';
+                    return false;
                 }
+        
+                validationMessage.textContent = '';
+                return true;
             }
-            //to validate name
-            function validateName(name) {
-
-                //regular expression
-                const nameRegex = /^[a-zA-Z]{3,25}$/;
-
-                //to test the name
-                return nameRegex.test(name);
-            }
+        
+        
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('updateForm').addEventListener('submit', function (event) {
+                    if (!validateNumber(document.querySelector('input[name="mobile_num"]'))) {
+                        event.preventDefault();
+                    }
+                    if (!validateName(document.querySelector('input[name="address_customer_name"]'))) {
+                        event.preventDefault();
+                    }
+                });
+            });
         </script>
 
 
