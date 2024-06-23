@@ -11,7 +11,6 @@
                 <div class="col-lg-12">
                     <div class="row">
                         <div class="col-md-3">
-
                             <div class="dashboard-menu">
                                 <ul class="nav flex-column " role="tablist">
                                     <li class="nav-item">
@@ -98,12 +97,16 @@
                                                             <td>
                                                                 <!-- Product Names -->
                                                                 <% order.orderItems.forEach(orderItem=> { %>
-                                                                    <% if (orderItem.orderedWeight) { %>
-                                                                        <% orderItem.orderedWeight.forEach(pdt=> { %>
-                                                                            <%= pdt.name %><br> <br>
-                                                                                <% }); %>
-                                                                                    <% } %>
-                                                                                        <% }); %>
+                                                                    <% orderItem.orderedWeight.forEach(pdt=> { %>
+                                                                    
+                                                                        <% if (orderItem.is_returned) { %>
+                                                                      <p style="color: red; font-size: smaller; font-weight: bold;">   <%= pdt.name %> Returned</p>
+                                                                        <% } else { %>
+                                                                          <%= pdt.name %> <br><br>
+                                                                          <% } %>
+                                                                     
+                                                                      <% }); %>
+                                                                        <% }); %>
                                                             </td>
                                                             <td>
                                                                 <!-- Corresponding Weights -->
@@ -121,7 +124,7 @@
                                                                                                         <%= pdt.weight
                                                                                                             %>g
                                                                                                             <% } %>
-                                                                                                                <br><br>
+                                                                                                                <br>
                                                                                                                 <% });
                                                                                                                     %>
                                                                                                                     <% }
@@ -151,12 +154,13 @@
                                                                             <%= order.shippingAddress.city %>
 
                                                             </td>
-                                                            <td class="form-group">
+                                                            <td class="form-group" style="text-align: center;">
                                                                 <button
                                                                     class="cancelOrderBtn btn-small d-block btn btn-fill-out btn-block hover-up"
-                                                                    style="color: red;" data-order-id="<%= order._id %>"
-                                                                    type="button" <%=order.orderStatus==='Cancelled'
-                                                                    ? 'disabled' : '' %>
+                                                                    style="color: red; font-size: 14px;"
+                                                                    data-order-id="<%= order._id %>" type="button"
+                                                                    <%=order.orderStatus==='Cancelled' ? 'disabled' : ''
+                                                                    %>
                                                                     onclick="confirmCancel(this)">
                                                                     <%= order.orderStatus==='Cancelled'
                                                                         ? 'Order Cancelled' : 'Cancel Order' %>
@@ -168,7 +172,7 @@
                                                                             <input type="hidden"
                                                                                 value="<%= order._id %>" name="orderId">
                                                                             <button class="btn btn-small"
-                                                                                style="margin-top: 4px; background-color: white; color: rgb(0, 0, 0); border: 0;">View</button>
+                                                                                style="margin-left: 15px; background-color: white; color: rgb(1, 14, 3); border: 0; font-weight: bold; margin-bottom: 2px;">View</button>
                                                                         </form>
 
                                                                         <% }%>
@@ -185,7 +189,7 @@
                                                                                         value="<%= order._id %>"
                                                                                         name="orderDbId">
                                                                                     <button
-                                                                                        style="margin-top: 4px; background-color: white; color: rgb(255, 0, 0); border: 0;">Return</button>
+                                                                                        style="margin-top: 2px; background-color: white; color: rgb(255, 0, 0); border: 1px solid;">Return</button>
                                                                                 </form>
 
                                                                                 <% } %>
@@ -254,32 +258,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // function confirmCancel(button) {
-        //     if (confirm("Are you sure you want to cancel this order?")) {
-        //         const orderId = button.getAttribute('data-order-id');
 
-        //         // Send a DELETE request to cancel the order
-        //         fetch(`/cancelOrder/${orderId}`, {
-        //             method: 'DELETE',
-        //         })
-        //             .then(response => {
-        //                 if (!response.ok) {
-        //                     throw new Error('Failed to cancel order');
-        //                 }
-
-        //                 // Update the UI to reflect the cancelled order
-        //                 const orderStatusCell = document.getElementById(`orderStatus_${orderId}`);
-        //                 orderStatusCell.textContent = 'Cancelled';
-
-        //                 button.textContent = 'Order Cancelled'; // Change the button text
-        //                 button.disabled = true;
-        //             })
-        //             .catch(error => {
-        //                 console.error('Error cancelling order:', error);
-        //                 alert('Failed to cancel order. Please try again.');
-        //             });
-        //     }
-        // }
         function confirmCancel(button) {
             const orderId = button.getAttribute('data-order-id');
 
