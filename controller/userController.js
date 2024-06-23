@@ -25,7 +25,7 @@ const seccurePassword = async (password) => {
 /////////////OTP/////////
 
 function generateOTP() {
-   
+
     // Generate a random 6-digit OTP
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -59,7 +59,7 @@ const sendOtp = async (email, otp) => {
 
 const saveOtp = async (email, otp, expiresAt) => {
     try {
-     
+
         const user = await User.findOne({ email: email });
         if (!user) {
             throw new Error('User not found');
@@ -91,39 +91,25 @@ const loadresendOTP = async (req, res) => {
     }
 }
 
-// Function to save OTP and schedule its deletion
-const deleteOtp = async (email, otp, expiresAt) => {
-    try {
-        // Update user record with new OTP and expiration time
-        await User.findOneAndUpdate(
-            { email: email },
-            { otp: otp, otp_expiry: expiresAt }
-        );
-
-        // Schedule a job to clear the OTP after the validity period
-        schedule.scheduleJob(expiresAt, async () => {
-            await expireOtp(email);
-        });
-
-        console.log(`OTP saved and scheduled for deletion for user ${email}`);
-    } catch (error) {
-        console.error(`Error saving OTP for user ${email}:`, error);
-        throw error;
-    }
-};
-
 const resendOTP = async (req, res) => {
     try {
         console.log('=========================in resendOTP ')
         const { email } = req.body;
-        console.log('email: ', email)
+
         const otp = generateOTP();
 
         // Calculate OTP expiration time
-        const otpValidityPeriod = 1 * 60; // 5 minutes in seconds
+        const otpValidityPeriod = 1 * 60;
         const expiresAt = new Date(Date.now() + otpValidityPeriod * 1000);
-        // Save OTP to database with expiration time
-        await deleteOtp(email, otp, expiresAt);
+
+        await saveOtp(email, otp, expiresAt);
+        //to make otp null after 1 minutes
+        setTimeout(async () => {
+            await expireOtp(req.body.email)
+        }, 1 * 60 * 1000);
+
+        //to send otp to mail
+        await sendOtp(email, otp);
 
         const userData = await User.findOne({ email: email })
         // res.render('veryfyOtp',{successMessage: "OTP resent successfully!", otpTimestamp, otpValidityPeriod })
@@ -135,8 +121,7 @@ const resendOTP = async (req, res) => {
         })
 
     } catch (error) {
-        console.log('Error occurred while resending the OTP, ' + error.message)
-        res.render('error')
+        console.log('Error occurred while resending the OTP, ' + error);
     }
 }
 
@@ -293,7 +278,7 @@ const registerUser = async (req, res) => {
             return res.render('register', { errorMessage: 'Email already registered,Please verify your email by clicking resend OTP' })
         }
         let referralCode = generateShortUUID();
-        
+
         const user = new User({
             name: req.body.name,
             email: req.body.email,
@@ -315,7 +300,7 @@ const registerUser = async (req, res) => {
             }, 1 * 60 * 1000);
 
             //to send otp to mail
-            await sendOtp(req.body.email, otp); 
+            await sendOtp(req.body.email, otp);
 
             return res.render('veryfyOtp', {
                 userData,
@@ -433,7 +418,7 @@ const loadverifyGoogleSignin = async (req, res) => {
                     is_blocked: false,
                     is_verified: profile.email_verified,
                     is_deleted: false,
-                    referralCode:referralCode
+                    referralCode: referralCode
                 })
                 await user.save();
                 req.session.user_id = user._id

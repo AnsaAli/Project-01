@@ -13,7 +13,7 @@
 
                         <div class="col-md-6">
                             <div class="toggle_info"
-                                style="background-color: #012c2c; color: #f9f9f9; display: flex; justify-content: space-between; align-items: center;">
+                                style="background-color: #046f6f; color: #f9f9f9; display: flex; justify-content: space-between; align-items: center;">
                                 <span>
                                     <i class="fi-rs-label mr-10"></i>
                                     Wallet: <span class="" style="color: yellow;">₹ <%= user.wallet %></span>
@@ -23,12 +23,12 @@
                         </div>
 
                         <div class="col-md-6">
-                            <div class="toggle_info" style="background-color: #012c2c; color: #f9f9f9;">
+                            <div class="toggle_info" style="background-color: #046f6f; color: #f9f9f9;">
                                 <span>
                                     <i class="fi-rs-label mr-10"></i>
-                                    <span class="text-muted">Have a coupon?</span>
+                                    <span style=" color: #ffffff;">Have a coupon?</span>
                                     <a href="#" class="toggle_coupon_link" data-bs-toggle="collapse"
-                                        aria-expanded="false" style="color: #f9f9f9;">Click here to enter
+                                        aria-expanded="false" style="color: #f9f9f9; font-weight: bold;">Click here to enter
                                         your coupon code!</a>
                                 </span>
                                 <input type="hidden" id="apply_coupon_btn_clicked" name="apply_coupon_btn_clicked"
@@ -37,7 +37,7 @@
                                 <div id="coupon_input" class="collapse">
                                     <input type="text" id="code" placeholder="Enter coupon code">
                                     <button id="apply_coupon_btn" class="btn  btn-block mt-30"
-                                        onclick="applycoupon($('#code').val())">Apply</button> <br>
+                                        onclick="applycoupon($('#code').val())" style="background-color: #ffffff; color: #000000;">Apply</button> <br>
                                     <a href="#" style="color: red;" onclick="removeCoupon()">Remove
                                         Coupon</a>
                                 </div>
