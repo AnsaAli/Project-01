@@ -44,46 +44,43 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% monthlyOrders.forEach(order=> { %>
+                            <% monthlyOrders.forEach(order => { %>
                                 <tr>
+                                    <td><%= order.order_id %></td>
+                                    <td><%= order.orderDate.toDateString().substring(0, 10) %></td>
                                     <td>
-                                        <%= order.order_id %>
+                                        <% order.orderItems.forEach(orderItem => { %>
+                                            <% if (orderItem.orderedWeight) { %>
+                                                <% orderItem.orderedWeight.forEach(pdt => { %>
+                                                    <%= pdt.name %><br>
+                                                <% }); %>
+                                            <% } %>
+                                        <% }); %>
                                     </td>
                                     <td>
-                                        <%= order.orderDate.toDateString().substring(0, 10)  %>
-                                    </td>
-                                    <% order.orderItems.forEach(orderItem => { %>
-                                        <% if (orderItem.orderedWeight) { %>
-                                            <% orderItem.orderedWeight.forEach(pdt => { %>
-                                             
-                                                    <td><%= pdt.name %></td>
-                                                    <td>
-                                                        <% if (pdt.weight >= 1000) { %>
-                                                            <%= Math.floor(pdt.weight / 1000) %>kg
-                                                            <% let remainingGrams = pdt.weight % 1000; %>
-                                                            <% if (remainingGrams > 0) { %>
-                                                                <%= remainingGrams %>g
-                                                            <% } %>
-                                                        <% } else { %>
-                                                            <%= pdt.weight %>g
+                                        <% order.orderItems.forEach(orderItem => { %>
+                                            <% if (orderItem.orderedWeight) { %>
+                                                <% orderItem.orderedWeight.forEach(pdt => { %>
+                                                    <% if (pdt.weight >= 1000) { %>
+                                                        <%= Math.floor(pdt.weight / 1000) %>kg 
+                                                        <% let remainingGrams = pdt.weight % 1000; %>
+                                                        <% if (remainingGrams > 0) { %>
+                                                            <%= remainingGrams %>g<br>
                                                         <% } %>
-                                                    </td>
-                                                
-                                            <% }); %>
-                                        <% } %>
-                                    <% }); %>
-                                    <td>
-                                        <%= order.paymentMethod %>
+                                                    <% } else { %>
+                                                        <%= pdt.weight %>g<br>
+                                                    <% } %>
+                                                <% }); %>
+                                            <% } %>
+                                        <% }); %>
                                     </td>
-                                    <td>
-                                     <%= order.orderStatus %>
-                                     </td>
-                                    <td>
-                                        <%= order.finalPrice %>
-                                    </td>
+                                    <td><%= order.paymentMethod %></td>
+                                    <td><%= order.orderStatus %></td>
+                                    <td><%= order.finalPrice %></td>
                                 </tr>
-                                <% }); %>
+                            <% }); %>
                         </tbody>
+                        
                     </table>
                 </div>
 
